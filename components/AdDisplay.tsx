@@ -1,13 +1,24 @@
 import { useState, useEffect } from 'react';
-import ChristmasTheme from './ChristmasTheme'; // Make sure this matches your file name
+import ChristmasTheme from './ChristmasTheme';
+
+// Define the shape of our Ad data to prevent errors
+interface Ad {
+  Title: string;
+  ImageURL: string;
+  Status: string;
+  Price: string;
+  Target_Screen: string;
+  Category: string;
+}
 
 const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
 const queryParams = new URLSearchParams(window.location.search);
 const deviceId = queryParams.get('id') || "Lobby_Screen_1"; 
 
 export default function AdDisplay() {
-  const [ads, setAds] = useState<any[]>([]);
-  const [theme, setTheme] = useState("Corporate"); 
+  const [ads, setAds] = useState<Ad[]>([]);
+  const [theme, setTheme] = useState<string>("Corporate");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,21 +27,26 @@ export default function AdDisplay() {
         const res = await fetch(API_URL);
         const data = await res.json();
         
-        // 1. DETERMINE THEME
-        // Ideally, we would read this from the Sheet, but for now let's use the ID
+        // 1. DETERMINE THEME LOGIC
+        // If the URL contains JoesPizza or BBQ, force the Christmas theme
         if (deviceId.includes("JoesPizza") || deviceId.includes("BBQ")) {
-            setTheme("Christmas"); // <--- FORCING CHRISTMAS THEME HERE FOR YOU
+            setTheme("Christmas"); 
         } else {
             setTheme("Corporate");
         }
 
-        // 2. FILTER ADS
-        const relevantAds = data.filter((ad:any) => 
+        // 2. FILTER ADS FOR THIS DEVICE
+        const relevantAds = data.filter((ad: Ad) => 
             ad.Status === 'Active' && 
             (ad.Target_Screen === 'All' || ad.Target_Screen === deviceId)
         );
+        
         setAds(relevantAds);
-      } catch (error) { console.error(error); }
+        setIsLoading(false); 
+      } catch (error) { 
+        console.error("Error fetching ads:", error);
+        setIsLoading(false);
+      }
     };
 
     // Heartbeat logic
@@ -43,12 +59,23 @@ export default function AdDisplay() {
 
     fetchData();
     sendHeartbeat();
-    setInterval(fetchData, 30000);
-    setInterval(sendHeartbeat, 60000);
-  }, []); // <--- useEffect ENDS HERE
+    
+    // Set Timers
+    const dataInterval = setInterval(fetchData, 30000);
+    const heartbeatInterval = setInterval(sendHeartbeat, 60000);
 
-  // --- THE TRAFFIC COP (Must be OUTSIDE useEffect) ---
-  
+    return () => {
+      clearInterval(dataInterval);
+      clearInterval(heartbeatInterval);
+    };
+  }, []);
+
+  // --- RENDER LOGIC ---
+
+  if (isLoading) {
+    return <div className="h-screen w-screen bg-black text-white flex items-center justify-center">Loading...</div>;
+  }
+
   // 3. CHECK THEME AND RENDER
   if (theme === 'Christmas') {
      return <ChristmasTheme ads={ads} />;
@@ -58,7 +85,6 @@ export default function AdDisplay() {
   return (
     <div className="bg-white text-black h-screen flex items-center justify-center">
         <h1 className="text-4xl">Welcome to {deviceId}</h1>
-        {/* You can put your standard corporate layout here */}
     </div>
   );
 }
