@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import ChristmasTheme from './ChristmasTheme';
 
-// Define the shape of our Ad data to prevent errors
 interface Ad {
   Title: string;
   ImageURL: string;
@@ -21,6 +20,20 @@ export default function AdDisplay() {
   const [theme, setTheme] = useState<string>("Corporate");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // --- 1. TRAFFIC COP (Runs immediately, doesn't wait for Google Sheets) ---
+  useEffect(() => {
+    const lowerId = deviceId.toLowerCase();
+    console.log("System detected ID:", lowerId);
+
+    // If ID is "joespizza_lobby", this will set theme to Christmas
+    if (lowerId.includes("joespizza") || lowerId.includes("bbq")) {
+        setTheme("Christmas"); 
+    } else {
+        setTheme("Corporate");
+    }
+  }, []); // Empty brackets = Runs once when page loads
+
+  // --- 2. DATA FETCHER (Runs in background) ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -28,24 +41,7 @@ export default function AdDisplay() {
         const res = await fetch(API_URL);
         const data = await res.json();
         
-        // --- DEBUGGING LOG ---
-        // Open your browser console (F12) to see this value. 
-        // It confirms exactly what ID the system sees.
-        console.log("System detected Device ID:", deviceId);
-
-        // 1. DETERMINE THEME LOGIC (UPDATED)
-        // We convert the ID to lowercase so "JoesPizza", "joespizza", and "JOESPIZZA" all work.
-        const lowerId = deviceId.toLowerCase();
-
-        if (lowerId.includes("joespizza") || lowerId.includes("bbq")) {
-            console.log("Theme set to: Christmas"); // Debug log
-            setTheme("Christmas"); 
-        } else {
-            console.log("Theme set to: Corporate"); // Debug log
-            setTheme("Corporate");
-        }
-
-        // 2. FILTER ADS FOR THIS DEVICE
+        // Filter ads for this specific device
         const relevantAds = data.filter((ad: Ad) => 
             ad.Status === 'Active' && 
             (ad.Target_Screen === 'All' || ad.Target_Screen === deviceId)
@@ -55,6 +51,7 @@ export default function AdDisplay() {
         setIsLoading(false); 
       } catch (error) { 
         console.error("Error fetching ads:", error);
+        // Even if data fails, we stop loading so the Theme can show (empty)
         setIsLoading(false);
       }
     };
@@ -62,7 +59,6 @@ export default function AdDisplay() {
     // Heartbeat logic
     const sendHeartbeat = async () => {
       try {
-        if (!API_URL) return;
         await fetch(`${API_URL}?action=heartbeat&device_id=${deviceId}`, { mode: 'no-cors' });
       } catch (e) {}
     };
@@ -70,7 +66,6 @@ export default function AdDisplay() {
     fetchData();
     sendHeartbeat();
     
-    // Set Timers
     const dataInterval = setInterval(fetchData, 30000);
     const heartbeatInterval = setInterval(sendHeartbeat, 60000);
 
