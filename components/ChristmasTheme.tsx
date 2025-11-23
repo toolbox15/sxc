@@ -1,11 +1,16 @@
-
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Gift, Snowflake } from 'lucide-react';
-import { STARTERS, SIDES, PIZZAS, SPECIALS, EXTRAS } from '../constants';
-import { MenuItem } from '../types';
 
-// --- Sub-components for clean code ---
+// --- Types for your Google Sheet Data ---
+interface AdItem {
+  Title: string;
+  Price: string;
+  Description?: string;
+  Category: string;
+}
+
+// --- Sub-components ---
 
 const RibbonHeader: React.FC<{ title: string; className?: string }> = ({ title, className }) => (
   <div className={`relative flex items-center justify-center py-4 bg-red-800 shadow-xl border-y-4 border-yellow-500 ${className}`}>
@@ -18,14 +23,15 @@ const RibbonHeader: React.FC<{ title: string; className?: string }> = ({ title, 
   </div>
 );
 
-const MenuListItem: React.FC<{ item: MenuItem; large?: boolean }> = ({ item, large = false }) => (
+const MenuListItem: React.FC<{ item: AdItem; large?: boolean }> = ({ item, large = false }) => (
   <div className="flex items-baseline justify-between w-full mb-3 relative group">
     <div className="flex-grow pr-4 relative z-10">
+      {/* Maps to 'Title' from Google Sheet */}
       <span className={`font-sans font-bold text-gray-100 ${large ? 'text-4xl' : 'text-3xl'}`}>
-        {item.name}
+        {item.Title} 
       </span>
-      {item.description && (
-        <p className="text-2xl text-gray-400 italic mt-1 font-serif">{item.description}</p>
+      {item.Description && (
+        <p className="text-2xl text-gray-400 italic mt-1 font-serif">{item.Description}</p>
       )}
     </div>
     
@@ -33,15 +39,15 @@ const MenuListItem: React.FC<{ item: MenuItem; large?: boolean }> = ({ item, lar
     <div className="absolute left-0 right-0 bottom-2 border-b-2 border-dotted border-gray-600 z-0"></div>
 
     <div className="relative z-10 pl-4 bg-gradient-to-l from-slate-900 to-slate-900/0">
+      {/* Maps to 'Price' from Google Sheet */}
       <span className={`font-serif font-bold text-yellow-400 ${large ? 'text-5xl' : 'text-4xl'}`}>
-        ${item.price}
+        {item.Price}
       </span>
     </div>
   </div>
 );
 
 const SnowEffect: React.FC = () => {
-  // Generate random snowflakes
   const snowflakes = useMemo(() => Array.from({ length: 50 }).map((_, i) => ({
     id: i,
     x: Math.random() * 100,
@@ -56,45 +62,26 @@ const SnowEffect: React.FC = () => {
         <motion.div
           key={flake.id}
           className="absolute bg-white rounded-full opacity-60"
-          style={{
-            left: `${flake.x}%`,
-            width: flake.size,
-            height: flake.size,
-          }}
+          style={{ left: `${flake.x}%`, width: flake.size, height: flake.size }}
           initial={{ y: -50 }}
-          animate={{ y: 2200 }} // Falls well below 4K height
-          transition={{
-            duration: flake.duration,
-            repeat: Infinity,
-            delay: flake.delay,
-            ease: "linear",
-          }}
+          animate={{ y: 2200 }} 
+          transition={{ duration: flake.duration, repeat: Infinity, delay: flake.delay, ease: "linear" }}
         />
       ))}
     </div>
   );
 };
 
+// --- SVGs (Kept exactly as you provided) ---
+
 const PizzaWreathSVG: React.FC<{ className?: string }> = ({ className }) => (
   <svg viewBox="0 0 200 200" className={className}>
-    {/* Drop Shadow Ring - Stroked to keep center clear - Changed to WHITE and smaller blur */}
     <circle cx="100" cy="100" r="85" fill="none" stroke="rgba(255, 255, 255, 0.5)" strokeWidth="20" opacity="0.6" filter="blur(4px)" />
-
-    {/* Crust Ring (Outer) */}
     <circle cx="100" cy="100" r="85" fill="none" stroke="#d97706" strokeWidth="22" />
-    {/* Crust texture */}
     <circle cx="100" cy="100" r="85" fill="none" stroke="#fbbf24" strokeWidth="20" strokeDasharray="10 15" strokeLinecap="round" opacity="0.8" />
-
-    {/* Tomato Sauce Base */}
     <circle cx="100" cy="100" r="70" fill="none" stroke="#b91c1c" strokeWidth="48" />
-
-    {/* Melted Cheese Layer (Ring) */}
     <circle cx="100" cy="100" r="70" fill="none" stroke="#fef3c7" strokeWidth="40" />
-    
-    {/* Burnt Cheese / Oven spots */}
     <circle cx="100" cy="100" r="70" fill="none" stroke="#d97706" strokeWidth="40" strokeDasharray="5 45" opacity="0.4" />
-
-    {/* Toppings: Pepperoni (Berries) */}
     {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
       <g key={`pep-${i}`} transform={`rotate(${angle} 100 100)`}>
         <circle cx="100" cy="45" r="7.5" fill="#ef4444" stroke="#991b1b" strokeWidth="1" />
@@ -102,44 +89,29 @@ const PizzaWreathSVG: React.FC<{ className?: string }> = ({ className }) => (
         <circle cx="98" cy="44" r="1" fill="#7f1d1d" opacity="0.3" />
       </g>
     ))}
-
-    {/* Toppings: Sausage (Irregular Chunks) */}
     {[35, 80, 125, 170, 215, 260, 305, 350].map((angle, i) => (
       <g key={`sausage-${i}`} transform={`rotate(${angle} 100 100)`}>
          <path d="M96 52 C 94 48, 104 46, 106 50 C 108 55, 100 58, 96 52" fill="#5D4037" stroke="#3E2723" strokeWidth="1" />
          <circle cx="99" cy="51" r="1.2" fill="#8D6E63" opacity="0.4" />
       </g>
     ))}
-
-    {/* Toppings: Basil/Peppers (Greenery) */}
     {[22, 67, 112, 157, 202, 247, 292, 337].map((angle, i) => (
       <g key={`basil-${i}`} transform={`rotate(${angle} 100 100)`}>
         <path d="M100 48 Q 90 40 95 32 Q 105 32 100 48" fill="#15803d" />
         <path d="M100 48 Q 110 40 105 32 Q 95 32 100 48" fill="#166534" opacity="0.7" />
       </g>
     ))}
-    
-    {/* Toppings: Black Olives */}
     {[10, 100, 190, 280].map((angle, i) => (
       <circle key={`olive-${i}`} cx="100" cy="58" r="3.5" fill="#171717" stroke="#404040" strokeWidth="1" transform={`rotate(${angle} 100 100)`} />
     ))}
-    
-    {/* Toppings: Mushrooms */}
     {[55, 145, 235, 325].map((angle, i) => (
       <path key={`mush-${i}`} d="M97 55 Q 100 50 103 55 L 103 60 L 97 60 Z" fill="#a8a29e" transform={`rotate(${angle} 100 100)`} />
     ))}
-
-    {/* Festive Bow */}
     <g transform="translate(0, 15)">
-      {/* Ribbon tails */}
       <path d="M100 160 L 80 200 L 100 160 L 120 200" stroke="#dc2626" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M80 200 L 85 205 M 120 200 L 115 205" stroke="#991b1b" strokeWidth="2" />
-      
-      {/* Bow loops */}
       <path d="M100 160 C 80 140, 50 160, 70 180 C 80 190, 100 160, 100 160" fill="#ef4444" stroke="#991b1b" strokeWidth="1" />
       <path d="M100 160 C 120 140, 150 160, 130 180 C 120 190, 100 160, 100 160" fill="#ef4444" stroke="#991b1b" strokeWidth="1" />
-      
-      {/* Center Knot */}
       <circle cx="100" cy="160" r="7" fill="#b91c1c" />
     </g>
   </svg>
@@ -149,16 +121,9 @@ const GlowingTreeSVG: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <div className={className}>
       <svg viewBox="0 0 200 300" className="w-full h-full drop-shadow-2xl">
-        {/* Tree Body */}
         <path d="M100 20 L40 100 H80 L30 180 H70 L20 260 H180 L130 180 H170 L120 100 H160 Z" fill="#14532d" />
-        
-        {/* Trunk */}
         <rect x="85" y="260" width="30" height="40" fill="#3f2c22" />
-
-        {/* Lights (Animated via Framer Motion in parent wrapper context if needed, but here simple CSS/SVG animation) */}
-        {/* Using Framer Motion components inside SVG */}
         <motion.circle cx="100" cy="20" r="8" fill="#fbbf24" animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.2, 1] }} transition={{ duration: 2, repeat: Infinity }} />
-        
         <motion.circle cx="60" cy="120" r="5" fill="#ef4444" animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }} />
         <motion.circle cx="140" cy="140" r="5" fill="#3b82f6" animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.8, repeat: Infinity, delay: 0.5 }} />
         <motion.circle cx="90" cy="190" r="5" fill="#eab308" animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 2.2, repeat: Infinity, delay: 0.1 }} />
@@ -170,30 +135,28 @@ const GlowingTreeSVG: React.FC<{ className?: string }> = ({ className }) => {
   );
 };
 
-
 // --- Main Component ---
 
-export const RestaurantChristmasMenu: React.FC = () => {
+// Accepts the 'ads' prop from AdDisplay
+const ChristmasTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
+  
+  // --- DATA FILTERING ---
+  // This connects to your Google Sheet 'Category' column
+  const starters = ads.filter(ad => ad.Category === 'Starter');
+  const sides = ads.filter(ad => ad.Category === 'Side');
+  const pizzas = ads.filter(ad => ad.Category === 'Main');
+  const specials = ads.filter(ad => ad.Category === 'Special');
+  const extras = ads.filter(ad => ad.Category === 'Extra');
+
   return (
     <div className="w-full h-full relative overflow-hidden bg-gradient-to-br from-slate-900 via-red-950 to-slate-900 text-gray-100">
-      
-      {/* Background Atmosphere */}
       <SnowEffect />
       
-      {/* Floating Decor Icons (Absolute) */}
-      <motion.div 
-        className="absolute top-12 left-12 text-yellow-500/20"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-      >
+      {/* Floating Icons */}
+      <motion.div className="absolute top-12 left-12 text-yellow-500/20" animate={{ rotate: 360 }} transition={{ duration: 60, repeat: Infinity, ease: "linear" }}>
         <Snowflake size={120} />
       </motion.div>
-
-      <motion.div 
-        className="absolute bottom-24 left-[35%] text-red-600/20"
-        animate={{ rotate: -10 }}
-        transition={{ duration: 5, repeat: Infinity, repeatType: "mirror" }}
-      >
+      <motion.div className="absolute bottom-24 left-[35%] text-red-600/20" animate={{ rotate: -10 }} transition={{ duration: 5, repeat: Infinity, repeatType: "mirror" }}>
         <Gift size={160} />
       </motion.div>
 
@@ -202,14 +165,12 @@ export const RestaurantChristmasMenu: React.FC = () => {
         
         {/* --- LEFT COLUMN --- */}
         <div className="col-span-4 flex flex-col gap-12 h-full relative z-10">
-          
           {/* STARTERS */}
           <div className="bg-slate-900/50 backdrop-blur-sm border border-red-900/30 p-8 rounded-xl shadow-2xl flex-1 flex flex-col pt-32"> 
-            {/* Added pt-32 to push content down below overlapping wreath if needed, though header is z-20 */}
             <RibbonHeader title="Starters" className="mb-8 -mx-12" />
-            <div className="flex flex-col justify-between h-full py-4">
-              {STARTERS.map(item => (
-                <MenuListItem key={item.id} item={item} large />
+            <div className="flex flex-col justify-start gap-2 h-full py-4 overflow-y-auto">
+              {starters.map((item, i) => (
+                <MenuListItem key={i} item={item} large />
               ))}
             </div>
           </div>
@@ -218,38 +179,25 @@ export const RestaurantChristmasMenu: React.FC = () => {
           <div className="bg-slate-900/50 backdrop-blur-sm border border-red-900/30 p-8 rounded-xl shadow-2xl h-[40%] flex flex-col relative overflow-hidden">
             <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-yellow-500 rounded-tl-3xl opacity-50"></div>
             <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-yellow-500 rounded-br-3xl opacity-50"></div>
-            
-            <h3 className="text-5xl font-serif text-yellow-500 text-center mb-8 border-b-2 border-red-800 pb-2">
-              Festive Drinks & Treats
-            </h3>
-            
+            <h3 className="text-5xl font-serif text-yellow-500 text-center mb-8 border-b-2 border-red-800 pb-2">Festive Drinks</h3>
             <div className="grid grid-cols-2 gap-x-12 gap-y-4">
-               {EXTRAS.map(item => (
-                 <MenuListItem key={item.id} item={item} />
+               {extras.map((item, i) => (
+                 <MenuListItem key={i} item={item} />
                ))}
             </div>
           </div>
-
         </div>
 
         {/* --- CENTER COLUMN --- */}
         <div className="col-span-4 flex flex-col gap-8 h-full relative z-20">
-          
-          {/* Header Area - Overlapping and Massive */}
+          {/* Massive Wreath / Title */}
           <div className="flex flex-col items-center justify-start h-[25%] relative -mx-[25vw] z-50 pointer-events-none">
-             {/* Massive Wreath - Scaled Down */}
              <div className="absolute top-10 w-[350px] h-[350px] z-0">
                 <PizzaWreathSVG className="w-full h-full drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
              </div>
-             
-             {/* Text sitting on top */}
              <div className="relative z-10 flex flex-col items-center justify-center mt-44">
-                <h1 className="font-serif text-[6rem] leading-none text-red-500 italic font-bold drop-shadow-[0_5px_5px_rgba(0,0,0,1)]" style={{ fontFamily: 'Cinzel, serif' }}>
-                  Merry
-                </h1>
-                <h1 className="font-serif text-[4.5rem] leading-none text-white tracking-[0.2em] font-bold uppercase drop-shadow-[0_10px_10px_rgba(0,0,0,1)] -mt-1">
-                  Christmas
-                </h1>
+                <h1 className="font-serif text-[6rem] leading-none text-red-500 italic font-bold drop-shadow-[0_5px_5px_rgba(0,0,0,1)]" style={{ fontFamily: 'serif' }}>Merry</h1>
+                <h1 className="font-serif text-[4.5rem] leading-none text-white tracking-[0.2em] font-bold uppercase drop-shadow-[0_10px_10px_rgba(0,0,0,1)] -mt-1">Christmas</h1>
              </div>
           </div>
 
@@ -257,54 +205,46 @@ export const RestaurantChristmasMenu: React.FC = () => {
           <div className="bg-slate-900/50 backdrop-blur-sm p-8 rounded-xl flex-shrink-0 mt-8">
             <RibbonHeader title="Sides" className="mb-8 -mx-12" />
             <div className="flex flex-col gap-6">
-              {SIDES.map(item => (
-                <MenuListItem key={item.id} item={item} large />
+              {sides.map((item, i) => (
+                <MenuListItem key={i} item={item} large />
               ))}
             </div>
           </div>
 
-          {/* SPECIALS (Center Box) */}
+          {/* SPECIALS */}
           <div className="flex-grow border-double border-8 border-red-800 bg-red-950/40 relative p-8 flex flex-col items-center justify-center rounded-lg mt-4">
              <div className="absolute -top-6 bg-red-950 p-2 rounded-full border-4 border-yellow-500 shadow-xl">
                 <Sparkles size={25} className="text-yellow-400 animate-pulse" />
              </div>
-             
-             <h2 className="text-6xl font-serif text-yellow-400 mb-12 mt-4 uppercase tracking-widest border-b-4 border-yellow-600 pb-2">
-               Our Specials
-             </h2>
-
+             <h2 className="text-6xl font-serif text-yellow-400 mb-12 mt-4 uppercase tracking-widest border-b-4 border-yellow-600 pb-2">Our Specials</h2>
              <div className="w-full flex flex-col gap-8">
-               {SPECIALS.map(item => (
-                 <MenuListItem key={item.id} item={item} large />
+               {specials.map((item, i) => (
+                 <MenuListItem key={i} item={item} large />
                ))}
              </div>
           </div>
-
         </div>
 
         {/* --- RIGHT COLUMN --- */}
         <div className="col-span-4 flex flex-col gap-8 h-full relative z-10">
-          
           {/* BEST PIZZA */}
           <div className="bg-slate-900/50 backdrop-blur-sm border border-red-900/30 p-8 rounded-xl shadow-2xl h-full flex flex-col pb-[350px] pt-32"> 
-            {/* Added pt-32 to push content down below overlapping wreath */}
             <RibbonHeader title="Best Pizza" className="mb-10 -mx-12" />
-            
-            <div className="flex flex-col justify-around h-full">
-              {PIZZAS.map(item => (
-                <MenuListItem key={item.id} item={item} />
+            <div className="flex flex-col justify-start gap-4 h-full overflow-y-auto">
+              {pizzas.map((item, i) => (
+                 <MenuListItem key={i} item={item} />
               ))}
             </div>
           </div>
-
-          {/* ANIMATED TREE (Bottom Right Overlay) */}
+          {/* ANIMATED TREE */}
           <div className="absolute bottom-0 right-0 w-full flex justify-center pointer-events-none">
              <GlowingTreeSVG className="w-[400px] h-[500px]" />
           </div>
-
         </div>
 
       </div>
     </div>
   );
 };
+
+export default ChristmasTheme;
