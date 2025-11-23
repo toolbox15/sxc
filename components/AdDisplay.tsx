@@ -13,6 +13,7 @@ interface Ad {
 
 const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
 const queryParams = new URLSearchParams(window.location.search);
+// Defaults to "Lobby_Screen_1" if no ID is provided in the URL
 const deviceId = queryParams.get('id') || "Lobby_Screen_1"; 
 
 export default function AdDisplay() {
@@ -27,11 +28,20 @@ export default function AdDisplay() {
         const res = await fetch(API_URL);
         const data = await res.json();
         
-        // 1. DETERMINE THEME LOGIC
-        // If the URL contains JoesPizza or BBQ, force the Christmas theme
-        if (deviceId.includes("JoesPizza") || deviceId.includes("BBQ")) {
+        // --- DEBUGGING LOG ---
+        // Open your browser console (F12) to see this value. 
+        // It confirms exactly what ID the system sees.
+        console.log("System detected Device ID:", deviceId);
+
+        // 1. DETERMINE THEME LOGIC (UPDATED)
+        // We convert the ID to lowercase so "JoesPizza", "joespizza", and "JOESPIZZA" all work.
+        const lowerId = deviceId.toLowerCase();
+
+        if (lowerId.includes("joespizza") || lowerId.includes("bbq")) {
+            console.log("Theme set to: Christmas"); // Debug log
             setTheme("Christmas"); 
         } else {
+            console.log("Theme set to: Corporate"); // Debug log
             setTheme("Corporate");
         }
 
@@ -73,7 +83,7 @@ export default function AdDisplay() {
   // --- RENDER LOGIC ---
 
   if (isLoading) {
-    return <div className="h-screen w-screen bg-black text-white flex items-center justify-center">Loading...</div>;
+    return <div className="h-screen w-screen bg-black text-white flex items-center justify-center">Loading System...</div>;
   }
 
   // 3. CHECK THEME AND RENDER
@@ -83,8 +93,9 @@ export default function AdDisplay() {
   
   // 4. DEFAULT RENDER (Corporate/Standard)
   return (
-    <div className="bg-white text-black h-screen flex items-center justify-center">
-        <h1 className="text-4xl">Welcome to {deviceId}</h1>
+    <div className="bg-white text-black h-screen flex flex-col items-center justify-center">
+        <h1 className="text-4xl font-bold">Welcome to {deviceId}</h1>
+        <p className="mt-4 text-gray-500">Theme: {theme}</p>
     </div>
   );
 }
