@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import ChristmasTheme from './ChristmasTheme';
+import BistroTheme from './BistroTheme'; // <--- NEW IMPORT
 
+// Define the shape of our Ad data to prevent errors
 interface Ad {
   Title: string;
   ImageURL: string;
@@ -8,11 +10,12 @@ interface Ad {
   Price: string;
   Target_Screen: string;
   Category: string;
+  Color?: string;
+  Description?: string;
 }
 
 const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
 const queryParams = new URLSearchParams(window.location.search);
-// Defaults to "Lobby_Screen_1" if no ID is provided in the URL
 const deviceId = queryParams.get('id') || "Lobby_Screen_1"; 
 
 export default function AdDisplay() {
@@ -20,20 +23,24 @@ export default function AdDisplay() {
   const [theme, setTheme] = useState<string>("Corporate");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // --- 1. TRAFFIC COP (Runs immediately, doesn't wait for Google Sheets) ---
+  // --- 1. TRAFFIC COP LOGIC ---
   useEffect(() => {
     const lowerId = deviceId.toLowerCase();
     console.log("System detected ID:", lowerId);
 
-    // If ID is "joespizza_lobby", this will set theme to Christmas
+    // LOGIC: Check the URL to decide which Theme file to load
     if (lowerId.includes("joespizza") || lowerId.includes("bbq")) {
         setTheme("Christmas"); 
-    } else {
+    } 
+    else if (lowerId.includes("bistro")) {
+        setTheme("Bistro"); // <--- NEW RULE
+    }
+    else {
         setTheme("Corporate");
     }
-  }, []); // Empty brackets = Runs once when page loads
+  }, []); 
 
-  // --- 2. DATA FETCHER (Runs in background) ---
+  // --- 2. DATA FETCHER ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,7 +58,6 @@ export default function AdDisplay() {
         setIsLoading(false); 
       } catch (error) { 
         console.error("Error fetching ads:", error);
-        // Even if data fails, we stop loading so the Theme can show (empty)
         setIsLoading(false);
       }
     };
@@ -81,16 +87,22 @@ export default function AdDisplay() {
     return <div className="h-screen w-screen bg-black text-white flex items-center justify-center">Loading System...</div>;
   }
 
-  // 3. CHECK THEME AND RENDER
+  // ROUTE: Bistro Theme
+  if (theme === 'Bistro') {
+     return <BistroTheme ads={ads} />;
+  }
+
+  // ROUTE: Christmas Theme
   if (theme === 'Christmas') {
      return <ChristmasTheme ads={ads} />;
   }
   
-  // 4. DEFAULT RENDER (Corporate/Standard)
+  // ROUTE: Default / Corporate
   return (
     <div className="bg-white text-black h-screen flex flex-col items-center justify-center">
         <h1 className="text-4xl font-bold">Welcome to {deviceId}</h1>
         <p className="mt-4 text-gray-500">Theme: {theme}</p>
+        <p className="text-sm text-gray-400">Add '?id=JoesBistro' to URL to test.</p>
     </div>
   );
 }
