@@ -1,50 +1,52 @@
-// --- WHISPY SMOKE COMPONENT (New & Improved!) ---
+// --- FINAL WHISPY SMOKE COMPONENT ---
 const SteamEffect = () => {
-  // Create 15 whispy trails
-  const paths = Array.from({ length: 15 });
+  // Only 8 particles for a "small amount"
+  const particles = Array.from({ length: 8 });
+
+  // Helper to get random numbers easily
+  const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
   return (
-    <div className="absolute bottom-0 left-0 w-[500px] h-[800px] pointer-events-none overflow-hidden z-0">
-      {/* <svg> is how we draw curly lines */}
-      <svg className="w-full h-full" viewBox="0 0 500 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {paths.map((_, i) => {
-          // Randomize the start position and curve for each trail
-          const startX = Math.random() * 200;
-          const curveAmount = Math.random() * 100 + 50;
-          const duration = Math.random() * 15 + 15; // Very slow (15-30s)
-          const delay = Math.random() * 10;
+    // Container: Constrained to bottom-left, only 40% height of screen
+    <div className="absolute bottom-0 left-0 w-[300px] h-[40%] pointer-events-none overflow-hidden z-0">
+      {particles.map((_, i) => {
+        // Generate unique random values for each particle
+        const startX = random(50, 200); // Start somewhere in the left corner
+        const driftX = random(-50, 50); // Drift left or right slightly
+        const heightY = random(-200, -350); // How high it goes (negative is up)
+        const rotation = random(-180, 180); // Twist left or right
+        const duration = random(8, 12); // Slow rise
+        const delay = random(0, 5);
 
-          return (
-            <motion.path
-              key={i}
-              // This draws a curly line (Bezier curve)
-              d={`M${startX} 800 C ${startX + curveAmount} 600, ${startX - curveAmount} 400, ${startX + curveAmount / 2} 0`}
-              stroke="white"
-              strokeWidth={Math.random() * 3 + 1} // Random thickness
-              strokeLinecap="round"
-              filter="url(#blurMe)" // Apply the blur filter
-              initial={{ opacity: 0, pathLength: 0, y: 100 }}
-              animate={{ 
-                opacity: [0, 0.4, 0], // Fade in slowly, then out
-                pathLength: [0, 1], // Draw the line from bottom to top
-                y: -200 // Slowly drift up
-              }}
-              transition={{ 
-                duration: duration,
-                repeat: Infinity, 
-                delay: delay,
-                ease: "easeInOut"
-              }}
-            />
-          );
-        })}
-        {/* This is the "blur filter" that makes the lines look like smoke */}
-        <defs>
-          <filter id="blurMe">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="15" />
-          </filter>
-        </defs>
-      </svg>
+        return (
+          <motion.div
+            key={i}
+            // The Look: Elongated oval, very subtle white, medium blur
+            className="absolute bg-white/20 w-8 h-16 rounded-full blur-lg origin-center"
+            initial={{ 
+              opacity: 0, 
+              scale: 0.2, 
+              x: startX, 
+              y: 50, // Start just below view
+              rotate: 0 
+            }}
+            animate={{ 
+              opacity: [0, 0.4, 0], // Fade in then OUT quickly
+              scale: [0.5, 1.5], // Grow wispy
+              y: heightY, // Move up to the dissipation point
+              x: startX + driftX, // Drift sideways
+              rotate: rotation // <-- THE SECRET SAUCE: Slow twisting creates the "curl" look
+            }}
+            transition={{ 
+              duration: duration,
+              repeat: Infinity, 
+              delay: delay,
+              ease: "easeInOut",
+              times: [0, 0.4, 1] // Fade out way before it finishes moving up
+            }}
+          />
+        );
+      })}
     </div>
   );
 };
