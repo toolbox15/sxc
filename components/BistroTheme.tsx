@@ -6,17 +6,17 @@ interface AdItem {
   Title: string;
   Price: string;
   Description?: string;
-  Category: string; // 'Appetizers', 'Entrees', 'Desserts', 'Drinks'
+  Category: string;
   Color?: string;
 }
 
 // --- PLACEHOLDER DATA ---
 const DUMMY_MENU = {
   appetizers: [
-    { Title: "Truffle Parmesan Fries", Price: "$12", Description: "Hand-cut fries, truffle oil, shaved parmesan, garlic aioli", Category: "Appetizers" },
-    { Title: "Escargot de Bourgogne", Price: "$16", Description: "Garlic herb butter, toasted baguette slices", Category: "Appetizers" },
-    { Title: "Beef Carpaccio", Price: "$18", Description: "Thinly sliced raw beef, capers, baby arugula, lemon", Category: "Appetizers" },
-    { Title: "French Onion Soup", Price: "$10", Description: "Caramelized onions, rich beef broth, gruyère crouton", Category: "Appetizers" }
+    { Title: "Truffle Fries", Price: "$12", Description: "Hand-cut, truffle oil, parmesan", Category: "Appetizers" },
+    { Title: "Escargot", Price: "$16", Description: "Garlic herb butter, baguette", Category: "Appetizers" },
+    { Title: "Beef Carpaccio", Price: "$18", Description: "Raw beef, capers, arugula", Category: "Appetizers" },
+    { Title: "Onion Soup", Price: "$10", Description: "Caramelized onions, gruyère", Category: "Appetizers" }
   ],
   entrees: [
     { Title: "Steak Frites", Price: "$34", Description: "10oz NY Strip, peppercorn sauce, crispy shoestring fries", Category: "Entrees" },
@@ -25,10 +25,10 @@ const DUMMY_MENU = {
     { Title: "Wild Mushroom Risotto", Price: "$24", Description: "Arborio rice, porcini mushrooms, truffle oil, parmesan reggiano", Category: "Entrees" }
   ],
   drinks: [
-    { Title: "The Old Fashioned", Price: "$14", Description: "Bourbon, angostura bitters, orange peel, luxardo cherry", Category: "Drinks" },
-    { Title: "French 75", Price: "$13", Description: "Gin, champagne, lemon juice, sugar", Category: "Drinks" },
+    { Title: "Old Fashioned", Price: "$14", Description: "Bourbon, bitters, orange peel", Category: "Drinks" },
+    { Title: "French 75", Price: "$13", Description: "Gin, champagne, lemon", Category: "Drinks" },
     { Title: "House Cabernet", Price: "$11", Description: "Napa Valley, 2021", Category: "Drinks" },
-    { Title: "Artisan Coffee", Price: "$5", Description: "Locally roasted, french press", Category: "Drinks" }
+    { Title: "Artisan Coffee", Price: "$5", Description: "Locally roasted", Category: "Drinks" }
   ]
 };
 
@@ -43,32 +43,31 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 }
 };
 
-// --- SMOKE COMPONENT (FIXED: Visible & Bottom Left) ---
+// --- SMOKE COMPONENT (LOW LYING FOG) ---
 const SteamEffect = () => {
-  const particles = Array.from({ length: 12 }); // Increased count slightly
+  const particles = Array.from({ length: 15 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
   return (
-    // Locked to Bottom Left, 400px wide
-    <div className="absolute bottom-0 left-0 w-[400px] h-[500px] pointer-events-none overflow-hidden z-10">
+    // Locked to Bottom Left, height restricted to 300px so it doesn't go up high
+    <div className="absolute bottom-0 left-0 w-[400px] h-[300px] pointer-events-none overflow-hidden z-10">
       {particles.map((_, i) => {
-        const startX = random(50, 250); // Start in the left corner
-        const driftX = random(-50, 50); // Drift left/right
-        const heightY = random(-200, -400); // Float up
-        const rotation = random(-90, 90); // Twist
-        const duration = random(8, 12); // Speed
+        const startX = random(50, 300); 
+        const driftX = random(-50, 50); 
+        const heightY = random(-50, -150); // ONLY GO UP A LITTLE BIT (Low lying)
+        const rotation = random(-45, 45); 
+        const duration = random(8, 12); 
         const delay = random(0, 5);
 
         return (
           <motion.div
             key={i}
-            // Increased opacity (bg-white/10) and blur (blur-xl) so it's visible
-            className="absolute bg-white/10 w-12 h-24 rounded-[100%] blur-2xl origin-center"
+            className="absolute bg-white/10 w-16 h-16 rounded-[100%] blur-2xl origin-center"
             initial={{ opacity: 0, scale: 0.5, x: startX, y: 100, rotate: 0 }}
             animate={{ 
-              opacity: [0, 0.4, 0], // Peak opacity 0.4 (Visible but not a flashlight)
-              scale: [0.5, 1.5], 
-              y: heightY, 
+              opacity: [0, 0.3, 0], // Peak opacity 0.3
+              scale: [0.5, 2], // Grow wide
+              y: heightY, // Move up slightly
               x: startX + driftX, 
               rotate: rotation 
             }}
@@ -77,7 +76,7 @@ const SteamEffect = () => {
               repeat: Infinity, 
               delay: delay,
               ease: "easeInOut",
-              times: [0, 0.2, 0.8] 
+              times: [0, 0.2, 1] 
             }}
           />
         );
@@ -106,35 +105,36 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/40 z-0"></div>
 
-      {/* Steam Effect (Now visible!) */}
+      {/* Steam Effect */}
       <SteamEffect />
 
       {/* --- THE LAYOUT GRID --- */}
       <div className="relative z-10 w-full h-full grid grid-cols-12 gap-4 p-12">
         
-        {/* LEFT ZONE (Appetizers) */}
-        <div className="col-span-4 pt-40 px-12">
+        {/* LEFT ZONE (Appetizers) - SQUEEZED (px-20) & SMALLER TEXT (text-2xl) */}
+        <div className="col-span-4 pt-44 px-20">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {appetizers.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="group">
                 <div className="flex justify-between items-baseline">
-                  <h3 className="text-3xl font-bold text-amber-100 group-hover:text-white transition-colors" style={{ color: item.Color }}>
+                  {/* Smaller Title Font (2xl) to fit */}
+                  <h3 className="text-2xl font-bold text-amber-100 group-hover:text-white transition-colors" style={{ color: item.Color }}>
                     {item.Title}
                   </h3>
-                  <span className="text-3xl text-amber-400 font-bold">{item.Price}</span>
+                  <span className="text-2xl text-amber-400 font-bold">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-lg text-amber-200/60 italic mt-1">{item.Description}</p>}
+                {item.Description && <p className="text-base text-amber-200/60 italic mt-1">{item.Description}</p>}
                 
-                {/* DIVIDER: 3px height */}
-                <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-4"></div>
+                {/* 3px DIVIDER */}
+                <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-3"></div>
               </motion.div>
             ))}
           </motion.div>
         </div>
 
-        {/* CENTER ZONE (Entrees) */}
-        <div className="col-span-4 pt-32 px-8">
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
+        {/* CENTER ZONE (Entrees) - STANDARD SIZE */}
+        <div className="col-span-4 pt-32 px-10">
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {entrees.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="group">
                 <div className="flex justify-between items-baseline">
@@ -145,28 +145,29 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                 </div>
                 {item.Description && <p className="text-xl text-amber-200/60 italic mt-1">{item.Description}</p>}
                 
-                {/* DIVIDER: 3px height */}
-                <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-4"></div>
+                {/* 3px DIVIDER */}
+                <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-5"></div>
               </motion.div>
             ))}
           </motion.div>
         </div>
 
-        {/* RIGHT ZONE (Drinks) */}
-        <div className="col-span-4 pt-40 px-12">
+        {/* RIGHT ZONE (Drinks) - SQUEEZED (px-20) & SMALLER TEXT (text-2xl) */}
+        <div className="col-span-4 pt-44 px-20">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {drinks.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="group">
                 <div className="flex justify-between items-baseline">
-                  <h3 className="text-3xl font-bold text-amber-100 group-hover:text-white transition-colors" style={{ color: item.Color }}>
+                   {/* Smaller Title Font (2xl) to fit */}
+                  <h3 className="text-2xl font-bold text-amber-100 group-hover:text-white transition-colors" style={{ color: item.Color }}>
                     {item.Title}
                   </h3>
-                  <span className="text-3xl text-amber-400 font-bold">{item.Price}</span>
+                  <span className="text-2xl text-amber-400 font-bold">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-lg text-amber-200/60 italic mt-1">{item.Description}</p>}
+                {item.Description && <p className="text-base text-amber-200/60 italic mt-1">{item.Description}</p>}
                 
-                {/* DIVIDER: 3px height */}
-                <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-4"></div>
+                {/* 3px DIVIDER */}
+                <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-3"></div>
               </motion.div>
             ))}
           </motion.div>
