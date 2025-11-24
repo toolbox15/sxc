@@ -21,11 +21,49 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 }
 };
 
+// --- STEAM/SMOKE COMPONENT (New!) ---
+const SteamEffect = () => {
+  // Create 20 "puffs" of smoke
+  const puffs = Array.from({ length: 20 });
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {puffs.map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute bg-white rounded-full blur-3xl" // blur-3xl makes it look like smoke
+          initial={{ 
+            opacity: 0, 
+            scale: 0.5,
+            x: Math.random() * window.innerWidth, 
+            y: window.innerHeight + 100 // Start below screen
+          }}
+          animate={{ 
+            opacity: [0, 0.3, 0], // Fade in then out
+            scale: [1, 2, 3], // Grow larger
+            y: -200, // Float up
+            x: (Math.random() * window.innerWidth) + (Math.random() * 200 - 100) // Drift side to side
+          }}
+          transition={{ 
+            duration: Math.random() * 10 + 10, // Slow rise
+            repeat: Infinity, 
+            delay: Math.random() * 5,
+            ease: "easeInOut"
+          }}
+          style={{
+            width: Math.random() * 200 + 100, // Random puff size
+            height: Math.random() * 200 + 100,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 // --- MAIN COMPONENT ---
 const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   
   // FILTERING THE MENU
-  // Make sure these match your Google Sheet "Category" column exactly!
   const appetizers = ads.filter(ad => ad.Category === 'Appetizers');
   const entrees = ads.filter(ad => ad.Category === 'Entrees');
   const drinks = ads.filter(ad => ad.Category === 'Drinks');
@@ -36,10 +74,12 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       style={{ backgroundImage: "url('/bistro-bg.png')" }} 
     >
       {/* Dark Overlay for readability */}
-      <div className="absolute inset-0 bg-black/40"></div>
+      <div className="absolute inset-0 bg-black/40 z-0"></div>
+
+      {/* 💨 THE STEAM ENGINE (Added Here) */}
+      <SteamEffect />
 
       {/* --- THE LAYOUT GRID --- */}
-      {/* We use a 3-column grid. You may need to adjust 'pt' (Padding Top) to match your image holes. */}
       <div className="relative z-10 w-full h-full grid grid-cols-12 gap-8 p-16">
         
         {/* LEFT ZONE (Appetizers) */}
