@@ -13,10 +13,10 @@ interface AdItem {
 // --- PLACEHOLDER DATA ---
 const DUMMY_MENU = {
   appetizers: [
-    { Title: "Truffle Parmesan Fries", Price: "$12", Description: "Hand-cut fries, truffle oil, parmesan", Category: "Appetizers" },
-    { Title: "Escargot", Price: "$16", Description: "Garlic herb butter, baguette", Category: "Appetizers" },
-    { Title: "Beef Carpaccio", Price: "$18", Description: "Raw beef, capers, arugula", Category: "Appetizers" },
-    { Title: "Onion Soup", Price: "$10", Description: "Caramelized onions, gruyère", Category: "Appetizers" }
+    { Title: "Truffle Parmesan Fries", Price: "$12", Description: "Hand-cut fries, truffle oil, shaved parmesan, garlic aioli", Category: "Appetizers" },
+    { Title: "Escargot de Bourgogne", Price: "$16", Description: "Garlic herb butter, toasted baguette slices", Category: "Appetizers" },
+    { Title: "Beef Carpaccio", Price: "$18", Description: "Thinly sliced raw beef, capers, baby arugula, lemon", Category: "Appetizers" },
+    { Title: "French Onion Soup", Price: "$10", Description: "Caramelized onions, rich beef broth, gruyère crouton", Category: "Appetizers" }
   ],
   entrees: [
     { Title: "Steak Frites", Price: "$34", Description: "10oz NY Strip, peppercorn sauce, crispy shoestring fries", Category: "Entrees" },
@@ -25,10 +25,10 @@ const DUMMY_MENU = {
     { Title: "Wild Mushroom Risotto", Price: "$24", Description: "Arborio rice, porcini mushrooms, truffle oil, parmesan reggiano", Category: "Entrees" }
   ],
   drinks: [
-    { Title: "Old Fashioned", Price: "$14", Description: "Bourbon, bitters, orange peel", Category: "Drinks" },
-    { Title: "French 75", Price: "$13", Description: "Gin, champagne, lemon", Category: "Drinks" },
+    { Title: "The Old Fashioned", Price: "$14", Description: "Bourbon, angostura bitters, orange peel, luxardo cherry", Category: "Drinks" },
+    { Title: "French 75", Price: "$13", Description: "Gin, champagne, lemon juice, sugar", Category: "Drinks" },
     { Title: "House Cabernet", Price: "$11", Description: "Napa Valley, 2021", Category: "Drinks" },
-    { Title: "Artisan Coffee", Price: "$5", Description: "Locally roasted", Category: "Drinks" }
+    { Title: "Artisan Coffee", Price: "$5", Description: "Locally roasted, french press", Category: "Drinks" }
   ]
 };
 
@@ -43,40 +43,41 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 }
 };
 
-// --- SMOKE COMPONENT (LOW LYING & VISIBLE) ---
-const SteamEffect = () => {
-  const particles = Array.from({ length: 15 });
+// --- GOLDEN DUST COMPONENT (Elegant Atmosphere) ---
+const GoldenDustEffect = () => {
+  // 25 tiny particles spread across the screen
+  const particles = Array.from({ length: 25 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
   return (
-    // Locked to Bottom Left, height restricted to 300px
-    <div className="absolute bottom-0 left-0 w-[400px] h-[300px] pointer-events-none overflow-hidden z-10">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {particles.map((_, i) => {
-        const startX = random(50, 300); 
-        const driftX = random(-50, 50); 
-        const heightY = random(-50, -150); // Low rise only
-        const rotation = random(-45, 45); 
-        const duration = random(8, 12); 
-        const delay = random(0, 5);
+        const startX = random(0, window.innerWidth);
+        const startY = random(0, window.innerHeight);
+        const duration = random(10, 20); // Very slow movement
 
         return (
           <motion.div
             key={i}
-            className="absolute bg-white/10 w-16 h-16 rounded-[100%] blur-2xl origin-center"
-            initial={{ opacity: 0, scale: 0.5, x: startX, y: 100, rotate: 0 }}
+            // Looks like a tiny gold spark
+            className="absolute bg-amber-400 w-1 h-1 rounded-full opacity-60"
+            initial={{ 
+              x: startX, 
+              y: startY, 
+              scale: 0,
+              opacity: 0 
+            }}
             animate={{ 
-              opacity: [0, 0.4, 0], // Increased opacity to 0.4 so you can SEE it
-              scale: [0.5, 2], 
-              y: heightY, 
-              x: startX + driftX, 
-              rotate: rotation 
+              y: [startY, startY - 100], // Float up slowly
+              x: [startX, startX + random(-20, 20)], // Drift slightly left/right
+              opacity: [0, 0.6, 0], // Fade in and out softly (Twinkle)
+              scale: [0, 1.5, 0] // Grow and shrink
             }}
             transition={{ 
               duration: duration,
               repeat: Infinity, 
-              delay: delay,
-              ease: "easeInOut",
-              times: [0, 0.2, 1] 
+              delay: random(0, 10),
+              ease: "easeInOut"
             }}
           />
         );
@@ -105,19 +106,18 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/40 z-0"></div>
 
-      {/* Steam Effect */}
-      <SteamEffect />
+      {/* ✨ GOLDEN DUST EFFECT ✨ */}
+      <GoldenDustEffect />
 
       {/* --- THE LAYOUT GRID --- */}
       <div className="relative z-10 w-full h-full grid grid-cols-12 gap-4 p-12">
         
-        {/* LEFT ZONE (Appetizers) - SQUEEZED (px-24) & SMALLER TEXT (text-xl) */}
+        {/* LEFT ZONE (Appetizers) */}
         <div className="col-span-4 pt-44 px-24">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {appetizers.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="group">
                 <div className="flex justify-between items-baseline">
-                  {/* Smaller Title Font (xl) to guarantee fit */}
                   <h3 className="text-xl font-bold text-amber-100 group-hover:text-white transition-colors" style={{ color: item.Color }}>
                     {item.Title}
                   </h3>
@@ -132,7 +132,7 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* CENTER ZONE (Entrees) - STANDARD SIZE (4xl) */}
+        {/* CENTER ZONE (Entrees) */}
         <div className="col-span-4 pt-32 px-10">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {entrees.map((item, i) => (
@@ -152,13 +152,12 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* RIGHT ZONE (Drinks) - SQUEEZED (px-24) & SMALLER TEXT (text-xl) */}
+        {/* RIGHT ZONE (Drinks) */}
         <div className="col-span-4 pt-44 px-24">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {drinks.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="group">
                 <div className="flex justify-between items-baseline">
-                   {/* Smaller Title Font (xl) to guarantee fit */}
                   <h3 className="text-xl font-bold text-amber-100 group-hover:text-white transition-colors" style={{ color: item.Color }}>
                     {item.Title}
                   </h3>
