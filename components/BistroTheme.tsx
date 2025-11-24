@@ -25,10 +25,10 @@ const DUMMY_MENU = {
     { Title: "Wild Mushroom Risotto", Price: "$24", Description: "Arborio rice, porcini mushrooms, truffle oil, parmesan reggiano", Category: "Entrees" }
   ],
   drinks: [
-    { Title: "The Old Fashioned", Price: "$14", Description: "Bourbon, angostura bitters, orange peel, luxardo cherry", Category: "Drinks" },
-    { Title: "French 75", Price: "$13", Description: "Gin, champagne, lemon juice, sugar", Category: "Drinks" },
+    { Title: "Old Fashioned", Price: "$14", Description: "Bourbon, bitters, orange peel", Category: "Drinks" },
+    { Title: "French 75", Price: "$13", Description: "Gin, champagne, lemon", Category: "Drinks" },
     { Title: "House Cabernet", Price: "$11", Description: "Napa Valley, 2021", Category: "Drinks" },
-    { Title: "Artisan Coffee", Price: "$5", Description: "Locally roasted, french press", Category: "Drinks" }
+    { Title: "Artisan Coffee", Price: "$5", Description: "Locally roasted", Category: "Drinks" }
   ]
 };
 
@@ -45,7 +45,6 @@ const itemVariants = {
 
 // --- GOLDEN DUST COMPONENT (Elegant Atmosphere) ---
 const GoldenDustEffect = () => {
-  // 25 tiny particles spread across the screen
   const particles = Array.from({ length: 25 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
@@ -54,24 +53,18 @@ const GoldenDustEffect = () => {
       {particles.map((_, i) => {
         const startX = random(0, window.innerWidth);
         const startY = random(0, window.innerHeight);
-        const duration = random(10, 20); // Very slow movement
+        const duration = random(10, 20);
 
         return (
           <motion.div
             key={i}
-            // Looks like a tiny gold spark
             className="absolute bg-amber-400 w-1 h-1 rounded-full opacity-60"
-            initial={{ 
-              x: startX, 
-              y: startY, 
-              scale: 0,
-              opacity: 0 
-            }}
+            initial={{ x: startX, y: startY, scale: 0, opacity: 0 }}
             animate={{ 
-              y: [startY, startY - 100], // Float up slowly
-              x: [startX, startX + random(-20, 20)], // Drift slightly left/right
-              opacity: [0, 0.6, 0], // Fade in and out softly (Twinkle)
-              scale: [0, 1.5, 0] // Grow and shrink
+              y: [startY, startY - 100], 
+              x: [startX, startX + random(-20, 20)], 
+              opacity: [0, 0.6, 0], 
+              scale: [0, 1.5, 0] 
             }}
             transition={{ 
               duration: duration,
@@ -116,16 +109,17 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         <div className="col-span-4 pt-44 px-24">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {appetizers.map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="group">
+              <motion.div key={i} variants={itemVariants}>
                 <div className="flex justify-between items-baseline">
-                  <h3 className="text-xl font-bold text-amber-100 group-hover:text-white transition-colors" style={{ color: item.Color }}>
+                  {/* Fixed Color: Amber-100 (No Hover) */}
+                  <h3 className="text-xl font-bold text-amber-100" style={{ color: item.Color }}>
                     {item.Title}
                   </h3>
                   <span className="text-xl text-amber-400 font-bold">{item.Price}</span>
                 </div>
                 {item.Description && <p className="text-sm text-amber-200/60 italic mt-1">{item.Description}</p>}
                 
-                {/* 3px DIVIDER */}
+                {/* DIVIDER */}
                 <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-3"></div>
               </motion.div>
             ))}
@@ -136,16 +130,17 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         <div className="col-span-4 pt-32 px-10">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {entrees.map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="group">
+              <motion.div key={i} variants={itemVariants}>
                 <div className="flex justify-between items-baseline">
-                  <h3 className="text-4xl font-bold text-white group-hover:text-amber-200 transition-colors" style={{ color: item.Color }}>
+                  {/* Fixed Color: White (No Hover) */}
+                  <h3 className="text-4xl font-bold text-white" style={{ color: item.Color }}>
                     {item.Title}
                   </h3>
                   <span className="text-4xl text-amber-400 font-bold">{item.Price}</span>
                 </div>
                 {item.Description && <p className="text-xl text-amber-200/60 italic mt-1">{item.Description}</p>}
                 
-                {/* 3px DIVIDER */}
+                {/* DIVIDER */}
                 <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-5"></div>
               </motion.div>
             ))}
@@ -156,16 +151,17 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         <div className="col-span-4 pt-44 px-24">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {drinks.map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="group">
+              <motion.div key={i} variants={itemVariants}>
                 <div className="flex justify-between items-baseline">
-                  <h3 className="text-xl font-bold text-amber-100 group-hover:text-white transition-colors" style={{ color: item.Color }}>
+                   {/* Fixed Color: Amber-100 (No Hover) */}
+                  <h3 className="text-xl font-bold text-amber-100" style={{ color: item.Color }}>
                     {item.Title}
                   </h3>
                   <span className="text-xl text-amber-400 font-bold">{item.Price}</span>
                 </div>
                 {item.Description && <p className="text-sm text-amber-200/60 italic mt-1">{item.Description}</p>}
                 
-                {/* 3px DIVIDER */}
+                {/* DIVIDER */}
                 <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-3"></div>
               </motion.div>
             ))}
