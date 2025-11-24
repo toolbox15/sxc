@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // --- DATA STRUCTURE ---
@@ -8,6 +8,7 @@ interface AdItem {
   Description?: string;
   Category: string;
   Color?: string;
+  Schedule?: string; // <--- NEW: Controls when the item appears
 }
 
 // --- PLACEHOLDER DATA ---
@@ -43,7 +44,7 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 }
 };
 
-// --- SMOKE COMPONENT (Low & Subtle) ---
+// --- SMOKE COMPONENT ---
 const SteamEffect = () => {
   const particles = Array.from({ length: 15 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -87,13 +88,46 @@ const SteamEffect = () => {
 // --- MAIN COMPONENT ---
 const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   
-  const realAppetizers = ads.filter(ad => ad.Category === 'Appetizers');
+  // 🕒 TIME LOGIC STATE
+  const [timeOfDay, setTimeOfDay] = useState<string>('All Day');
+
+  // CHECK THE CLOCK EVERY MINUTE
+  useEffect(() => {
+    const checkTime = () => {
+      const currentHour = new Date().getHours(); // 0 to 23
+      
+      if (currentHour < 11) {
+        setTimeOfDay('Breakfast'); // Before 11 AM
+      } else if (currentHour >= 11 && currentHour < 16) {
+        setTimeOfDay('Lunch'); // 11 AM to 4 PM
+      } else {
+        setTimeOfDay('Dinner'); // After 4 PM
+      }
+    };
+
+    checkTime(); // Run immediately
+    const timer = setInterval(checkTime, 60000); // Check every minute
+    return () => clearInterval(timer);
+  }, []);
+
+  // 🧹 FILTER FUNCTION
+  // Keeps items that match CURRENT time OR are marked "All Day" (or empty)
+  const filterByTime = (item: AdItem) => {
+    if (!item.Schedule || item.Schedule === "" || item.Schedule === "All Day") return true;
+    return item.Schedule === timeOfDay;
+  };
+
+  // 1. Filter by Time first
+  const timelyAds = ads.filter(filterByTime);
+
+  // 2. Then filter by Category
+  const realAppetizers = timelyAds.filter(ad => ad.Category === 'Appetizers');
   const appetizers = realAppetizers.length > 0 ? realAppetizers : DUMMY_MENU.appetizers;
 
-  const realEntrees = ads.filter(ad => ad.Category === 'Entrees');
+  const realEntrees = timelyAds.filter(ad => ad.Category === 'Entrees');
   const entrees = realEntrees.length > 0 ? realEntrees : DUMMY_MENU.entrees;
 
-  const realDrinks = ads.filter(ad => ad.Category === 'Drinks');
+  const realDrinks = timelyAds.filter(ad => ad.Category === 'Drinks');
   const drinks = realDrinks.length > 0 ? realDrinks : DUMMY_MENU.drinks;
 
   return (
@@ -107,10 +141,7 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       {/* Steam Effect */}
       <SteamEffect />
 
-      {/* --- NEW IMAGES (Wine & Dish) --- */}
-      {/* Note: These will be invisible/broken until you upload the PNGs to /public */}
-      
-      {/* 🍷 Wine Bottle (Bottom Right) */}
+      {/* --- NEW IMAGES --- */}
       <motion.img 
         src="/wine-bottle.png" 
         className="absolute bottom-0 right-[-50px] h-[600px] w-auto z-20 opacity-90 drop-shadow-2xl pointer-events-none"
@@ -118,8 +149,6 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 2, ease: "easeOut" }}
       />
-
-      {/* 🍲 Signature Dish (Bottom Center/Left) */}
       <motion.img 
         src="/signature-dish.png" 
         className="absolute bottom-[-50px] left-[35%] h-[400px] w-auto z-20 opacity-90 drop-shadow-2xl pointer-events-none"
@@ -128,11 +157,10 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         transition={{ duration: 2, delay: 0.5, ease: "easeOut" }}
       />
 
-
       {/* --- THE LAYOUT GRID --- */}
       <div className="relative z-30 w-full h-full grid grid-cols-12 gap-4 p-12">
         
-        {/* LEFT ZONE - SQUEEZED HARDER (px-32) */}
+        {/* LEFT ZONE */}
         <div className="col-span-4 pt-44 px-32">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {appetizers.map((item, i) => (
@@ -142,15 +170,13 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                   <span className="text-xl text-amber-400 font-bold">{item.Price}</span>
                 </div>
                 {item.Description && <p className="text-sm text-amber-200/60 italic mt-1">{item.Description}</p>}
-                
-                {/* 3px DIVIDER */}
                 <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-3"></div>
               </motion.div>
             ))}
           </motion.div>
         </div>
 
-        {/* CENTER ZONE - SQUEEZED SLIGHTLY (px-16) */}
+        {/* CENTER ZONE */}
         <div className="col-span-4 pt-32 px-16">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {entrees.map((item, i) => (
@@ -160,15 +186,13 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                   <span className="text-4xl text-amber-400 font-bold">{item.Price}</span>
                 </div>
                 {item.Description && <p className="text-xl text-amber-200/60 italic mt-1">{item.Description}</p>}
-                
-                {/* 3px DIVIDER */}
                 <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-5"></div>
               </motion.div>
             ))}
           </motion.div>
         </div>
 
-        {/* RIGHT ZONE - SQUEEZED HARDER (px-32) - This brings price "IN" */}
+        {/* RIGHT ZONE */}
         <div className="col-span-4 pt-44 px-32">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {drinks.map((item, i) => (
@@ -178,8 +202,6 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                   <span className="text-xl text-amber-400 font-bold">{item.Price}</span>
                 </div>
                 {item.Description && <p className="text-sm text-amber-200/60 italic mt-1">{item.Description}</p>}
-                
-                {/* 3px DIVIDER */}
                 <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-3"></div>
               </motion.div>
             ))}
@@ -191,7 +213,7 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       {/* --- FOOTER --- */}
       <div className="absolute bottom-8 w-full text-center z-10 pointer-events-none">
         <p className="text-amber-500 font-serif text-lg tracking-[0.3em] uppercase opacity-80">
-          Locally Sourced • Seasonal Ingredients • Established 2025
+          Currently Serving: <span className="font-bold text-white">{timeOfDay} Menu</span>
         </p>
       </div>
 
