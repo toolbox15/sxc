@@ -10,7 +10,7 @@ interface AdItem {
   Color?: string;
 }
 
-// --- PLACEHOLDER DATA (Shows when Google Sheet is empty) ---
+// --- PLACEHOLDER DATA ---
 const DUMMY_MENU = {
   appetizers: [
     { Title: "Truffle Parmesan Fries", Price: "$12", Description: "Hand-cut fries, truffle oil, shaved parmesan, garlic aioli", Category: "Appetizers" },
@@ -43,29 +43,31 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 }
 };
 
-// --- FINAL WHISPY SMOKE COMPONENT ---
+// --- SMOKE COMPONENT (FIXED: Visible & Bottom Left) ---
 const SteamEffect = () => {
-  const particles = Array.from({ length: 6 });
+  const particles = Array.from({ length: 12 }); // Increased count slightly
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
   return (
-    <div className="absolute bottom-0 left-0 w-[300px] h-[40%] pointer-events-none overflow-hidden z-0">
+    // Locked to Bottom Left, 400px wide
+    <div className="absolute bottom-0 left-0 w-[400px] h-[500px] pointer-events-none overflow-hidden z-10">
       {particles.map((_, i) => {
-        const startX = random(50, 200);
-        const driftX = random(-30, 30);
-        const heightY = random(-150, -300);
-        const rotation = random(-90, 90);
-        const duration = random(10, 15);
-        const delay = random(0, 6);
+        const startX = random(50, 250); // Start in the left corner
+        const driftX = random(-50, 50); // Drift left/right
+        const heightY = random(-200, -400); // Float up
+        const rotation = random(-90, 90); // Twist
+        const duration = random(8, 12); // Speed
+        const delay = random(0, 5);
 
         return (
           <motion.div
             key={i}
-            className="absolute bg-white/5 w-6 h-20 rounded-[100%] blur-2xl origin-center"
-            initial={{ opacity: 0, scale: 0.4, x: startX, y: 20, rotate: 0 }}
+            // Increased opacity (bg-white/10) and blur (blur-xl) so it's visible
+            className="absolute bg-white/10 w-12 h-24 rounded-[100%] blur-2xl origin-center"
+            initial={{ opacity: 0, scale: 0.5, x: startX, y: 100, rotate: 0 }}
             animate={{ 
-              opacity: [0, 0.15, 0], 
-              scale: [0.4, 1.1], 
+              opacity: [0, 0.4, 0], // Peak opacity 0.4 (Visible but not a flashlight)
+              scale: [0.5, 1.5], 
               y: heightY, 
               x: startX + driftX, 
               rotate: rotation 
@@ -75,7 +77,7 @@ const SteamEffect = () => {
               repeat: Infinity, 
               delay: delay,
               ease: "easeInOut",
-              times: [0, 0.3, 0.7] 
+              times: [0, 0.2, 0.8] 
             }}
           />
         );
@@ -87,7 +89,6 @@ const SteamEffect = () => {
 // --- MAIN COMPONENT ---
 const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   
-  // LOGIC: If 'ads' has real data, use it. Otherwise, use DUMMY_MENU.
   const realAppetizers = ads.filter(ad => ad.Category === 'Appetizers');
   const appetizers = realAppetizers.length > 0 ? realAppetizers : DUMMY_MENU.appetizers;
 
@@ -102,17 +103,17 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center text-amber-50 font-serif"
       style={{ backgroundImage: "url('/bistro-bg.png')" }} 
     >
-      {/* Dark Overlay for readability */}
+      {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/40 z-0"></div>
 
-      {/* 💨 THE STEAM ENGINE */}
+      {/* Steam Effect (Now visible!) */}
       <SteamEffect />
 
       {/* --- THE LAYOUT GRID --- */}
-      <div className="relative z-10 w-full h-full grid grid-cols-12 gap-8 p-16">
+      <div className="relative z-10 w-full h-full grid grid-cols-12 gap-4 p-12">
         
         {/* LEFT ZONE (Appetizers) */}
-        <div className="col-span-4 pt-40 px-6">
+        <div className="col-span-4 pt-40 px-12">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {appetizers.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="group">
@@ -124,15 +125,15 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                 </div>
                 {item.Description && <p className="text-lg text-amber-200/60 italic mt-1">{item.Description}</p>}
                 
-                {/* ✨ DECORATIVE DIVIDER (Fading Gold Line) ✨ */}
-                <div className="w-full h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-4"></div>
+                {/* DIVIDER: 3px height */}
+                <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-4"></div>
               </motion.div>
             ))}
           </motion.div>
         </div>
 
         {/* CENTER ZONE (Entrees) */}
-        <div className="col-span-4 pt-32 px-6">
+        <div className="col-span-4 pt-32 px-8">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {entrees.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="group">
@@ -144,15 +145,15 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                 </div>
                 {item.Description && <p className="text-xl text-amber-200/60 italic mt-1">{item.Description}</p>}
                 
-                {/* ✨ DECORATIVE DIVIDER (Fading Gold Line) ✨ */}
-                <div className="w-full h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-4"></div>
+                {/* DIVIDER: 3px height */}
+                <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-4"></div>
               </motion.div>
             ))}
           </motion.div>
         </div>
 
-        {/* RIGHT ZONE (Drinks/Dessert) */}
-        <div className="col-span-4 pt-40 px-6">
+        {/* RIGHT ZONE (Drinks) */}
+        <div className="col-span-4 pt-40 px-12">
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {drinks.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="group">
@@ -164,8 +165,8 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                 </div>
                 {item.Description && <p className="text-lg text-amber-200/60 italic mt-1">{item.Description}</p>}
                 
-                {/* ✨ DECORATIVE DIVIDER (Fading Gold Line) ✨ */}
-                <div className="w-full h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-4"></div>
+                {/* DIVIDER: 3px height */}
+                <div className="w-full h-[3px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent my-4"></div>
               </motion.div>
             ))}
           </motion.div>
