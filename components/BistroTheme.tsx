@@ -32,7 +32,7 @@ const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
   return (
     <div 
-      className="w-full h-full relative overflow-hidden bg-cover bg-center text-amber-50 font-serif"
+      className="w-full h-screen relative overflow-hidden bg-cover bg-center text-amber-50 font-serif"
       style={{ backgroundImage: "url('/bistro-bg.png')" }} 
     >
       {/* Dark Overlay for readability */}
