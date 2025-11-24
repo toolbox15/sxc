@@ -8,6 +8,7 @@ interface AdItem {
   Price: string;
   Description?: string;
   Category: string;
+  Color?: string; // <--- ADDED: This allows Google Sheet to control text color
 }
 
 // --- Sub-components ---
@@ -26,8 +27,13 @@ const RibbonHeader: React.FC<{ title: string; className?: string }> = ({ title, 
 const MenuListItem: React.FC<{ item: AdItem; large?: boolean }> = ({ item, large = false }) => (
   <div className="flex items-baseline justify-between w-full mb-3 relative group">
     <div className="flex-grow pr-4 relative z-10">
-      {/* Maps to 'Title' from Google Sheet */}
-      <span className={`font-sans font-bold text-gray-100 ${large ? 'text-4xl' : 'text-3xl'}`}>
+      {/* UPDATED: Logic to use Google Sheet Color 
+         If item.Color exists, use it. Otherwise, default to gray-100.
+      */}
+      <span 
+        className={`font-sans font-bold ${large ? 'text-4xl' : 'text-3xl'}`}
+        style={{ color: item.Color || '#f3f4f6' }} 
+      >
         {item.Title} 
       </span>
       {item.Description && (
@@ -39,7 +45,6 @@ const MenuListItem: React.FC<{ item: AdItem; large?: boolean }> = ({ item, large
     <div className="absolute left-0 right-0 bottom-2 border-b-2 border-dotted border-gray-600 z-0"></div>
 
     <div className="relative z-10 pl-4 bg-gradient-to-l from-slate-900 to-slate-900/0">
-      {/* Maps to 'Price' from Google Sheet */}
       <span className={`font-serif font-bold text-yellow-400 ${large ? 'text-5xl' : 'text-4xl'}`}>
         {item.Price}
       </span>
@@ -72,7 +77,7 @@ const SnowEffect: React.FC = () => {
   );
 };
 
-// --- SVGs (Kept exactly as you provided) ---
+// --- SVGs ---
 
 const PizzaWreathSVG: React.FC<{ className?: string }> = ({ className }) => (
   <svg viewBox="0 0 200 200" className={className}>
@@ -137,18 +142,17 @@ const GlowingTreeSVG: React.FC<{ className?: string }> = ({ className }) => {
 
 // --- Main Component ---
 
-// Accepts the 'ads' prop from AdDisplay
 const ChristmasTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   
-  // --- DATA FILTERING ---
-  // This connects to your Google Sheet 'Category' column
-  const starters = ads.filter(ad => ad.Category === 'Starter');
-  const sides = ads.filter(ad => ad.Category === 'Side');
-  const pizzas = ads.filter(ad => ad.Category === 'Main');
-  const specials = ads.filter(ad => ad.Category === 'Special');
-  const extras = ads.filter(ad => ad.Category === 'Extra');
+  // Maps your Google Sheet Categories to the boxes
+  const starters = ads.filter(ad => ad.Category === 'Starters'); // Note: "Starters" with 's'
+  const sides = ads.filter(ad => ad.Category === 'Sides');
+  const pizzas = ads.filter(ad => ad.Category === 'Best Pizza');
+  const specials = ads.filter(ad => ad.Category === 'Specials');
+  const extras = ads.filter(ad => ad.Category === 'Festive Drinks');
 
   return (
+    // BACKGROUND CONTROL: To change background, edit the "bg-gradient..." classes below
     <div className="w-full h-full relative overflow-hidden bg-gradient-to-br from-slate-900 via-red-950 to-slate-900 text-gray-100">
       <SnowEffect />
       
