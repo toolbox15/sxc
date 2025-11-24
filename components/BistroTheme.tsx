@@ -1,135 +1,50 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-
-// --- DATA STRUCTURE ---
-interface AdItem {
-  Title: string;
-  Price: string;
-  Description?: string;
-  Category: string; // 'Appetizers', 'Entrees', 'Desserts', 'Drinks'
-  Color?: string;
-}
-
-// --- ANIMATION SETTINGS ---
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: { opacity: 1, x: 0 }
-};
-
-// --- STEAM/SMOKE COMPONENT (New!) ---
+// --- WHISPY SMOKE COMPONENT (New & Improved!) ---
 const SteamEffect = () => {
-  // Create 20 "puffs" of smoke
-  const puffs = Array.from({ length: 20 });
+  // Create 15 whispy trails
+  const paths = Array.from({ length: 15 });
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-      {puffs.map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute bg-white rounded-full blur-3xl" // blur-3xl makes it look like smoke
-          initial={{ 
-            opacity: 0, 
-            scale: 0.5,
-            x: Math.random() * window.innerWidth, 
-            y: window.innerHeight + 100 // Start below screen
-          }}
-          animate={{ 
-            opacity: [0, 0.3, 0], // Fade in then out
-            scale: [1, 2, 3], // Grow larger
-            y: -200, // Float up
-            x: (Math.random() * window.innerWidth) + (Math.random() * 200 - 100) // Drift side to side
-          }}
-          transition={{ 
-            duration: Math.random() * 10 + 10, // Slow rise
-            repeat: Infinity, 
-            delay: Math.random() * 5,
-            ease: "easeInOut"
-          }}
-          style={{
-            width: Math.random() * 200 + 100, // Random puff size
-            height: Math.random() * 200 + 100,
-          }}
-        />
-      ))}
+    <div className="absolute bottom-0 left-0 w-[500px] h-[800px] pointer-events-none overflow-hidden z-0">
+      {/* <svg> is how we draw curly lines */}
+      <svg className="w-full h-full" viewBox="0 0 500 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {paths.map((_, i) => {
+          // Randomize the start position and curve for each trail
+          const startX = Math.random() * 200;
+          const curveAmount = Math.random() * 100 + 50;
+          const duration = Math.random() * 15 + 15; // Very slow (15-30s)
+          const delay = Math.random() * 10;
+
+          return (
+            <motion.path
+              key={i}
+              // This draws a curly line (Bezier curve)
+              d={`M${startX} 800 C ${startX + curveAmount} 600, ${startX - curveAmount} 400, ${startX + curveAmount / 2} 0`}
+              stroke="white"
+              strokeWidth={Math.random() * 3 + 1} // Random thickness
+              strokeLinecap="round"
+              filter="url(#blurMe)" // Apply the blur filter
+              initial={{ opacity: 0, pathLength: 0, y: 100 }}
+              animate={{ 
+                opacity: [0, 0.4, 0], // Fade in slowly, then out
+                pathLength: [0, 1], // Draw the line from bottom to top
+                y: -200 // Slowly drift up
+              }}
+              transition={{ 
+                duration: duration,
+                repeat: Infinity, 
+                delay: delay,
+                ease: "easeInOut"
+              }}
+            />
+          );
+        })}
+        {/* This is the "blur filter" that makes the lines look like smoke */}
+        <defs>
+          <filter id="blurMe">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="15" />
+          </filter>
+        </defs>
+      </svg>
     </div>
   );
 };
-
-// --- MAIN COMPONENT ---
-const BistroTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
-  
-  // FILTERING THE MENU
-  const appetizers = ads.filter(ad => ad.Category === 'Appetizers');
-  const entrees = ads.filter(ad => ad.Category === 'Entrees');
-  const drinks = ads.filter(ad => ad.Category === 'Drinks');
-
-  return (
-    <div 
-      className="w-full h-screen relative overflow-hidden bg-cover bg-center text-amber-50 font-serif"
-      style={{ backgroundImage: "url('/bistro-bg.png')" }} 
-    >
-      {/* Dark Overlay for readability */}
-      <div className="absolute inset-0 bg-black/40 z-0"></div>
-
-      {/* 💨 THE STEAM ENGINE (Added Here) */}
-      <SteamEffect />
-
-      {/* --- THE LAYOUT GRID --- */}
-      <div className="relative z-10 w-full h-full grid grid-cols-12 gap-8 p-16">
-        
-        {/* LEFT ZONE (Appetizers) */}
-        <div className="col-span-4 pt-40 px-6">
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
-            {appetizers.map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="border-b border-amber-500/30 pb-2">
-                <div className="flex justify-between items-baseline">
-                  <h3 className="text-3xl font-bold text-amber-100" style={{ color: item.Color }}>{item.Title}</h3>
-                  <span className="text-3xl text-amber-400">{item.Price}</span>
-                </div>
-                {item.Description && <p className="text-xl text-amber-200/70 italic mt-1">{item.Description}</p>}
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* CENTER ZONE (Entrees) */}
-        <div className="col-span-4 pt-32 px-6">
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
-            {entrees.map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="border-b border-amber-500/30 pb-2">
-                <div className="flex justify-between items-baseline">
-                  <h3 className="text-4xl font-bold text-white" style={{ color: item.Color }}>{item.Title}</h3>
-                  <span className="text-4xl text-amber-400">{item.Price}</span>
-                </div>
-                {item.Description && <p className="text-xl text-amber-200/70 italic mt-1">{item.Description}</p>}
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* RIGHT ZONE (Drinks/Dessert) */}
-        <div className="col-span-4 pt-40 px-6">
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
-            {drinks.map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="border-b border-amber-500/30 pb-2">
-                <div className="flex justify-between items-baseline">
-                  <h3 className="text-3xl font-bold text-amber-100" style={{ color: item.Color }}>{item.Title}</h3>
-                  <span className="text-3xl text-amber-400">{item.Price}</span>
-                </div>
-                {item.Description && <p className="text-xl text-amber-200/70 italic mt-1">{item.Description}</p>}
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
-      </div>
-    </div>
-  );
-};
-
-export default BistroTheme;
