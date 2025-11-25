@@ -43,6 +43,40 @@ const itemVariants = {
   visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
 };
 
+// --- 🍺 BUBBLES EFFECT (Continuous Loop) ---
+const BubblesEffect = () => {
+  const bubbles = Array.from({ length: 25 }); // More bubbles
+  const random = (min: number, max: number) => Math.random() * (max - min) + min;
+
+  return (
+    <div className="absolute bottom-[20px] left-[40px] w-[180px] h-[350px] pointer-events-none overflow-hidden z-20 opacity-70">
+      {bubbles.map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute bg-white rounded-full"
+          style={{ 
+              width: random(3, 6), 
+              height: random(3, 6), 
+              left: `${random(10, 90)}%` 
+          }}
+          initial={{ y: 350, opacity: 0 }}
+          animate={{ 
+            y: -20, 
+            opacity: [0, 1, 0], 
+            x: random(-5, 5) 
+          }}
+          transition={{ 
+            duration: random(1.5, 3.5), // Faster fizz
+            repeat: Infinity, 
+            delay: random(0, 5),
+            ease: "linear" 
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 // --- STADIUM FLASH EFFECT ---
 const StadiumFlashEffect = () => {
   const flashes = Array.from({ length: 15 });
@@ -50,20 +84,15 @@ const StadiumFlashEffect = () => {
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-      {flashes.map((_, i) => {
-        const startX = random(0, window.innerWidth);
-        const startY = random(0, window.innerHeight / 2);
-        
-        return (
-          <motion.div
-            key={i}
-            className="absolute bg-white rounded-full blur-xl"
-            style={{ width: random(10, 40), height: random(10, 40), top: startY, left: startX }}
-            animate={{ opacity: [0, 0.8, 0], scale: [0.5, 1.5, 0.5] }}
-            transition={{ duration: 0.2, repeat: Infinity, repeatDelay: random(1, 8), delay: random(0, 5) }}
-          />
-        );
-      })}
+      {flashes.map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute bg-white rounded-full blur-xl"
+          style={{ width: random(10, 40), height: random(10, 40), top: random(0, window.innerHeight/2), left: random(0, window.innerWidth) }}
+          animate={{ opacity: [0, 0.8, 0], scale: [0.5, 1.5, 0.5] }}
+          transition={{ duration: 0.2, repeat: Infinity, repeatDelay: random(1, 8), delay: random(0, 5) }}
+        />
+      ))}
     </div>
   );
 };
@@ -88,37 +117,31 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       {/* --- DECORATIVE ASSETS --- */}
       
-      {/* 🍺 THE KEG (Bottom Left) */}
-      <motion.img 
-        src="/keg.png" 
-        alt="Loading Keg..." 
-        className="absolute bottom-[-20px] left-[-50px] h-[500px] w-auto z-10 drop-shadow-2xl"
-        // FIXED: Simple fade in, no looping jerkiness
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      />
-
-      {/* 🏈 THE FOOTBALL (Bottom Right) - FIXED ANIMATION */}
-      <motion.div
-        className="absolute bottom-[20px] right-[50px] z-10"
-        initial={{ y: 100, opacity: 0 }} // Start off screen
-        animate={{ y: 0, opacity: 1 }}   // Fly in ONCE
-        transition={{ duration: 1, ease: "easeOut" }} // Smooth entry
+      {/* 🍺 THE KEG GROUP (Now Breathing, Not Sliding) */}
+      <motion.div 
+        className="absolute bottom-0 left-[-30px] z-10"
+        // BREATHING ANIMATION: Gently bobs up and down forever
+        animate={{ y: [0, -10, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       >
-        <motion.img 
+          <BubblesEffect />
+          <img 
+            src="https://pngimg.com/d/beer_keg_PNG12.png" 
+            alt="Beer Keg" 
+            className="h-[480px] w-auto drop-shadow-2xl"
+          />
+      </motion.div>
+
+      {/* 🏈 THE FOOTBALL (Floating) */}
+      <motion.div 
+        className="absolute bottom-[30px] right-[30px] z-10"
+        // FLOATING ANIMATION
+        animate={{ y: [0, -15, 0], rotate: [-2, 2, -2] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <img 
           src="/football.png" 
           className="h-[350px] w-auto drop-shadow-2xl"
-          // FLOATING LOOP: This runs separately so it doesn't reset the position
-          animate={{ 
-            y: [-10, 10, -10], // Gentle bobbing
-            rotate: [-2, 2, -2] // Gentle twisting
-          }}
-          transition={{ 
-            duration: 4, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
-          }}
         />
       </motion.div>
 
@@ -133,14 +156,32 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         </div>
 
         {/* LEFT COLUMN (Kickoff) */}
-        <div className="col-span-4 pl-32 pt-4">
-          <div className="bg-orange-600/20 border-l-4 border-orange-500 p-4 mb-6 rounded-r-lg">
-            <h2 className="text-4xl font-black text-white uppercase italic">Kickoff</h2>
+        <div className="col-span-4 pl-40 pt-4">
+          <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg">
+            <h2 className="text-3xl font-black text-white uppercase italic">Kickoff</h2>
           </div>
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {kickoff.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
-                <div className="flex justify-between items-end">
+                <div className="flex justify-between items-end w-full">
+                  <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
+                  <span className="text-2xl font-black text-orange-500">{item.Price}</span>
+                </div>
+                {item.Description && <p className="text-slate-300 text-xs font-bold">{item.Description}</p>}
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* CENTER COLUMN (Main Event) */}
+        <div className="col-span-4 pt-4 px-6">
+          <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg">
+            <h2 className="text-3xl font-black text-white uppercase italic">The Main Event</h2>
+          </div>
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
+            {mains.map((item, i) => (
+              <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
+                <div className="flex justify-between items-end w-full">
                   <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
                   <span className="text-3xl font-black text-orange-500">{item.Price}</span>
                 </div>
@@ -150,37 +191,19 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* CENTER COLUMN (Main Event) */}
-        <div className="col-span-4 pt-4 px-4">
-          <div className="bg-white/10 border-l-4 border-white p-4 mb-6 rounded-r-lg">
-            <h2 className="text-4xl font-black text-white uppercase italic">The Main Event</h2>
-          </div>
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
-            {mains.map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
-                <div className="flex justify-between items-end">
-                  <h3 className="text-3xl font-bold text-white uppercase">{item.Title}</h3>
-                  <span className="text-4xl font-black text-orange-500">{item.Price}</span>
-                </div>
-                {item.Description && <p className="text-slate-300 text-lg font-bold">{item.Description}</p>}
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
         {/* RIGHT COLUMN (Draft Picks) */}
-        <div className="col-span-4 pr-32 pt-4">
-          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-4 mb-6 rounded-l-lg text-right">
-            <h2 className="text-4xl font-black text-white uppercase italic">Draft Picks</h2>
+        <div className="col-span-4 pr-40 pt-4">
+          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right">
+            <h2 className="text-3xl font-black text-white uppercase italic">Draft Picks</h2>
           </div>
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
+          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5 pb-32">
             {drinks.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
-                <div className="flex justify-between items-end">
-                  <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
-                  <span className="text-3xl font-black text-orange-500">{item.Price}</span>
+                <div className="flex justify-between items-end w-full">
+                  <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
+                  <span className="text-2xl font-black text-orange-500">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-300 text-sm font-bold text-right">{item.Description}</p>}
+                {item.Description && <p className="text-slate-300 text-xs font-bold text-right">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
