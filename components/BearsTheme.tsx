@@ -49,7 +49,6 @@ const BubblesEffect = () => {
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
   return (
-    // Positioned for a standard Beer Mug shape
     <div className="absolute bottom-[120px] left-[50px] w-[140px] h-[300px] pointer-events-none overflow-hidden z-20 opacity-50">
       {bubbles.map((_, i) => (
         <motion.div
@@ -118,23 +117,23 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       {/* --- DECORATIVE ASSETS --- */}
       
-      {/* 🍺 THE BEER MUG GROUP (LOCAL FILE) */}
+      {/* 🍺 THE BEER MUG GROUP (MOVED LEFT) */}
       <motion.div 
-        className="absolute bottom-[-40px] left-[-20px] z-10"
+        className="absolute bottom-[-40px] left-[-60px] z-10" // <--- Changed from -20px to -60px (Pushed left)
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       >
           <BubblesEffect />
           <img 
-            src="/beer-glass.png" // <--- UPDATED: Now looks for your local file
+            src="/beer-glass.png" 
             alt="Beer Glass" 
             className="h-[500px] w-auto drop-shadow-2xl"
           />
       </motion.div>
 
-      {/* 🏈 THE FOOTBALL (Moved Down to clear text) */}
+      {/* 🏈 THE FOOTBALL */}
       <motion.div 
-        className="absolute bottom-[10px] right-[30px] z-10" // Moved from bottom-[30px] to bottom-[10px]
+        className="absolute bottom-[10px] right-[30px] z-10"
         animate={{ y: [0, -15, 0], rotate: [-2, 2, -2] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       >
@@ -154,8 +153,8 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </h1>
         </div>
 
-        {/* LEFT COLUMN */}
-        <div className="col-span-4 pl-44 pt-4">
+        {/* LEFT COLUMN - PADDING INCREASED */}
+        <div className="col-span-4 pl-60 pt-4"> {/* <--- Changed pl-44 to pl-60 (Push text right) */}
           <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg">
             <h2 className="text-3xl font-black text-white uppercase italic">Kickoff</h2>
           </div>
