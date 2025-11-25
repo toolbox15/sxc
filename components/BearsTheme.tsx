@@ -43,13 +43,13 @@ const itemVariants = {
   visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
 };
 
-// --- 🍺 BUBBLES EFFECT (Adjusted for Mug) ---
+// --- 🍺 BUBBLES EFFECT ---
 const BubblesEffect = () => {
   const bubbles = Array.from({ length: 30 }); 
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
   return (
-    // Positioned specifically for the Beer Mug shape
+    // Positioned for a standard Beer Mug shape
     <div className="absolute bottom-[120px] left-[50px] w-[140px] h-[300px] pointer-events-none overflow-hidden z-20 opacity-50">
       {bubbles.map((_, i) => (
         <motion.div
@@ -118,7 +118,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       {/* --- DECORATIVE ASSETS --- */}
       
-      {/* 🍺 THE BEER MUG GROUP (Stable Wiki Link) */}
+      {/* 🍺 THE BEER MUG GROUP (LOCAL FILE) */}
       <motion.div 
         className="absolute bottom-[-40px] left-[-20px] z-10"
         animate={{ y: [0, -5, 0] }}
@@ -126,15 +126,15 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       >
           <BubblesEffect />
           <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Krombacher_Pils_0%2C33l_Glas.png/485px-Krombacher_Pils_0%2C33l_Glas.png" 
+            src="/beer-glass.png" // <--- UPDATED: Now looks for your local file
             alt="Beer Glass" 
             className="h-[500px] w-auto drop-shadow-2xl"
           />
       </motion.div>
 
-      {/* 🏈 THE FOOTBALL */}
+      {/* 🏈 THE FOOTBALL (Moved Down to clear text) */}
       <motion.div 
-        className="absolute bottom-[30px] right-[30px] z-10"
+        className="absolute bottom-[10px] right-[30px] z-10" // Moved from bottom-[30px] to bottom-[10px]
         animate={{ y: [0, -15, 0], rotate: [-2, 2, -2] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       >
