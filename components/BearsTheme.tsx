@@ -43,30 +43,31 @@ const itemVariants = {
   visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
 };
 
-// --- 🍺 BUBBLES EFFECT (Continuous Loop) ---
+// --- 🍺 BUBBLES EFFECT (Adjusted for Mug) ---
 const BubblesEffect = () => {
-  const bubbles = Array.from({ length: 25 }); // More bubbles
+  const bubbles = Array.from({ length: 30 }); 
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
   return (
-    <div className="absolute bottom-[20px] left-[40px] w-[180px] h-[350px] pointer-events-none overflow-hidden z-20 opacity-70">
+    // Positioned specifically for the Beer Mug shape
+    <div className="absolute bottom-[120px] left-[50px] w-[140px] h-[300px] pointer-events-none overflow-hidden z-20 opacity-50">
       {bubbles.map((_, i) => (
         <motion.div
           key={i}
           className="absolute bg-white rounded-full"
           style={{ 
-              width: random(3, 6), 
-              height: random(3, 6), 
-              left: `${random(10, 90)}%` 
+              width: random(2, 5), 
+              height: random(2, 5), 
+              left: `${random(5, 95)}%` 
           }}
-          initial={{ y: 350, opacity: 0 }}
+          initial={{ y: 300, opacity: 0 }}
           animate={{ 
             y: -20, 
             opacity: [0, 1, 0], 
-            x: random(-5, 5) 
+            x: random(-3, 3) 
           }}
           transition={{ 
-            duration: random(1.5, 3.5), // Faster fizz
+            duration: random(2, 4), 
             repeat: Infinity, 
             delay: random(0, 5),
             ease: "linear" 
@@ -117,25 +118,23 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       {/* --- DECORATIVE ASSETS --- */}
       
-      {/* 🍺 THE KEG GROUP (Now Breathing, Not Sliding) */}
+      {/* 🍺 THE BEER MUG GROUP (Stable Wiki Link) */}
       <motion.div 
-        className="absolute bottom-0 left-[-30px] z-10"
-        // BREATHING ANIMATION: Gently bobs up and down forever
-        animate={{ y: [0, -10, 0] }}
+        className="absolute bottom-[-40px] left-[-20px] z-10"
+        animate={{ y: [0, -5, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       >
           <BubblesEffect />
           <img 
-            src="https://pngimg.com/d/beer_keg_PNG12.png" 
-            alt="Beer Keg" 
-            className="h-[480px] w-auto drop-shadow-2xl"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Krombacher_Pils_0%2C33l_Glas.png/485px-Krombacher_Pils_0%2C33l_Glas.png" 
+            alt="Beer Glass" 
+            className="h-[500px] w-auto drop-shadow-2xl"
           />
       </motion.div>
 
-      {/* 🏈 THE FOOTBALL (Floating) */}
+      {/* 🏈 THE FOOTBALL */}
       <motion.div 
         className="absolute bottom-[30px] right-[30px] z-10"
-        // FLOATING ANIMATION
         animate={{ y: [0, -15, 0], rotate: [-2, 2, -2] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       >
@@ -155,8 +154,8 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </h1>
         </div>
 
-        {/* LEFT COLUMN (Kickoff) */}
-        <div className="col-span-4 pl-40 pt-4">
+        {/* LEFT COLUMN */}
+        <div className="col-span-4 pl-44 pt-4">
           <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg">
             <h2 className="text-3xl font-black text-white uppercase italic">Kickoff</h2>
           </div>
@@ -173,7 +172,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* CENTER COLUMN (Main Event) */}
+        {/* CENTER COLUMN */}
         <div className="col-span-4 pt-4 px-6">
           <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg">
             <h2 className="text-3xl font-black text-white uppercase italic">The Main Event</h2>
@@ -191,7 +190,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN (Draft Picks) */}
+        {/* RIGHT COLUMN */}
         <div className="col-span-4 pr-40 pt-4">
           <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right">
             <h2 className="text-3xl font-black text-white uppercase italic">Draft Picks</h2>
