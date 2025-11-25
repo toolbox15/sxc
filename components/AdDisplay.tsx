@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ChristmasTheme from './ChristmasTheme';
-import BistroTheme from './BistroTheme'; // <--- NEW IMPORT
+import BistroTheme from './BistroTheme';
+import BearsTheme from './BearsTheme'; // <--- NEW IMPORT
 
 // Define the shape of our Ad data to prevent errors
 interface Ad {
@@ -12,6 +13,7 @@ interface Ad {
   Category: string;
   Color?: string;
   Description?: string;
+  Schedule?: string; // Added for Dayparting support
 }
 
 const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
@@ -33,7 +35,10 @@ export default function AdDisplay() {
         setTheme("Christmas"); 
     } 
     else if (lowerId.includes("bistro")) {
-        setTheme("Bistro"); // <--- NEW RULE
+        setTheme("Bistro");
+    }
+    else if (lowerId.includes("bears")) {
+        setTheme("Bears"); // <--- NEW RULE FOR FOOTBALL
     }
     else {
         setTheme("Corporate");
@@ -87,6 +92,11 @@ export default function AdDisplay() {
     return <div className="h-screen w-screen bg-black text-white flex items-center justify-center">Loading System...</div>;
   }
 
+  // ROUTE: Bears Theme
+  if (theme === 'Bears') {
+     return <BearsTheme ads={ads} />;
+  }
+
   // ROUTE: Bistro Theme
   if (theme === 'Bistro') {
      return <BistroTheme ads={ads} />;
@@ -102,7 +112,7 @@ export default function AdDisplay() {
     <div className="bg-white text-black h-screen flex flex-col items-center justify-center">
         <h1 className="text-4xl font-bold">Welcome to {deviceId}</h1>
         <p className="mt-4 text-gray-500">Theme: {theme}</p>
-        <p className="text-sm text-gray-400">Add '?id=JoesBistro' to URL to test.</p>
+        <p className="text-sm text-gray-400">Add '?id=Bears_TV' to URL to test.</p>
     </div>
   );
 }
