@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-// NEW IMPORTS: The Icons
 import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
 
 // --- DATA STRUCTURE ---
@@ -47,7 +46,7 @@ const itemVariants = {
 
 // --- 🍺 BUBBLES EFFECT ---
 const BubblesEffect = () => {
-  const bubbles = Array.from({ length: 30 }); 
+  const bubbles = Array.from({ length: 30 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
   return (
@@ -56,22 +55,22 @@ const BubblesEffect = () => {
         <motion.div
           key={i}
           className="absolute bg-white rounded-full"
-          style={{ 
-              width: random(2, 5), 
-              height: random(2, 5), 
-              left: `${random(5, 95)}%` 
+          style={{
+              width: random(2, 5),
+              height: random(2, 5),
+              left: `${random(5, 95)}%`
           }}
           initial={{ y: 300, opacity: 0 }}
-          animate={{ 
-            y: -20, 
-            opacity: [0, 1, 0], 
-            x: random(-3, 3) 
+          animate={{
+            y: -20,
+            opacity: [0, 1, 0],
+            x: random(-3, 3)
           }}
-          transition={{ 
-            duration: random(2, 4), 
-            repeat: Infinity, 
+          transition={{
+            duration: random(2, 4),
+            repeat: Infinity,
             delay: random(0, 5),
-            ease: "linear" 
+            ease: "linear"
           }}
         />
       ))}
@@ -99,17 +98,49 @@ const StadiumFlashEffect = () => {
   );
 };
 
+// --- 🏃‍♂️ RUNNING PLAYER ANIMATION ---
+const RunningPlayer = () => {
+  return (
+    <motion.img
+      // NOTE: Replace this URL with a local file (e.g., /player-run.gif) for production security.
+      src="https://i.pinimg.com/originals/44/e4/26/44e42617161681634478673655451838.gif"
+      alt="Running Player"
+      className="absolute z-20 w-32 h-auto drop-shadow-lg pointer-events-none"
+      initial={{
+        top: '25%', // Start near the top of the drinks section
+        right: '-5%', // Start off-screen to the right
+        scale: 0.6,
+        opacity: 0
+      }}
+      animate={{
+        top: ['25%', '50%', '82%'], // Move down the screen
+        right: ['-5%', '20%', '12%'], // Move left across the field
+        scale: [0.6, 0.9, 0.3], // Grow then shrink as it hits the ball
+        opacity: [0, 1, 1, 0] // Fade in, stay visible, then fade out
+      }}
+      transition={{
+        duration: 5,
+        repeat: Infinity,
+        ease: "easeInOut",
+        times: [0, 0.3, 0.8, 1], // Control the timing of the path steps
+        repeatDelay: 2 // Wait 2 seconds before running again
+      }}
+    />
+  );
+};
+
+
 // --- MAIN COMPONENT ---
 const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
-  
+
   const kickoff = ads.filter(ad => ad.Category === 'Kickoff').length > 0 ? ads.filter(ad => ad.Category === 'Kickoff') : DUMMY_MENU.kickoff;
   const mains = ads.filter(ad => ad.Category === 'Main Event').length > 0 ? ads.filter(ad => ad.Category === 'Main Event') : DUMMY_MENU.main_event;
   const drinks = ads.filter(ad => ad.Category === 'Draft Picks').length > 0 ? ads.filter(ad => ad.Category === 'Draft Picks') : DUMMY_MENU.draft_picks;
 
   return (
-    <div 
+    <div
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
-      style={{ backgroundImage: "url('/field-bg.png')" }} 
+      style={{ backgroundImage: "url('/field-bg.png')" }}
     >
       {/* Navy Blue Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-950/50 to-blue-950/90 z-0"></div>
@@ -118,36 +149,39 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       <StadiumFlashEffect />
 
       {/* --- DECORATIVE ASSETS --- */}
-      
+
+      {/* 🏃‍♂️ ADD THE RUNNING PLAYER HERE */}
+      <RunningPlayer />
+
       {/* 🍺 THE BEER MUG GROUP (LOCAL FILE) */}
-      <motion.div 
+      <motion.div
         className="absolute bottom-[-40px] left-[-60px] z-10"
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       >
           <BubblesEffect />
-          <img 
+          <img
             src="/beer-glass.png"
-            alt="Beer Glass" 
+            alt="Beer Glass"
             className="h-[500px] w-auto drop-shadow-2xl"
           />
       </motion.div>
 
       {/* 🏈 THE FOOTBALL */}
-      <motion.div 
+      <motion.div
         className="absolute bottom-[10px] right-[30px] z-10"
         animate={{ y: [0, -15, 0], rotate: [-2, 2, -2] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       >
-        <img 
-          src="/football.png" 
+        <img
+          src="/football.png"
           className="h-[350px] w-auto drop-shadow-2xl"
         />
       </motion.div>
 
       {/* --- CONTENT GRID --- */}
       <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
-        
+
         {/* HEADER */}
         <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4">
           <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-lg">
@@ -158,7 +192,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         {/* LEFT COLUMN (Kickoff) */}
         <div className="col-span-4 pl-60 pt-4">
           <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg flex items-center gap-3">
-            <Flame className="text-orange-500 w-8 h-8" /> {/* HEADER ICON */}
+            <Flame className="text-orange-500 w-8 h-8" />
             <h2 className="text-3xl font-black text-white uppercase italic">Kickoff</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
@@ -166,7 +200,6 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
-                    {/* 🔥 ITEM ICON: FLAME */}
                     <Flame className="text-orange-600 w-5 h-5" />
                     <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
                   </div>
@@ -181,7 +214,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         {/* CENTER COLUMN (Main Event) */}
         <div className="col-span-4 pt-4 px-6">
           <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg flex items-center gap-3">
-            <UtensilsCrossed className="text-white w-8 h-8" /> {/* HEADER ICON */}
+            <UtensilsCrossed className="text-white w-8 h-8" />
             <h2 className="text-3xl font-black text-white uppercase italic">The Main Event</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
@@ -189,7 +222,6 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
-                    {/* 🍴 ITEM ICON: FORK/KNIFE */}
                     <UtensilsCrossed className="text-orange-600 w-6 h-6" />
                     <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
                   </div>
@@ -205,14 +237,13 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         <div className="col-span-4 pr-40 pt-4">
           <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right flex items-center justify-end gap-3">
             <h2 className="text-3xl font-black text-white uppercase italic">Draft Picks</h2>
-            <Beer className="text-orange-500 w-8 h-8" /> {/* HEADER ICON */}
+            <Beer className="text-orange-500 w-8 h-8" />
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5 pb-32">
             {drinks.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
-                    {/* 🍺 ITEM ICON: BEER */}
                     <Beer className="text-orange-600 w-5 h-5" />
                     <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
                   </div>
