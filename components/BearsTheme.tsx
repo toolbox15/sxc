@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
+import { Flame, UtensilsCrossed, Beer, AlertCircle } from 'lucide-react';
 
 // --- DATA STRUCTURE ---
 interface AdItem {
@@ -8,6 +8,7 @@ interface AdItem {
   Price: string;
   Description?: string;
   Category: string;
+  Status?: string; // Needed to check active state
   Color?: string;
 }
 
@@ -44,45 +45,68 @@ const itemVariants = {
   visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
 };
 
-// --- 🍺 BUBBLES EFFECT ---
-const BubblesEffect = () => {
-  const bubbles = Array.from({ length: 30 });
-  const random = (min: number, max: number) => Math.random() * (max - min) + min;
+// --- 🚨 FLASH SALE COMPONENT (THE TRIGGERED RUNNER) ---
+const FlashSaleOverlay = ({ message }: { message: string }) => {
+  return (
+    <div className="absolute inset-0 z-50 pointer-events-none overflow-hidden">
+      {/* 1. RED SIREN OVERLAY (Pulsing Background) */}
+      <motion.div 
+        className="absolute inset-0 bg-red-600 mix-blend-overlay"
+        animate={{ opacity: [0, 0.4, 0] }}
+        transition={{ duration: 0.5, repeat: Infinity }} 
+      />
 
+      {/* 2. THE RUNNING PLAYER WITH THE SIGN */}
+      <motion.div
+        className="absolute bottom-[20px] w-auto h-auto"
+        initial={{ left: '-20%' }}
+        animate={{ left: '120%' }} // Sprint across screen
+        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+      >
+        {/* The Player GIF */}
+        <img 
+          src="/player-run.gif"
+          alt="Runner"
+          className="h-64 w-auto brightness-0 opacity-90" // Silhouette Mode
+        />
+        
+        {/* THE FLASHING SIGN HE IS HOLDING */}
+        <motion.div 
+          className="absolute top-[-80px] left-[40px] bg-red-600 border-4 border-yellow-400 text-white font-black uppercase text-3xl px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(255,255,0,0.8)]"
+          animate={{ scale: [1, 1.1, 1], rotate: [-5, 5, -5] }} // Pulse and shake
+          transition={{ duration: 0.2, repeat: Infinity }}
+        >
+          {message} {/* e.g. "50% OFF!" */}
+          <div className="absolute bottom-[-30px] left-1/2 w-2 h-[30px] bg-yellow-600 -translate-x-1/2"></div>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+};
+
+// --- DECORATIVE COMPONENTS ---
+const BubblesEffect = () => {
+  const bubbles = Array.from({ length: 30 }); 
+  const random = (min: number, max: number) => Math.random() * (max - min) + min;
   return (
     <div className="absolute bottom-[120px] left-[50px] w-[140px] h-[300px] pointer-events-none overflow-hidden z-20 opacity-50">
       {bubbles.map((_, i) => (
         <motion.div
           key={i}
           className="absolute bg-white rounded-full"
-          style={{
-              width: random(2, 5),
-              height: random(2, 5),
-              left: `${random(5, 95)}%`
-          }}
+          style={{ width: random(2, 5), height: random(2, 5), left: `${random(5, 95)}%` }}
           initial={{ y: 300, opacity: 0 }}
-          animate={{
-            y: -20,
-            opacity: [0, 1, 0],
-            x: random(-3, 3)
-          }}
-          transition={{
-            duration: random(2, 4),
-            repeat: Infinity,
-            delay: random(0, 5),
-            ease: "linear"
-          }}
+          animate={{ y: -20, opacity: [0, 1, 0], x: random(-3, 3) }}
+          transition={{ duration: random(2, 4), repeat: Infinity, delay: random(0, 5), ease: "linear" }}
         />
       ))}
     </div>
   );
 };
 
-// --- STADIUM FLASH EFFECT ---
 const StadiumFlashEffect = () => {
   const flashes = Array.from({ length: 15 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
-
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {flashes.map((_, i) => (
@@ -98,49 +122,26 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER (LEFT TO RIGHT SPRINT) ---
-const RunningPlayer = () => {
-  return (
-    <motion.img
-      // NOTE: Replace with your local file (/player-run.gif)
-      src="https://i.pinimg.com/originals/44/e4/26/44e42617161681634478673655451838.gif"
-      alt="Running Player"
-      className="absolute z-30 w-40 h-auto drop-shadow-lg pointer-events-none"
-      // Position logic:
-      initial={{
-        left: '10%',   // Start near the Keg
-        bottom: '50px', // Start at field level
-        opacity: 0,
-        scaleX: 1 // Normal direction (facing right)
-      }}
-      animate={{
-        left: ['10%', '85%'], // Run all the way to the Football
-        opacity: [0, 1, 1, 0], // Fade in, run, fade out
-        scale: [0.8, 1.2] // Grow slightly as he gets "closer" to camera
-      }}
-      transition={{
-        duration: 4, // Takes 4 seconds to sprint across
-        repeat: Infinity,
-        ease: "linear",
-        repeatDelay: 5 // Wait 5 seconds before running again
-      }}
-    />
-  );
-};
-
-
 // --- MAIN COMPONENT ---
 const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
-
+  
   const kickoff = ads.filter(ad => ad.Category === 'Kickoff').length > 0 ? ads.filter(ad => ad.Category === 'Kickoff') : DUMMY_MENU.kickoff;
   const mains = ads.filter(ad => ad.Category === 'Main Event').length > 0 ? ads.filter(ad => ad.Category === 'Main Event') : DUMMY_MENU.main_event;
   const drinks = ads.filter(ad => ad.Category === 'Draft Picks').length > 0 ? ads.filter(ad => ad.Category === 'Draft Picks') : DUMMY_MENU.draft_picks;
 
+  // 🚨 CHECK FOR ACTIVE ALERT
+  // This looks for a row in Google Sheets with Category 'ALERT' and Status 'Active'
+  const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
+
   return (
-    <div
+    <div 
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
-      style={{ backgroundImage: "url('/field-bg.png')" }}
+      style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
+      {/* 🚨 IF ALERT IS ACTIVE, SHOW THE RUNNER! */}
+      {/* The runner is ONLY visible when this condition is true */}
+      {alertAd && <FlashSaleOverlay message={alertAd.Title} />}
+
       {/* Navy Blue Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-950/50 to-blue-950/90 z-0"></div>
 
@@ -148,39 +149,30 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       <StadiumFlashEffect />
 
       {/* --- DECORATIVE ASSETS --- */}
+      {/* NOTE: I removed the 'RunningPlayer' component from here. He is gone from the normal view. */}
 
-      {/* 🏃‍♂️ THE SPRINTER */}
-      <RunningPlayer />
-
-      {/* 🍺 THE BEER MUG GROUP (Moved Left) */}
-      <motion.div
+      {/* 🍺 THE BEER MUG GROUP */}
+      <motion.div 
         className="absolute bottom-[-40px] left-[-60px] z-10"
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       >
           <BubblesEffect />
-          <img
-            src="/beer-glass.png"
-            alt="Beer Glass"
-            className="h-[500px] w-auto drop-shadow-2xl"
-          />
+          <img src="/beer-glass.png" alt="Beer Glass" className="h-[500px] w-auto drop-shadow-2xl" />
       </motion.div>
 
-      {/* 🏈 THE FOOTBALL (Moved Down) */}
-      <motion.div
+      {/* 🏈 THE FOOTBALL */}
+      <motion.div 
         className="absolute bottom-[10px] right-[30px] z-10"
         animate={{ y: [0, -15, 0], rotate: [-2, 2, -2] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       >
-        <img
-          src="/football.png"
-          className="h-[350px] w-auto drop-shadow-2xl"
-        />
+        <img src="/football.png" className="h-[350px] w-auto drop-shadow-2xl" />
       </motion.div>
 
       {/* --- CONTENT GRID --- */}
       <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
-
+        
         {/* HEADER */}
         <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4">
           <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-lg">
@@ -188,7 +180,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </h1>
         </div>
 
-        {/* LEFT COLUMN (Kickoff) */}
+        {/* LEFT COLUMN */}
         <div className="col-span-4 pl-60 pt-4">
           <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg flex items-center gap-3">
             <Flame className="text-orange-500 w-8 h-8" />
@@ -210,7 +202,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* CENTER COLUMN (Main Event) */}
+        {/* CENTER COLUMN */}
         <div className="col-span-4 pt-4 px-6">
           <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg flex items-center gap-3">
             <UtensilsCrossed className="text-white w-8 h-8" />
@@ -232,7 +224,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN (Draft Picks) */}
+        {/* RIGHT COLUMN */}
         <div className="col-span-4 pr-40 pt-4">
           <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right flex items-center justify-end gap-3">
             <h2 className="text-3xl font-black text-white uppercase italic">Draft Picks</h2>
