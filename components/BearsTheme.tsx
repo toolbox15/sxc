@@ -45,10 +45,10 @@ const itemVariants = {
   visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
 };
 
-// --- 🎉 CONFETTI ENGINE (Chicago Colors) ---
+// --- 🎉 SUPER-SIZED CONFETTI ENGINE ---
 const ConfettiEffect = () => {
-  const particles = Array.from({ length: 75 }); // Lots of confetti!
-  const colors = ['#C83803', '#0B162A', '#FFFFFF']; // Bears Orange, Navy, White
+  const particles = Array.from({ length: 150 }); // DOUBLED the amount (More intensity!)
+  const colors = ['#C83803', '#0B162A', '#FFFFFF', '#FFD700']; // Added Gold
   
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
@@ -58,20 +58,23 @@ const ConfettiEffect = () => {
         return (
           <motion.div
             key={i}
-            className="absolute w-3 h-3"
+            className="absolute"
             style={{ 
-              backgroundColor: colors[Math.floor(random(0, 3))],
+              backgroundColor: colors[Math.floor(random(0, 4))],
               left: `${random(0, 100)}%`,
-              top: -20
+              top: -50,
+              // BIGGER PIECES: Random size between 10px and 25px
+              width: random(10, 25),
+              height: random(10, 25)
             }}
             animate={{ 
               y: window.innerHeight + 100, 
               rotateX: random(0, 360), 
               rotateY: random(0, 360),
-              x: random(-50, 50)
+              x: random(-100, 100) // Wider drift
             }}
             transition={{ 
-              duration: random(2, 5), 
+              duration: random(2, 6), 
               repeat: Infinity, 
               ease: "linear",
               delay: random(0, 5)
@@ -83,43 +86,47 @@ const ConfettiEffect = () => {
   );
 };
 
-// --- 🚨 FLASH SALE OVERLAY (WITH CONFETTI) ---
+// --- 🚨 FLASH SALE OVERLAY (BIGGER TEXT) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
       
-      {/* 1. CONFETTI */}
+      {/* 1. BIG CONFETTI */}
       <ConfettiEffect />
 
-      {/* 2. PULSING BACKGROUND GLOW */}
+      {/* 2. PULSING BACKGROUND */}
       <motion.div 
-        className="absolute inset-0 bg-orange-600/20"
-        animate={{ opacity: [0.2, 0.6, 0.2] }}
+        className="absolute inset-0 bg-orange-600/30"
+        animate={{ opacity: [0.2, 0.7, 0.2] }}
         transition={{ duration: 0.5, repeat: Infinity }}
       />
 
-      {/* 3. MASSIVE TEXT CONTENT */}
+      {/* 3. MASSIVE CONTENT */}
       <motion.div 
-        className="relative z-10 text-center p-8"
+        className="relative z-10 text-center p-4 w-full"
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", bounce: 0.5 }}
       >
-        {/* "TOUCHDOWN!" OR "FLASH SALE" HEADER */}
-        <h2 className="text-4xl font-bold text-white italic tracking-widest mb-4">🚨 FIELD ALERT 🚨</h2>
+        {/* HEADER */}
+        <h2 className="text-5xl font-black text-white italic uppercase tracking-widest mb-8 drop-shadow-md">
+          🚨 FIELD ALERT 🚨
+        </h2>
         
-        {/* MAIN DEAL: "30% OFF DRINKS" */}
-        <h1 className="text-8xl md:text-9xl font-black text-orange-500 uppercase drop-shadow-[0_5px_5px_rgba(0,0,0,1)] leading-none mb-6">
+        {/* TITLE (e.g. TOUCHDOWN!) */}
+        <h1 className="text-8xl md:text-[9rem] font-black text-orange-500 uppercase drop-shadow-[0_10px_10px_rgba(0,0,0,1)] leading-none mb-8">
           {item.Title}
         </h1>
 
-        {/* TIMER/SUBTEXT: "FOR THE NEXT 10 MINS" */}
+        {/* DESCRIPTION (e.g. HALF PRICE SHOTS) - NOW YELLOW & HUGE */}
         <motion.div 
-          className="inline-block bg-white text-blue-950 text-4xl font-black uppercase px-8 py-4 rounded-full shadow-2xl"
-          animate={{ scale: [1, 1.1, 1] }} // Heartbeat pulse
+          className="inline-block bg-white border-8 border-orange-500 px-12 py-6 rounded-3xl shadow-2xl"
+          animate={{ scale: [1, 1.05, 1] }} 
           transition={{ duration: 0.8, repeat: Infinity }}
         >
-          {item.Description || "LIMITED TIME ONLY!"}
+          <p className="text-blue-950 text-5xl md:text-6xl font-black uppercase leading-tight">
+            {item.Description || "LIMITED TIME!"}
+          </p>
         </motion.div>
       </motion.div>
 
@@ -127,7 +134,7 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   );
 };
 
-// --- DECORATIVE COMPONENTS ---
+// --- DECORATIVE COMPONENTS (Keep existing) ---
 const BubblesEffect = () => {
   const bubbles = Array.from({ length: 30 }); 
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -165,7 +172,7 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER (Always Active) ---
+// --- 🏃‍♂️ RUNNING PLAYER ---
 const RunningPlayer = () => {
   return (
     <motion.img
@@ -186,7 +193,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const mains = ads.filter(ad => ad.Category === 'Main Event').length > 0 ? ads.filter(ad => ad.Category === 'Main Event') : DUMMY_MENU.main_event;
   const drinks = ads.filter(ad => ad.Category === 'Draft Picks').length > 0 ? ads.filter(ad => ad.Category === 'Draft Picks') : DUMMY_MENU.draft_picks;
 
-  // 🚨 CHECK FOR ACTIVE ALERT
+  // 🚨 CHECK FOR ACTIVE ALERT (Picks the FIRST one found)
   const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
 
   return (
@@ -194,7 +201,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
-      {/* 🚨 IF ALERT IS ACTIVE, SHOW CONFETTI OVERLAY */}
+      {/* 🚨 IF ALERT IS ACTIVE, SHOW CELEBRATION! */}
       {alertAd && <FlashSaleOverlay item={alertAd} />}
 
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-950/50 to-blue-950/90 z-0"></div>
@@ -245,6 +252,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                   </div>
                   <span className="text-2xl font-black text-orange-500">{item.Price}</span>
                 </div>
+                {item.Description && <p className="text-slate-300 text-xs font-bold ml-7">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
@@ -266,6 +274,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                   </div>
                   <span className="text-3xl font-black text-orange-500">{item.Price}</span>
                 </div>
+                {item.Description && <p className="text-slate-300 text-sm font-bold ml-8">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
@@ -287,6 +296,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                   </div>
                   <span className="text-2xl font-black text-orange-500">{item.Price}</span>
                 </div>
+                {item.Description && <p className="text-slate-300 text-xs font-bold text-right">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
