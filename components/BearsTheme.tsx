@@ -88,24 +88,39 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       {/* --- DECORATIVE ASSETS --- */}
       
-      {/* 🍺 THE KEG (Bottom Left) - USING WEB LINK TO FORCE IT TO SHOW */}
+      {/* 🍺 THE KEG (Bottom Left) */}
       <motion.img 
-        src="https://pngimg.com/d/beer_keg_PNG12.png" 
-        alt="Beer Keg" 
+        src="/keg.png" 
+        alt="Loading Keg..." 
         className="absolute bottom-[-20px] left-[-50px] h-[500px] w-auto z-10 drop-shadow-2xl"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+        // FIXED: Simple fade in, no looping jerkiness
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       />
 
-      {/* 🏈 THE FOOTBALL (Bottom Right) - Moved down slightly */}
-      <motion.img 
-        src="/football.png" 
-        className="absolute bottom-[-20px] right-[50px] h-[350px] w-auto z-10 drop-shadow-2xl"
-        initial={{ y: 200, opacity: 0 }}
-        animate={{ y: [0, -20, 0], rotate: [0, 5, -5, 0], opacity: 1 }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* 🏈 THE FOOTBALL (Bottom Right) - FIXED ANIMATION */}
+      <motion.div
+        className="absolute bottom-[20px] right-[50px] z-10"
+        initial={{ y: 100, opacity: 0 }} // Start off screen
+        animate={{ y: 0, opacity: 1 }}   // Fly in ONCE
+        transition={{ duration: 1, ease: "easeOut" }} // Smooth entry
+      >
+        <motion.img 
+          src="/football.png" 
+          className="h-[350px] w-auto drop-shadow-2xl"
+          // FLOATING LOOP: This runs separately so it doesn't reset the position
+          animate={{ 
+            y: [-10, 10, -10], // Gentle bobbing
+            rotate: [-2, 2, -2] // Gentle twisting
+          }}
+          transition={{ 
+            duration: 4, 
+            repeat: Infinity, 
+            ease: "easeInOut" 
+          }}
+        />
+      </motion.div>
 
       {/* --- CONTENT GRID --- */}
       <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
@@ -153,16 +168,14 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN (Draft Picks) - FIXED LAYOUT */}
-        {/* Removed 'flex-row-reverse' so numbers go to the right */}
-        <div className="col-span-4 pr-40 pt-4">
+        {/* RIGHT COLUMN (Draft Picks) */}
+        <div className="col-span-4 pr-32 pt-4">
           <div className="bg-orange-600/20 border-r-4 border-orange-500 p-4 mb-6 rounded-l-lg text-right">
             <h2 className="text-4xl font-black text-white uppercase italic">Draft Picks</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {drinks.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
-                {/* Title Left, Price Right (Standard) */}
                 <div className="flex justify-between items-end">
                   <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
                   <span className="text-3xl font-black text-orange-500">{item.Price}</span>
