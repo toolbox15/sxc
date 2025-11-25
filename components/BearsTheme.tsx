@@ -98,32 +98,31 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER ANIMATION ---
+// --- 🏃‍♂️ RUNNING PLAYER (LEFT TO RIGHT SPRINT) ---
 const RunningPlayer = () => {
   return (
     <motion.img
-      // NOTE: Replace this URL with a local file (e.g., /player-run.gif) for production security.
+      // NOTE: Replace with your local file (/player-run.gif)
       src="https://i.pinimg.com/originals/44/e4/26/44e42617161681634478673655451838.gif"
       alt="Running Player"
-      className="absolute z-20 w-32 h-auto drop-shadow-lg pointer-events-none"
+      className="absolute z-30 w-40 h-auto drop-shadow-lg pointer-events-none"
+      // Position logic:
       initial={{
-        top: '25%', // Start near the top of the drinks section
-        right: '-5%', // Start off-screen to the right
-        scale: 0.6,
-        opacity: 0
+        left: '10%',   // Start near the Keg
+        bottom: '50px', // Start at field level
+        opacity: 0,
+        scaleX: 1 // Normal direction (facing right)
       }}
       animate={{
-        top: ['25%', '50%', '82%'], // Move down the screen
-        right: ['-5%', '20%', '12%'], // Move left across the field
-        scale: [0.6, 0.9, 0.3], // Grow then shrink as it hits the ball
-        opacity: [0, 1, 1, 0] // Fade in, stay visible, then fade out
+        left: ['10%', '85%'], // Run all the way to the Football
+        opacity: [0, 1, 1, 0], // Fade in, run, fade out
+        scale: [0.8, 1.2] // Grow slightly as he gets "closer" to camera
       }}
       transition={{
-        duration: 5,
+        duration: 4, // Takes 4 seconds to sprint across
         repeat: Infinity,
-        ease: "easeInOut",
-        times: [0, 0.3, 0.8, 1], // Control the timing of the path steps
-        repeatDelay: 2 // Wait 2 seconds before running again
+        ease: "linear",
+        repeatDelay: 5 // Wait 5 seconds before running again
       }}
     />
   );
@@ -150,10 +149,10 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       {/* --- DECORATIVE ASSETS --- */}
 
-      {/* 🏃‍♂️ ADD THE RUNNING PLAYER HERE */}
+      {/* 🏃‍♂️ THE SPRINTER */}
       <RunningPlayer />
 
-      {/* 🍺 THE BEER MUG GROUP (LOCAL FILE) */}
+      {/* 🍺 THE BEER MUG GROUP (Moved Left) */}
       <motion.div
         className="absolute bottom-[-40px] left-[-60px] z-10"
         animate={{ y: [0, -5, 0] }}
@@ -167,7 +166,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           />
       </motion.div>
 
-      {/* 🏈 THE FOOTBALL */}
+      {/* 🏈 THE FOOTBALL (Moved Down) */}
       <motion.div
         className="absolute bottom-[10px] right-[30px] z-10"
         animate={{ y: [0, -15, 0], rotate: [-2, 2, -2] }}
