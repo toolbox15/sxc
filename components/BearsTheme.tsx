@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Flame, UtensilsCrossed, Beer, AlertCircle } from 'lucide-react';
+import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
 
 // --- DATA STRUCTURE ---
 interface AdItem {
@@ -45,42 +45,72 @@ const itemVariants = {
   visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
 };
 
-// --- 🚨 FLASH SALE COMPONENT (THE TRIGGERED RUNNER) ---
-const FlashSaleOverlay = ({ message }: { message: string }) => {
+// --- 🚨 THE REFEREE OVERLAY (Appears only on Alert) ---
+const RefereeOverlay = ({ message }: { message: string }) => {
   return (
     <div className="absolute inset-0 z-50 pointer-events-none overflow-hidden">
-      {/* 1. RED SIREN OVERLAY (Pulsing Background) */}
+      {/* 1. FLASHING BACKGROUND (Time Out Vibe) */}
       <motion.div 
-        className="absolute inset-0 bg-red-600 mix-blend-overlay"
-        animate={{ opacity: [0, 0.4, 0] }}
-        transition={{ duration: 0.5, repeat: Infinity }} 
+        className="absolute inset-0 bg-yellow-500 mix-blend-overlay"
+        animate={{ opacity: [0, 0.3, 0] }}
+        transition={{ duration: 0.8, repeat: Infinity }} 
       />
 
-      {/* 2. THE RUNNING PLAYER WITH THE SIGN */}
+      {/* 2. THE REFEREE RUNNING */}
       <motion.div
         className="absolute bottom-[20px] w-auto h-auto"
         initial={{ left: '-20%' }}
         animate={{ left: '120%' }} // Sprint across screen
-        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
       >
-        {/* The Player GIF */}
+        {/* ⚠️ IMPORTANT: Upload a referee GIF to public/referee.gif 
+           For now, we use the player gif, but tinted darker to look different
+        */}
         <img 
-          src="/player-run.gif"
-          alt="Runner"
-          className="h-64 w-auto brightness-0 opacity-90" // Silhouette Mode
+          src="/player-run.gif" // <--- CHANGE THIS TO /referee.gif LATER
+          alt="Referee"
+          className="h-72 w-auto brightness-50 sepia contrast-125" // Visual filter to distinguish him
         />
         
-        {/* THE FLASHING SIGN HE IS HOLDING */}
+        {/* THE SIGN HE IS HOLDING */}
         <motion.div 
-          className="absolute top-[-80px] left-[40px] bg-red-600 border-4 border-yellow-400 text-white font-black uppercase text-3xl px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(255,255,0,0.8)]"
-          animate={{ scale: [1, 1.1, 1], rotate: [-5, 5, -5] }} // Pulse and shake
-          transition={{ duration: 0.2, repeat: Infinity }}
+          className="absolute top-[-100px] left-[20px] bg-white border-4 border-black text-black font-black uppercase text-4xl px-6 py-6 rounded-lg shadow-2xl text-center leading-tight"
+          animate={{ rotate: [-5, 5, -5], scale: [1, 1.05, 1] }} // Whistle Blowing Shake
+          transition={{ duration: 0.3, repeat: Infinity }}
         >
-          {message} {/* e.g. "50% OFF!" */}
-          <div className="absolute bottom-[-30px] left-1/2 w-2 h-[30px] bg-yellow-600 -translate-x-1/2"></div>
+          {message} {/* Reads from Google Sheet */}
+          <div className="absolute bottom-[-40px] left-1/2 w-3 h-[40px] bg-gray-800 -translate-x-1/2"></div>
         </motion.div>
       </motion.div>
     </div>
+  );
+};
+
+// --- 🏃‍♂️ NORMAL RUNNING PLAYER (Always Active) ---
+const RunningPlayer = () => {
+  return (
+    <motion.img
+      src="/player-run.gif" // The normal football player
+      alt="Running Player"
+      className="absolute z-30 w-40 h-auto drop-shadow-lg pointer-events-none brightness-0 opacity-80"
+      initial={{
+        left: '10%',   
+        bottom: '50px', 
+        opacity: 0,
+        scaleX: 1 
+      }}
+      animate={{
+        left: ['10%', '85%'], 
+        opacity: [0, 1, 1, 0], 
+        scale: [0.8, 1.2] 
+      }}
+      transition={{
+        duration: 4, 
+        repeat: Infinity,
+        ease: "linear",
+        repeatDelay: 5 
+      }}
+    />
   );
 };
 
@@ -130,7 +160,6 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const drinks = ads.filter(ad => ad.Category === 'Draft Picks').length > 0 ? ads.filter(ad => ad.Category === 'Draft Picks') : DUMMY_MENU.draft_picks;
 
   // 🚨 CHECK FOR ACTIVE ALERT
-  // This looks for a row in Google Sheets with Category 'ALERT' and Status 'Active'
   const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
 
   return (
@@ -138,9 +167,8 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
-      {/* 🚨 IF ALERT IS ACTIVE, SHOW THE RUNNER! */}
-      {/* The runner is ONLY visible when this condition is true */}
-      {alertAd && <FlashSaleOverlay message={alertAd.Title} />}
+      {/* 🚨 REFEREE INTERRUPTION (If Alert is Active) */}
+      {alertAd && <RefereeOverlay message={alertAd.Title} />}
 
       {/* Navy Blue Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-950/50 to-blue-950/90 z-0"></div>
@@ -149,7 +177,9 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       <StadiumFlashEffect />
 
       {/* --- DECORATIVE ASSETS --- */}
-      {/* NOTE: I removed the 'RunningPlayer' component from here. He is gone from the normal view. */}
+
+      {/* 🏃‍♂️ THE NORMAL RUNNING PLAYER (Always Active) */}
+      <RunningPlayer />
 
       {/* 🍺 THE BEER MUG GROUP */}
       <motion.div 
