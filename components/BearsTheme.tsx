@@ -10,7 +10,7 @@ interface AdItem {
   Color?: string;
 }
 
-// --- PLACEHOLDER DATA (Bears Style) ---
+// --- PLACEHOLDER DATA ---
 const DUMMY_MENU = {
   kickoff: [
     { Title: "Ditka Dogs", Price: "$8", Description: "Chicago style, poppy seed bun, neon green relish, sport peppers", Category: "Kickoff" },
@@ -32,15 +32,40 @@ const DUMMY_MENU = {
   ]
 };
 
-// --- ANIMATION SETTINGS (Fast & Aggressive) ---
+// --- ANIMATION SETTINGS ---
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, x: -50 }, // Slide in hard from left
+  hidden: { opacity: 0, x: -50 },
   visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
+};
+
+// --- STADIUM FLASH EFFECT ---
+const StadiumFlashEffect = () => {
+  const flashes = Array.from({ length: 15 });
+  const random = (min: number, max: number) => Math.random() * (max - min) + min;
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {flashes.map((_, i) => {
+        const startX = random(0, window.innerWidth);
+        const startY = random(0, window.innerHeight / 2);
+        
+        return (
+          <motion.div
+            key={i}
+            className="absolute bg-white rounded-full blur-xl"
+            style={{ width: random(10, 40), height: random(10, 40), top: startY, left: startX }}
+            animate={{ opacity: [0, 0.8, 0], scale: [0.5, 1.5, 0.5] }}
+            transition={{ duration: 0.2, repeat: Infinity, repeatDelay: random(1, 8), delay: random(0, 5) }}
+          />
+        );
+      })}
+    </div>
+  );
 };
 
 // --- MAIN COMPONENT ---
@@ -55,14 +80,19 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
-      {/* Navy Blue Overlay (The Chicago Colors) */}
-      <div className="absolute inset-0 bg-slate-900/85 z-0"></div>
+      {/* Navy Blue Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-950/50 to-blue-950/90 z-0"></div>
+
+      {/* Flash Effect */}
+      <StadiumFlashEffect />
 
       {/* --- DECORATIVE ASSETS --- */}
       
       {/* 🍺 THE KEG (Bottom Left) */}
       <motion.img 
         src="/keg.png" 
+        // Added an 'alt' so if it breaks, you see text
+        alt="Beer Keg" 
         className="absolute bottom-[-20px] left-[-50px] h-[500px] w-auto z-10 drop-shadow-2xl"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -74,8 +104,8 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         src="/football.png" 
         className="absolute bottom-[50px] right-[50px] h-[350px] w-auto z-10 drop-shadow-2xl"
         initial={{ y: 200, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.2, type: "spring" }}
+        animate={{ y: [0, -20, 0], rotate: [0, 5, -5, 0], opacity: 1 }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
       {/* --- CONTENT GRID --- */}
@@ -88,8 +118,9 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </h1>
         </div>
 
-        {/* LEFT COLUMN (Appetizers) - Padded left to avoid Keg */}
-        <div className="col-span-4 pl-24 pt-4">
+        {/* LEFT COLUMN (Kickoff) */}
+        {/* Added 'pl-32' to push text away from the Keg */}
+        <div className="col-span-4 pl-32 pt-4">
           <div className="bg-orange-600/20 border-l-4 border-orange-500 p-4 mb-6 rounded-r-lg">
             <h2 className="text-4xl font-black text-white uppercase italic">Kickoff</h2>
           </div>
@@ -106,8 +137,8 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* CENTER COLUMN (Mains) */}
-        <div className="col-span-4 pt-4">
+        {/* CENTER COLUMN (Main Event) */}
+        <div className="col-span-4 pt-4 px-4">
           <div className="bg-white/10 border-l-4 border-white p-4 mb-6 rounded-r-lg">
             <h2 className="text-4xl font-black text-white uppercase italic">The Main Event</h2>
           </div>
@@ -124,15 +155,18 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN (Drinks) - Padded right to avoid Football */}
-        <div className="col-span-4 pr-24 pt-4 text-right">
-          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-4 mb-6 rounded-l-lg">
+        {/* RIGHT COLUMN (Draft Picks) */}
+        {/* CHANGED: Removed 'text-right'. Added 'pr-40' to avoid Football. */}
+        {/* Prices are now on the RIGHT side, matching standard menu format */}
+        <div className="col-span-4 pr-40 pt-4">
+          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-4 mb-6 rounded-l-lg text-right">
             <h2 className="text-4xl font-black text-white uppercase italic">Draft Picks</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {drinks.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
-                <div className="flex justify-between items-end flex-row-reverse">
+                {/* Restored normal flex row: Title Left, Price Right */}
+                <div className="flex justify-between items-end">
                   <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
                   <span className="text-3xl font-black text-orange-500">{item.Price}</span>
                 </div>
