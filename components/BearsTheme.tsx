@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+// NEW IMPORTS: The Icons
+import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
 
 // --- DATA STRUCTURE ---
 interface AdItem {
@@ -117,15 +119,15 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       {/* --- DECORATIVE ASSETS --- */}
       
-      {/* 🍺 THE BEER MUG GROUP (MOVED LEFT) */}
+      {/* 🍺 THE BEER MUG GROUP (LOCAL FILE) */}
       <motion.div 
-        className="absolute bottom-[-40px] left-[-60px] z-10" // <--- Changed from -20px to -60px (Pushed left)
+        className="absolute bottom-[-40px] left-[-60px] z-10"
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       >
           <BubblesEffect />
           <img 
-            src="/beer-glass.png" 
+            src="/beer-glass.png"
             alt="Beer Glass" 
             className="h-[500px] w-auto drop-shadow-2xl"
           />
@@ -153,52 +155,67 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </h1>
         </div>
 
-        {/* LEFT COLUMN - PADDING INCREASED */}
-        <div className="col-span-4 pl-60 pt-4"> {/* <--- Changed pl-44 to pl-60 (Push text right) */}
-          <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg">
+        {/* LEFT COLUMN (Kickoff) */}
+        <div className="col-span-4 pl-60 pt-4">
+          <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg flex items-center gap-3">
+            <Flame className="text-orange-500 w-8 h-8" /> {/* HEADER ICON */}
             <h2 className="text-3xl font-black text-white uppercase italic">Kickoff</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {kickoff.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
                 <div className="flex justify-between items-end w-full">
-                  <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
+                  <div className="flex items-center gap-2">
+                    {/* 🔥 ITEM ICON: FLAME */}
+                    <Flame className="text-orange-600 w-5 h-5" />
+                    <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
+                  </div>
                   <span className="text-2xl font-black text-orange-500">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-300 text-xs font-bold">{item.Description}</p>}
+                {item.Description && <p className="text-slate-300 text-xs font-bold ml-7">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
         </div>
 
-        {/* CENTER COLUMN */}
+        {/* CENTER COLUMN (Main Event) */}
         <div className="col-span-4 pt-4 px-6">
-          <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg">
+          <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg flex items-center gap-3">
+            <UtensilsCrossed className="text-white w-8 h-8" /> {/* HEADER ICON */}
             <h2 className="text-3xl font-black text-white uppercase italic">The Main Event</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {mains.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
                 <div className="flex justify-between items-end w-full">
-                  <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
+                  <div className="flex items-center gap-2">
+                    {/* 🍴 ITEM ICON: FORK/KNIFE */}
+                    <UtensilsCrossed className="text-orange-600 w-6 h-6" />
+                    <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
+                  </div>
                   <span className="text-3xl font-black text-orange-500">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-300 text-sm font-bold">{item.Description}</p>}
+                {item.Description && <p className="text-slate-300 text-sm font-bold ml-8">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN */}
+        {/* RIGHT COLUMN (Draft Picks) */}
         <div className="col-span-4 pr-40 pt-4">
-          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right">
+          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right flex items-center justify-end gap-3">
             <h2 className="text-3xl font-black text-white uppercase italic">Draft Picks</h2>
+            <Beer className="text-orange-500 w-8 h-8" /> {/* HEADER ICON */}
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5 pb-32">
             {drinks.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
                 <div className="flex justify-between items-end w-full">
-                  <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
+                  <div className="flex items-center gap-2">
+                    {/* 🍺 ITEM ICON: BEER */}
+                    <Beer className="text-orange-600 w-5 h-5" />
+                    <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
+                  </div>
                   <span className="text-2xl font-black text-orange-500">{item.Price}</span>
                 </div>
                 {item.Description && <p className="text-slate-300 text-xs font-bold text-right">{item.Description}</p>}
