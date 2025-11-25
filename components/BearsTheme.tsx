@@ -88,10 +88,9 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       {/* --- DECORATIVE ASSETS --- */}
       
-      {/* 🍺 THE KEG (Bottom Left) */}
+      {/* 🍺 THE KEG (Bottom Left) - USING WEB LINK TO FORCE IT TO SHOW */}
       <motion.img 
-        src="/keg.png" 
-        // Added an 'alt' so if it breaks, you see text
+        src="https://pngimg.com/d/beer_keg_PNG12.png" 
         alt="Beer Keg" 
         className="absolute bottom-[-20px] left-[-50px] h-[500px] w-auto z-10 drop-shadow-2xl"
         initial={{ scale: 0.8, opacity: 0 }}
@@ -99,10 +98,10 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         transition={{ duration: 1 }}
       />
 
-      {/* 🏈 THE FOOTBALL (Bottom Right) */}
+      {/* 🏈 THE FOOTBALL (Bottom Right) - Moved down slightly */}
       <motion.img 
         src="/football.png" 
-        className="absolute bottom-[50px] right-[50px] h-[350px] w-auto z-10 drop-shadow-2xl"
+        className="absolute bottom-[-20px] right-[50px] h-[350px] w-auto z-10 drop-shadow-2xl"
         initial={{ y: 200, opacity: 0 }}
         animate={{ y: [0, -20, 0], rotate: [0, 5, -5, 0], opacity: 1 }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -119,7 +118,6 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         </div>
 
         {/* LEFT COLUMN (Kickoff) */}
-        {/* Added 'pl-32' to push text away from the Keg */}
         <div className="col-span-4 pl-32 pt-4">
           <div className="bg-orange-600/20 border-l-4 border-orange-500 p-4 mb-6 rounded-r-lg">
             <h2 className="text-4xl font-black text-white uppercase italic">Kickoff</h2>
@@ -155,9 +153,8 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN (Draft Picks) */}
-        {/* CHANGED: Removed 'text-right'. Added 'pr-40' to avoid Football. */}
-        {/* Prices are now on the RIGHT side, matching standard menu format */}
+        {/* RIGHT COLUMN (Draft Picks) - FIXED LAYOUT */}
+        {/* Removed 'flex-row-reverse' so numbers go to the right */}
         <div className="col-span-4 pr-40 pt-4">
           <div className="bg-orange-600/20 border-r-4 border-orange-500 p-4 mb-6 rounded-l-lg text-right">
             <h2 className="text-4xl font-black text-white uppercase italic">Draft Picks</h2>
@@ -165,12 +162,12 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {drinks.map((item, i) => (
               <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
-                {/* Restored normal flex row: Title Left, Price Right */}
+                {/* Title Left, Price Right (Standard) */}
                 <div className="flex justify-between items-end">
                   <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
                   <span className="text-3xl font-black text-orange-500">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-300 text-sm font-bold">{item.Description}</p>}
+                {item.Description && <p className="text-slate-300 text-sm font-bold text-right">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
