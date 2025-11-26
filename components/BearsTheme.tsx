@@ -143,33 +143,30 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
     >
       {alertAd && <FlashSaleOverlay item={alertAd} />}
 
-      {/* Navy Blue Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-950/50 to-blue-950/90 z-0"></div>
+      {/* ✅ CORRECTED OVERLAY: Very light (20%) so Green Grass shows through */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-blue-950/10 to-blue-950/20 z-0"></div>
 
       <StadiumFlashEffect />
       <RunningPlayer />
 
-      {/* --- DECORATIVE ASSETS (ANCHORED TO GROUND) --- */}
+      {/* --- DECORATIVE ASSETS (ANCHORED) --- */}
       
       {/* 🍺 THE BEER MUG (Left) */}
       <div className="absolute bottom-[-40px] left-[-60px] z-10">
-          {/* CONTACT SHADOW (The floor shadow) */}
+          {/* Floor Shadow */}
           <div className="absolute bottom-[50px] left-[80px] w-[200px] h-[40px] bg-black/60 blur-xl rounded-full pointer-events-none"></div>
-          
           <BubblesEffect />
           <img src="/beer-glass.png" alt="Beer Glass" className="h-[500px] w-auto drop-shadow-2xl" />
       </div>
 
       {/* 🏈 THE FOOTBALL (Right) */}
-      {/* Removed 'y' animation so it stops floating. Added shadow. */}
       <div className="absolute bottom-[10px] right-[30px] z-10">
-        {/* CONTACT SHADOW (The floor shadow) */}
+        {/* Floor Shadow */}
         <div className="absolute bottom-[20px] left-[30px] w-[150px] h-[30px] bg-black/60 blur-xl rounded-full pointer-events-none"></div>
-        
         <motion.img 
           src="/football.png" 
           className="h-[350px] w-auto drop-shadow-2xl"
-          // Subtle breathing only, NO FLOATING
+          // NO FLOATING - Just subtle breathing
           animate={{ scale: [1, 1.02, 1] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -178,18 +175,19 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       {/* --- CONTENT GRID --- */}
       <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
         
-        {/* HEADER */}
+        {/* HEADER - Added strong drop-shadow for readability on bright field */}
         <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4">
-          <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-lg">
+          <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">
             Game Day <span className="text-orange-500">Specials</span>
           </h1>
         </div>
 
         {/* LEFT */}
         <div className="col-span-4 pl-60 pt-4">
-          <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg flex items-center gap-3">
+          {/* Added backdrop-blur-sm to boxes to help text stand out */}
+          <div className="bg-orange-600/30 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg flex items-center gap-3 backdrop-blur-sm">
             <Flame className="text-orange-500 w-8 h-8" />
-            <h2 className="text-3xl font-black text-white uppercase italic">Kickoff</h2>
+            <h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">Kickoff</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {kickoff.map((item, i) => (
@@ -197,11 +195,11 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
                     <Flame className="text-orange-600 w-5 h-5" />
-                    <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
+                    <h3 className="text-xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3>
                   </div>
-                  <span className="text-2xl font-black text-orange-500">{item.Price}</span>
+                  <span className="text-2xl font-black text-orange-500 drop-shadow-md">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-200 text-xs font-bold ml-7">{item.Description}</p>}
+                {item.Description && <p className="text-slate-100 text-xs font-bold ml-7 drop-shadow-sm">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
@@ -209,9 +207,9 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
         {/* CENTER */}
         <div className="col-span-4 pt-4 px-6">
-          <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg flex items-center gap-3">
+          <div className="bg-blue-950/40 border-l-4 border-white p-3 mb-4 rounded-r-lg flex items-center gap-3 backdrop-blur-sm">
             <UtensilsCrossed className="text-white w-8 h-8" />
-            <h2 className="text-3xl font-black text-white uppercase italic">The Main Event</h2>
+            <h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">The Main Event</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {mains.map((item, i) => (
@@ -219,11 +217,11 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
                     <UtensilsCrossed className="text-orange-600 w-6 h-6" />
-                    <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
+                    <h3 className="text-2xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3>
                   </div>
-                  <span className="text-3xl font-black text-orange-500">{item.Price}</span>
+                  <span className="text-3xl font-black text-orange-500 drop-shadow-md">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-200 text-sm font-bold ml-8">{item.Description}</p>}
+                {item.Description && <p className="text-slate-100 text-sm font-bold ml-8 drop-shadow-sm">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
@@ -231,8 +229,8 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
         {/* RIGHT */}
         <div className="col-span-4 pr-40 pt-4">
-          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right flex items-center justify-end gap-3">
-            <h2 className="text-3xl font-black text-white uppercase italic">Draft Picks</h2>
+          <div className="bg-orange-600/30 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right flex items-center justify-end gap-3 backdrop-blur-sm">
+            <h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">Draft Picks</h2>
             <Beer className="text-orange-500 w-8 h-8" />
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5 pb-32">
@@ -241,11 +239,11 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
                     <Beer className="text-orange-600 w-5 h-5" />
-                    <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
+                    <h3 className="text-xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3>
                   </div>
-                  <span className="text-2xl font-black text-orange-500">{item.Price}</span>
+                  <span className="text-2xl font-black text-orange-500 drop-shadow-md">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-200 text-xs font-bold text-right">{item.Description}</p>}
+                {item.Description && <p className="text-slate-100 text-xs font-bold text-right drop-shadow-sm">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
