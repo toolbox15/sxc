@@ -1,11 +1,15 @@
-// --- 🏃‍♂️ RUNNING PLAYER (15 Second Loop) ---
+// --- 🏃‍♂️ RUNNING PLAYER (15s Loop + "Halo" Fix) ---
 const RunningPlayer = () => {
   return (
     <motion.img
       src="/player-run.gif"
       alt="Running Player"
-      // BLENDING: mix-blend-overlay + 70% Opacity + Drop Shadow (As requested)
-      className="absolute z-30 w-40 h-auto drop-shadow-2xl pointer-events-none opacity-70 mix-blend-overlay"
+      // FIXING THE WHITE EDGE:
+      // 1. brightness-75 contrast-200: This is the key combination. It crushes mid-tones (the white halo) 
+      //    into darkness, making the edge disappear against the dark background.
+      // 2. drop-shadow-xl: A slightly tighter shadow than 2xl to help hide edges.
+      // 3. mix-blend-overlay + opacity-70: Keeps the "ghostly" blended look.
+      className="absolute z-30 w-40 h-auto pointer-events-none brightness-75 contrast-200 drop-shadow-xl opacity-70 mix-blend-overlay"
       initial={{
         left: '10%',   
         bottom: '50px', 
@@ -18,10 +22,10 @@ const RunningPlayer = () => {
         scale: [0.8, 1.2] 
       }}
       transition={{
-        duration: 5,        // He runs for 5 Seconds
+        duration: 5,        // Runs for 5 seconds
         repeat: Infinity,   
         ease: "linear",     
-        repeatDelay: 10     // He waits for 10 Seconds. (Total Cycle = 15s)
+        repeatDelay: 10     // Waits 10 seconds (Total cycle: 15s)
       }}
     />
   );
