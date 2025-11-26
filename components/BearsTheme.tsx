@@ -45,132 +45,45 @@ const itemVariants = {
   visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
 };
 
-// --- 🎉 SUPER-SIZED CONFETTI ENGINE ---
-const ConfettiEffect = () => {
-  const particles = Array.from({ length: 150 });
-  const colors = ['#C83803', '#0B162A', '#FFFFFF', '#FFD700'];
-  
-  const random = (min: number, max: number) => Math.random() * (max - min) + min;
-
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-      {particles.map((_, i) => {
-        return (
-          <motion.div
-            key={i}
-            className="absolute"
-            style={{ 
-              backgroundColor: colors[Math.floor(random(0, 4))],
-              left: `${random(0, 100)}%`,
-              top: -50,
-              width: random(10, 25),
-              height: random(10, 25)
-            }}
-            animate={{ 
-              y: window.innerHeight + 100, 
-              rotateX: random(0, 360), 
-              rotateY: random(0, 360),
-              x: random(-100, 100)
-            }}
-            transition={{ 
-              duration: random(2, 6), 
-              repeat: Infinity, 
-              ease: "linear",
-              delay: random(0, 5)
-            }}
-          />
-        );
-      })}
-    </div>
-  );
-};
-
-// --- 🚨 FLASH SALE OVERLAY (BIGGER TEXT) ---
-const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
-  return (
-    <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
-      
-      {/* 1. BIG CONFETTI */}
-      <ConfettiEffect />
-
-      {/* 2. PULSING BACKGROUND */}
-      <motion.div 
-        className="absolute inset-0 bg-orange-600/30"
-        animate={{ opacity: [0.2, 0.7, 0.2] }}
-        transition={{ duration: 0.5, repeat: Infinity }}
-      />
-
-      {/* 3. MASSIVE CONTENT */}
-      <motion.div 
-        className="relative z-10 text-center p-4 w-full"
-        initial={{ scale: 0.5, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", bounce: 0.5 }}
-      >
-        {/* HEADER */}
-        <h2 className="text-5xl font-black text-white italic uppercase tracking-widest mb-8 drop-shadow-md">
-          🚨 FIELD ALERT 🚨
-        </h2>
-        
-        {/* TITLE */}
-        <h1 className="text-8xl md:text-[9rem] font-black text-orange-500 uppercase drop-shadow-[0_10px_10px_rgba(0,0,0,1)] leading-none mb-8">
-          {item.Title}
-        </h1>
-
-        {/* DESCRIPTION */}
-        <motion.div 
-          className="inline-block bg-white border-8 border-orange-500 px-12 py-6 rounded-3xl shadow-2xl"
-          animate={{ scale: [1, 1.05, 1] }} 
-          transition={{ duration: 0.8, repeat: Infinity }}
-        >
-          <p className="text-blue-950 text-5xl md:text-6xl font-black uppercase leading-tight">
-            {item.Description || "LIMITED TIME!"}
-          </p>
-        </motion.div>
-      </motion.div>
-
-      {/* 4. THE RUNNING PLAYER (Runs across the FOREGROUND during alert) */}
-      {/* 🛠️ CHANGE HERE: Removed "brightness-0 invert" so he is full color */}
-      <motion.div
-        className="absolute bottom-[50px] w-auto h-auto z-30"
-        initial={{ left: '-20%' }}
-        animate={{ left: '120%' }} 
-        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-      >
-        <img 
-          src="/player-run.gif"
-          alt="Runner"
-          className="h-80 w-auto drop-shadow-2xl" 
-        />
-      </motion.div>
-
-    </div>
-  );
-};
-
-// --- DECORATIVE COMPONENTS ---
+// --- 🍺 BUBBLES EFFECT ---
 const BubblesEffect = () => {
-  const bubbles = Array.from({ length: 30 }); 
+  const bubbles = Array.from({ length: 30 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
+
   return (
     <div className="absolute bottom-[120px] left-[50px] w-[140px] h-[300px] pointer-events-none overflow-hidden z-20 opacity-50">
       {bubbles.map((_, i) => (
         <motion.div
           key={i}
           className="absolute bg-white rounded-full"
-          style={{ width: random(2, 5), height: random(2, 5), left: `${random(5, 95)}%` }}
+          style={{
+              width: random(2, 5),
+              height: random(2, 5),
+              left: `${random(5, 95)}%`
+          }}
           initial={{ y: 300, opacity: 0 }}
-          animate={{ y: -20, opacity: [0, 1, 0], x: random(-3, 3) }}
-          transition={{ duration: random(2, 4), repeat: Infinity, delay: random(0, 5), ease: "linear" }}
+          animate={{
+            y: -20,
+            opacity: [0, 1, 0],
+            x: random(-3, 3)
+          }}
+          transition={{
+            duration: random(2, 4),
+            repeat: Infinity,
+            delay: random(0, 5),
+            ease: "linear"
+          }}
         />
       ))}
     </div>
   );
 };
 
+// --- STADIUM FLASH EFFECT ---
 const StadiumFlashEffect = () => {
   const flashes = Array.from({ length: 15 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {flashes.map((_, i) => (
@@ -186,18 +99,87 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER (Always Active Background Runner) ---
+// --- 🏃‍♂️ RUNNING PLAYER (SLOWED DOWN & BLENDED) ---
 const RunningPlayer = () => {
-  // 🛠️ CHANGE HERE: Removed "brightness-0" so he is full color (but kept opacity low for background effect)
   return (
     <motion.img
       src="/player-run.gif"
       alt="Running Player"
-      className="absolute z-30 w-40 h-auto drop-shadow-lg pointer-events-none opacity-80"
-      initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }}
-      animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }}
-      transition={{ duration: 4, repeat: Infinity, ease: "linear", repeatDelay: 5 }}
+      // FIX: Added brightness-90 (dimmer) and opacity-90 to blend with dark field
+      // FIX: mix-blend-normal ensures colors stay true but softer
+      className="absolute z-30 w-40 h-auto drop-shadow-2xl pointer-events-none brightness-90 opacity-90"
+      initial={{
+        left: '10%',
+        bottom: '50px',
+        opacity: 0,
+        scaleX: 1
+      }}
+      animate={{
+        left: ['10%', '85%'],
+        opacity: [0, 1, 1, 0],
+        scale: [0.8, 1.2]
+      }}
+      transition={{
+        duration: 8, // <--- SLOWED DOWN (Was 4, Now 8 for dramatic effect)
+        repeat: Infinity,
+        ease: "linear",
+        repeatDelay: 5
+      }}
     />
+  );
+};
+
+// --- 🚨 FLASH SALE OVERLAY ---
+const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
+  return (
+    <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
+      
+      {/* PULSING BACKGROUND */}
+      <motion.div 
+        className="absolute inset-0 bg-orange-600/30"
+        animate={{ opacity: [0.2, 0.7, 0.2] }}
+        transition={{ duration: 0.5, repeat: Infinity }}
+      />
+
+      {/* MASSIVE CONTENT */}
+      <motion.div 
+        className="relative z-10 text-center p-4 w-full"
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", bounce: 0.5 }}
+      >
+        <h2 className="text-5xl font-black text-white italic uppercase tracking-widest mb-8 drop-shadow-md">
+          🚨 FIELD ALERT 🚨
+        </h2>
+        <h1 className="text-8xl md:text-[9rem] font-black text-orange-500 uppercase drop-shadow-[0_10px_10px_rgba(0,0,0,1)] leading-none mb-8">
+          {item.Title}
+        </h1>
+        <motion.div 
+          className="inline-block bg-white border-8 border-orange-500 px-12 py-6 rounded-3xl shadow-2xl"
+          animate={{ scale: [1, 1.05, 1] }} 
+          transition={{ duration: 0.8, repeat: Infinity }}
+        >
+          <p className="text-blue-950 text-5xl md:text-6xl font-black uppercase leading-tight">
+            {item.Description || "LIMITED TIME!"}
+          </p>
+        </motion.div>
+      </motion.div>
+
+      {/* RUNNER DURING ALERT */}
+      <motion.div
+        className="absolute bottom-[50px] w-auto h-auto z-30"
+        initial={{ left: '-20%' }}
+        animate={{ left: '120%' }} 
+        transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+      >
+        <img 
+          src="/player-run.gif"
+          alt="Runner"
+          className="h-80 w-auto drop-shadow-2xl" 
+        />
+      </motion.div>
+
+    </div>
   );
 };
 
@@ -208,7 +190,6 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const mains = ads.filter(ad => ad.Category === 'Main Event').length > 0 ? ads.filter(ad => ad.Category === 'Main Event') : DUMMY_MENU.main_event;
   const drinks = ads.filter(ad => ad.Category === 'Draft Picks').length > 0 ? ads.filter(ad => ad.Category === 'Draft Picks') : DUMMY_MENU.draft_picks;
 
-  // 🚨 CHECK FOR ACTIVE ALERT (Picks the FIRST one found)
   const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
 
   return (
@@ -216,13 +197,16 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
-      {/* 🚨 IF ALERT IS ACTIVE, SHOW CELEBRATION! */}
+      {/* IF ALERT IS ACTIVE */}
       {alertAd && <FlashSaleOverlay item={alertAd} />}
 
+      {/* Navy Blue Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-950/50 to-blue-950/90 z-0"></div>
+
+      {/* Flash Effect */}
       <StadiumFlashEffect />
 
-      {/* RUNNER */}
+      {/* RUNNER (Slower & Blended) */}
       <RunningPlayer />
 
       {/* DECORATIVE ASSETS */}
