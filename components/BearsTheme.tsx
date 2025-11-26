@@ -47,8 +47,8 @@ const itemVariants = {
 
 // --- 🎉 SUPER-SIZED CONFETTI ENGINE ---
 const ConfettiEffect = () => {
-  const particles = Array.from({ length: 150 }); // DOUBLED the amount (More intensity!)
-  const colors = ['#C83803', '#0B162A', '#FFFFFF', '#FFD700']; // Added Gold
+  const particles = Array.from({ length: 150 });
+  const colors = ['#C83803', '#0B162A', '#FFFFFF', '#FFD700'];
   
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
@@ -63,7 +63,6 @@ const ConfettiEffect = () => {
               backgroundColor: colors[Math.floor(random(0, 4))],
               left: `${random(0, 100)}%`,
               top: -50,
-              // BIGGER PIECES: Random size between 10px and 25px
               width: random(10, 25),
               height: random(10, 25)
             }}
@@ -71,7 +70,7 @@ const ConfettiEffect = () => {
               y: window.innerHeight + 100, 
               rotateX: random(0, 360), 
               rotateY: random(0, 360),
-              x: random(-100, 100) // Wider drift
+              x: random(-100, 100)
             }}
             transition={{ 
               duration: random(2, 6), 
@@ -113,12 +112,12 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
           🚨 FIELD ALERT 🚨
         </h2>
         
-        {/* TITLE (e.g. TOUCHDOWN!) */}
+        {/* TITLE */}
         <h1 className="text-8xl md:text-[9rem] font-black text-orange-500 uppercase drop-shadow-[0_10px_10px_rgba(0,0,0,1)] leading-none mb-8">
           {item.Title}
         </h1>
 
-        {/* DESCRIPTION (e.g. HALF PRICE SHOTS) - NOW YELLOW & HUGE */}
+        {/* DESCRIPTION */}
         <motion.div 
           className="inline-block bg-white border-8 border-orange-500 px-12 py-6 rounded-3xl shadow-2xl"
           animate={{ scale: [1, 1.05, 1] }} 
@@ -130,11 +129,26 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
         </motion.div>
       </motion.div>
 
+      {/* 4. THE RUNNING PLAYER (Runs across the FOREGROUND during alert) */}
+      {/* 🛠️ CHANGE HERE: Removed "brightness-0 invert" so he is full color */}
+      <motion.div
+        className="absolute bottom-[50px] w-auto h-auto z-30"
+        initial={{ left: '-20%' }}
+        animate={{ left: '120%' }} 
+        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+      >
+        <img 
+          src="/player-run.gif"
+          alt="Runner"
+          className="h-80 w-auto drop-shadow-2xl" 
+        />
+      </motion.div>
+
     </div>
   );
 };
 
-// --- DECORATIVE COMPONENTS (Keep existing) ---
+// --- DECORATIVE COMPONENTS ---
 const BubblesEffect = () => {
   const bubbles = Array.from({ length: 30 }); 
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -172,13 +186,14 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER ---
+// --- 🏃‍♂️ RUNNING PLAYER (Always Active Background Runner) ---
 const RunningPlayer = () => {
+  // 🛠️ CHANGE HERE: Removed "brightness-0" so he is full color (but kept opacity low for background effect)
   return (
     <motion.img
       src="/player-run.gif"
       alt="Running Player"
-      className="absolute z-30 w-40 h-auto drop-shadow-lg pointer-events-none brightness-0 opacity-80"
+      className="absolute z-30 w-40 h-auto drop-shadow-lg pointer-events-none opacity-80"
       initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }}
       animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }}
       transition={{ duration: 4, repeat: Infinity, ease: "linear", repeatDelay: 5 }}
