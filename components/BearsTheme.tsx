@@ -8,7 +8,6 @@ interface AdItem {
   Price: string;
   Description?: string;
   Category: string;
-  Status?: string;
   Color?: string;
 }
 
@@ -56,23 +55,10 @@ const BubblesEffect = () => {
         <motion.div
           key={i}
           className="absolute bg-white rounded-full"
-          style={{
-              width: random(2, 5),
-              height: random(2, 5),
-              left: `${random(5, 95)}%`
-          }}
+          style={{ width: random(2, 5), height: random(2, 5), left: `${random(5, 95)}%` }}
           initial={{ y: 300, opacity: 0 }}
-          animate={{
-            y: -20,
-            opacity: [0, 1, 0],
-            x: random(-3, 3)
-          }}
-          transition={{
-            duration: random(2, 4),
-            repeat: Infinity,
-            delay: random(0, 5),
-            ease: "linear"
-          }}
+          animate={{ y: -20, opacity: [0, 1, 0], x: random(-3, 3) }}
+          transition={{ duration: random(2, 4), repeat: Infinity, delay: random(0, 5), ease: "linear" }}
         />
       ))}
     </div>
@@ -99,34 +85,16 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER (UPDATED: 80% Opacity) ---
+// --- 🏃‍♂️ RUNNING PLAYER ---
 const RunningPlayer = () => {
   return (
     <motion.img
       src="/player-run.gif"
       alt="Running Player"
-      // UPDATES:
-      // 1. opacity-80: More visible than before (was 70)
-      // 2. brightness-90: Slightly brighter to pop against the field
-      // 3. mix-blend-overlay: Kept this so he still picks up the texture
       className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-150 drop-shadow-xl opacity-80 mix-blend-overlay"
-      initial={{
-        left: '10%',   
-        bottom: '50px', 
-        opacity: 0,
-        scaleX: 1 
-      }}
-      animate={{
-        left: ['10%', '85%'], 
-        opacity: [0, 1, 1, 0], 
-        scale: [0.8, 1.2] 
-      }}
-      transition={{
-        duration: 5,        
-        repeat: Infinity,   
-        ease: "linear",     
-        repeatDelay: 10     
-      }}
+      initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }}
+      animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }}
+      transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }}
     />
   );
 };
@@ -135,44 +103,25 @@ const RunningPlayer = () => {
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
-      <motion.div 
-        className="absolute inset-0 bg-orange-600/30"
-        animate={{ opacity: [0.2, 0.7, 0.2] }}
-        transition={{ duration: 0.5, repeat: Infinity }}
-      />
+      <motion.div className="absolute inset-0 bg-orange-600/30" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
       <motion.div 
         className="relative z-10 text-center p-4 w-full"
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", bounce: 0.5 }}
       >
-        <h2 className="text-5xl font-black text-white italic uppercase tracking-widest mb-8 drop-shadow-md">
-          🚨 FIELD ALERT 🚨
-        </h2>
-        <h1 className="text-8xl md:text-[9rem] font-black text-orange-500 uppercase drop-shadow-[0_10px_10px_rgba(0,0,0,1)] leading-none mb-8">
-          {item.Title}
-        </h1>
+        <h2 className="text-5xl font-black text-white italic uppercase tracking-widest mb-8 drop-shadow-md">🚨 FIELD ALERT 🚨</h2>
+        <h1 className="text-8xl md:text-[9rem] font-black text-orange-500 uppercase drop-shadow-[0_10px_10px_rgba(0,0,0,1)] leading-none mb-8">{item.Title}</h1>
         <motion.div 
           className="inline-block bg-white border-8 border-orange-500 px-12 py-6 rounded-3xl shadow-2xl"
           animate={{ scale: [1, 1.05, 1] }} 
           transition={{ duration: 0.8, repeat: Infinity }}
         >
-          <p className="text-blue-950 text-5xl md:text-6xl font-black uppercase leading-tight">
-            {item.Description || "LIMITED TIME!"}
-          </p>
+          <p className="text-blue-950 text-5xl md:text-6xl font-black uppercase leading-tight">{item.Description || "LIMITED TIME!"}</p>
         </motion.div>
       </motion.div>
-      <motion.div
-        className="absolute bottom-[50px] w-auto h-auto z-30"
-        initial={{ left: '-20%' }}
-        animate={{ left: '120%' }} 
-        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-      >
-        <img 
-          src="/player-run.gif"
-          alt="Runner"
-          className="h-80 w-auto drop-shadow-2xl" 
-        />
+      <motion.div className="absolute bottom-[50px] w-auto h-auto z-30" initial={{ left: '-20%' }} animate={{ left: '120%' }} transition={{ duration: 4, repeat: Infinity, ease: "linear" }}>
+        <img src="/player-run.gif" alt="Runner" className="h-80 w-auto drop-shadow-2xl" />
       </motion.div>
     </div>
   );
@@ -192,54 +141,55 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
-      {/* IF ALERT IS ACTIVE */}
       {alertAd && <FlashSaleOverlay item={alertAd} />}
 
-      {/* UPDATED OVERLAY: Lowered by ~85% 
-         Previously: from-blue-950/90 
-         Now: from-blue-950/20 (Much brighter field)
-      */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-blue-950/10 to-blue-950/20 z-0"></div>
+      {/* Navy Blue Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-950/50 to-blue-950/90 z-0"></div>
 
-      {/* Flash Effect */}
       <StadiumFlashEffect />
-
-      {/* RUNNER */}
       <RunningPlayer />
 
-      {/* DECORATIVE ASSETS */}
-      <motion.div 
-        className="absolute bottom-[-40px] left-[-60px] z-10"
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      >
+      {/* --- DECORATIVE ASSETS (ANCHORED TO GROUND) --- */}
+      
+      {/* 🍺 THE BEER MUG (Left) */}
+      <div className="absolute bottom-[-40px] left-[-60px] z-10">
+          {/* CONTACT SHADOW (The floor shadow) */}
+          <div className="absolute bottom-[50px] left-[80px] w-[200px] h-[40px] bg-black/60 blur-xl rounded-full pointer-events-none"></div>
+          
           <BubblesEffect />
           <img src="/beer-glass.png" alt="Beer Glass" className="h-[500px] w-auto drop-shadow-2xl" />
-      </motion.div>
+      </div>
 
-      <motion.div 
-        className="absolute bottom-[10px] right-[30px] z-10"
-        animate={{ y: [0, -15, 0], rotate: [-2, 2, -2] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <img src="/football.png" className="h-[350px] w-auto drop-shadow-2xl" />
-      </motion.div>
+      {/* 🏈 THE FOOTBALL (Right) */}
+      {/* Removed 'y' animation so it stops floating. Added shadow. */}
+      <div className="absolute bottom-[10px] right-[30px] z-10">
+        {/* CONTACT SHADOW (The floor shadow) */}
+        <div className="absolute bottom-[20px] left-[30px] w-[150px] h-[30px] bg-black/60 blur-xl rounded-full pointer-events-none"></div>
+        
+        <motion.img 
+          src="/football.png" 
+          className="h-[350px] w-auto drop-shadow-2xl"
+          // Subtle breathing only, NO FLOATING
+          animate={{ scale: [1, 1.02, 1] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
 
-      {/* CONTENT GRID */}
+      {/* --- CONTENT GRID --- */}
       <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
         
-        {/* HEADER - Added text shadow to ensure readablity on brighter field */}
+        {/* HEADER */}
         <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4">
-          <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+          <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-lg">
             Game Day <span className="text-orange-500">Specials</span>
           </h1>
         </div>
 
         {/* LEFT */}
         <div className="col-span-4 pl-60 pt-4">
-          <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg flex items-center gap-3 backdrop-blur-sm">
+          <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg flex items-center gap-3">
             <Flame className="text-orange-500 w-8 h-8" />
-            <h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">Kickoff</h2>
+            <h2 className="text-3xl font-black text-white uppercase italic">Kickoff</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {kickoff.map((item, i) => (
@@ -247,11 +197,11 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
                     <Flame className="text-orange-600 w-5 h-5" />
-                    <h3 className="text-xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3>
+                    <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
                   </div>
-                  <span className="text-2xl font-black text-orange-500 drop-shadow-md">{item.Price}</span>
+                  <span className="text-2xl font-black text-orange-500">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-200 text-xs font-bold ml-7 drop-shadow-sm">{item.Description}</p>}
+                {item.Description && <p className="text-slate-200 text-xs font-bold ml-7">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
@@ -259,9 +209,9 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
         {/* CENTER */}
         <div className="col-span-4 pt-4 px-6">
-          <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg flex items-center gap-3 backdrop-blur-sm">
+          <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg flex items-center gap-3">
             <UtensilsCrossed className="text-white w-8 h-8" />
-            <h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">The Main Event</h2>
+            <h2 className="text-3xl font-black text-white uppercase italic">The Main Event</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {mains.map((item, i) => (
@@ -269,11 +219,11 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
                     <UtensilsCrossed className="text-orange-600 w-6 h-6" />
-                    <h3 className="text-2xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3>
+                    <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
                   </div>
-                  <span className="text-3xl font-black text-orange-500 drop-shadow-md">{item.Price}</span>
+                  <span className="text-3xl font-black text-orange-500">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-200 text-sm font-bold ml-8 drop-shadow-sm">{item.Description}</p>}
+                {item.Description && <p className="text-slate-200 text-sm font-bold ml-8">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
@@ -281,8 +231,8 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
         {/* RIGHT */}
         <div className="col-span-4 pr-40 pt-4">
-          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right flex items-center justify-end gap-3 backdrop-blur-sm">
-            <h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">Draft Picks</h2>
+          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right flex items-center justify-end gap-3">
+            <h2 className="text-3xl font-black text-white uppercase italic">Draft Picks</h2>
             <Beer className="text-orange-500 w-8 h-8" />
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5 pb-32">
@@ -291,11 +241,11 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
                     <Beer className="text-orange-600 w-5 h-5" />
-                    <h3 className="text-xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3>
+                    <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
                   </div>
-                  <span className="text-2xl font-black text-orange-500 drop-shadow-md">{item.Price}</span>
+                  <span className="text-2xl font-black text-orange-500">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-200 text-xs font-bold text-right drop-shadow-sm">{item.Description}</p>}
+                {item.Description && <p className="text-slate-200 text-xs font-bold text-right">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
