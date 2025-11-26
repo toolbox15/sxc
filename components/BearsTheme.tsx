@@ -99,17 +99,17 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER (15s Loop + "Halo" Fix) ---
+// --- 🏃‍♂️ RUNNING PLAYER (UPDATED: 80% Opacity) ---
 const RunningPlayer = () => {
   return (
     <motion.img
       src="/player-run.gif"
       alt="Running Player"
-      // FIXING THE WHITE EDGE:
-      // 1. brightness-75 contrast-200: Crushes white halo into darkness.
-      // 2. drop-shadow-xl: Hides sharp edges.
-      // 3. mix-blend-overlay: Blends texture.
-      className="absolute z-30 w-40 h-auto pointer-events-none brightness-75 contrast-200 drop-shadow-xl opacity-70 mix-blend-overlay"
+      // UPDATES:
+      // 1. opacity-80: More visible than before (was 70)
+      // 2. brightness-90: Slightly brighter to pop against the field
+      // 3. mix-blend-overlay: Kept this so he still picks up the texture
+      className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-150 drop-shadow-xl opacity-80 mix-blend-overlay"
       initial={{
         left: '10%',   
         bottom: '50px', 
@@ -122,16 +122,16 @@ const RunningPlayer = () => {
         scale: [0.8, 1.2] 
       }}
       transition={{
-        duration: 5,        // Runs for 5 seconds
+        duration: 5,        
         repeat: Infinity,   
         ease: "linear",     
-        repeatDelay: 10     // Waits 10 seconds (Total cycle: 15s)
+        repeatDelay: 10     
       }}
     />
   );
 };
 
-// --- 🚨 FLASH SALE OVERLAY (BIGGER TEXT) ---
+// --- 🚨 FLASH SALE OVERLAY ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
@@ -192,12 +192,19 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
+      {/* IF ALERT IS ACTIVE */}
       {alertAd && <FlashSaleOverlay item={alertAd} />}
 
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/90 via-blue-950/50 to-blue-950/90 z-0"></div>
+      {/* UPDATED OVERLAY: Lowered by ~85% 
+         Previously: from-blue-950/90 
+         Now: from-blue-950/20 (Much brighter field)
+      */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-blue-950/10 to-blue-950/20 z-0"></div>
+
+      {/* Flash Effect */}
       <StadiumFlashEffect />
 
-      {/* RUNNER (Now using the "Halo Fix" version) */}
+      {/* RUNNER */}
       <RunningPlayer />
 
       {/* DECORATIVE ASSETS */}
@@ -220,29 +227,31 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       {/* CONTENT GRID */}
       <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
+        
+        {/* HEADER - Added text shadow to ensure readablity on brighter field */}
         <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4">
-          <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-lg">
+          <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
             Game Day <span className="text-orange-500">Specials</span>
           </h1>
         </div>
 
         {/* LEFT */}
         <div className="col-span-4 pl-60 pt-4">
-          <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg flex items-center gap-3">
+          <div className="bg-orange-600/20 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg flex items-center gap-3 backdrop-blur-sm">
             <Flame className="text-orange-500 w-8 h-8" />
-            <h2 className="text-3xl font-black text-white uppercase italic">Kickoff</h2>
+            <h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">Kickoff</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">
             {kickoff.map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
+              <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600/50 pb-2">
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
                     <Flame className="text-orange-600 w-5 h-5" />
-                    <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
+                    <h3 className="text-xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3>
                   </div>
-                  <span className="text-2xl font-black text-orange-500">{item.Price}</span>
+                  <span className="text-2xl font-black text-orange-500 drop-shadow-md">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-300 text-xs font-bold ml-7">{item.Description}</p>}
+                {item.Description && <p className="text-slate-200 text-xs font-bold ml-7 drop-shadow-sm">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
@@ -250,21 +259,21 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
         {/* CENTER */}
         <div className="col-span-4 pt-4 px-6">
-          <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg flex items-center gap-3">
+          <div className="bg-white/10 border-l-4 border-white p-3 mb-4 rounded-r-lg flex items-center gap-3 backdrop-blur-sm">
             <UtensilsCrossed className="text-white w-8 h-8" />
-            <h2 className="text-3xl font-black text-white uppercase italic">The Main Event</h2>
+            <h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">The Main Event</h2>
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">
             {mains.map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
+              <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600/50 pb-2">
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
                     <UtensilsCrossed className="text-orange-600 w-6 h-6" />
-                    <h3 className="text-2xl font-bold text-white uppercase">{item.Title}</h3>
+                    <h3 className="text-2xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3>
                   </div>
-                  <span className="text-3xl font-black text-orange-500">{item.Price}</span>
+                  <span className="text-3xl font-black text-orange-500 drop-shadow-md">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-300 text-sm font-bold ml-8">{item.Description}</p>}
+                {item.Description && <p className="text-slate-200 text-sm font-bold ml-8 drop-shadow-sm">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
@@ -272,21 +281,21 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
         {/* RIGHT */}
         <div className="col-span-4 pr-40 pt-4">
-          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right flex items-center justify-end gap-3">
-            <h2 className="text-3xl font-black text-white uppercase italic">Draft Picks</h2>
+          <div className="bg-orange-600/20 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right flex items-center justify-end gap-3 backdrop-blur-sm">
+            <h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">Draft Picks</h2>
             <Beer className="text-orange-500 w-8 h-8" />
           </div>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5 pb-32">
             {drinks.map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600 pb-2">
+              <motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600/50 pb-2">
                 <div className="flex justify-between items-end w-full">
                   <div className="flex items-center gap-2">
                     <Beer className="text-orange-600 w-5 h-5" />
-                    <h3 className="text-xl font-bold text-white uppercase">{item.Title}</h3>
+                    <h3 className="text-xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3>
                   </div>
-                  <span className="text-2xl font-black text-orange-500">{item.Price}</span>
+                  <span className="text-2xl font-black text-orange-500 drop-shadow-md">{item.Price}</span>
                 </div>
-                {item.Description && <p className="text-slate-300 text-xs font-bold text-right">{item.Description}</p>}
+                {item.Description && <p className="text-slate-200 text-xs font-bold text-right drop-shadow-sm">{item.Description}</p>}
               </motion.div>
             ))}
           </motion.div>
