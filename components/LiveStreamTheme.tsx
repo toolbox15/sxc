@@ -46,9 +46,9 @@ const LiveStreamTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       {activeAlert && <FlashSaleOverlay item={activeAlert} />}
 
       {/* --- TOP SECTION (Video + Sidebar) --- */}
-      <div className="flex flex-1 overflow-hidden h-[88%]"> {/* Reduced height slightly to give ticker room */}
+      <div className="flex flex-1 overflow-hidden h-[88%]">
         
-        {/* 📺 VIDEO PLAYER */}
+        {/* 📺 VIDEO PLAYER (80% Width) */}
         <div className="w-[80%] h-full relative bg-black">
           <ReactPlayer
             url={videoUrl}
@@ -65,7 +65,7 @@ const LiveStreamTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           </div>
         </div>
 
-        {/* 📋 SIDEBAR MENU */}
+        {/* 📋 SIDEBAR MENU (20% Width) */}
         <div className="w-[20%] h-full bg-slate-900 border-l border-slate-700 flex flex-col">
           <div className="bg-blue-950 p-4 text-center border-b-4 border-orange-500 z-10">
             <h2 className="text-white text-xl font-black italic uppercase">Game Day<br/><span className="text-orange-500">Menu</span></h2>
@@ -105,23 +105,20 @@ const LiveStreamTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         </div>
       </div>
 
-      {/* --- BOTTOM TICKER (The L-Shape Horizontal) --- */}
-      <div className="h-[12%] relative flex items-end">
+      {/* --- BOTTOM TICKER (The Red Bar) --- */}
+      <div className="h-[12%] relative flex items-center bg-red-700 border-t-4 border-white z-20">
         
-        {/* BACKGROUND SHAPE with Rounded Top-Left Corner */}
-        <div className="absolute inset-0 bg-blue-950 border-t-4 border-orange-500 rounded-tl-[40px] z-0 shadow-2xl"></div>
-
-        {/* 🛑 STATIC LABEL (The "Fixed" Part) */}
-        {/* This sits ON TOP (z-20) so text scrolls BEHIND it */}
-        <div className="relative z-20 h-full flex items-center pl-10 pr-6 bg-blue-900 rounded-tl-[40px] border-r-4 border-orange-600 shadow-xl">
-          <div className="flex flex-col leading-tight">
-            <span className="text-white font-black italic text-xl tracking-tighter">GAME DAY</span>
-            <span className="text-orange-500 font-black italic text-3xl tracking-tighter">UPDATES</span>
+        {/* 🛑 STATIC LABEL (Rounded Box) */}
+        {/* This sits ON TOP (z-30) with a drop shadow */}
+        <div className="relative z-30 h-full flex items-center pl-8 pr-12 bg-white rounded-tr-[50px] shadow-[5px_0_15px_rgba(0,0,0,0.5)]">
+          <div className="flex flex-col leading-none">
+            <span className="text-red-700 font-black italic text-lg tracking-tighter">GAME DAY</span>
+            <span className="text-black font-black italic text-3xl tracking-tighter">UPDATES</span>
           </div>
         </div>
         
         {/* 🏃‍♂️ SCROLLING TEXT AREA */}
-        <div className="flex-1 h-full relative overflow-hidden flex items-center z-10 ml-4">
+        <div className="flex-1 h-full relative overflow-hidden flex items-center z-10">
           <motion.div 
             className="whitespace-nowrap absolute left-full flex items-center gap-16"
             animate={{ x: '-150vw' }} 
@@ -129,12 +126,12 @@ const LiveStreamTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
           >
             {alerts.length > 0 ? (
                alerts.map((item, i) => (
-                 <span key={i} className="text-white text-4xl font-bold uppercase flex items-center gap-4 drop-shadow-md">
-                   <span className="text-yellow-400">🚨 {item.Title}:</span> {item.Description}
+                 <span key={i} className="text-white text-4xl font-bold uppercase flex items-center gap-4 drop-shadow-md font-mono tracking-tighter">
+                   <span className="text-yellow-300">🚨 {item.Title}:</span> {item.Description}
                  </span>
                ))
             ) : (
-               <span className="text-slate-300 text-3xl font-bold uppercase tracking-wider">
+               <span className="text-white/90 text-3xl font-bold uppercase tracking-wider font-mono">
                  Welcome to the Sports Lounge • Ask your server about daily specials • Enjoy the game!
                </span>
             )}
