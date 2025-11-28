@@ -105,14 +105,21 @@ const LiveStreamTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         </div>
       </div>
 
-      {/* --- BOTTOM TICKER (The Red Bar) --- */}
-      <div className="h-[12%] relative flex items-center bg-red-700 border-t-4 border-white z-20">
+      {/* --- BOTTOM TICKER (The Bears Blue Bar) --- */}
+      {/* Changed bg-red-700 to bg-blue-950 and removed border-white */}
+      <div className="h-[12%] relative flex items-center bg-blue-950 z-20">
+
+        {/* 🐻 BEARS STRIPES (Top border effect) */}
+        {/* Top light orange stripe */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-orange-400 z-40"></div>
+        {/* Bottom darker orange stripe sitting just below it */}
+        <div className="absolute top-1 left-0 right-0 h-1 bg-orange-600 z-40"></div>
         
         {/* 🛑 STATIC LABEL (Rounded Box) */}
-        {/* This sits ON TOP (z-30) with a drop shadow */}
         <div className="relative z-30 h-full flex items-center pl-8 pr-12 bg-white rounded-tr-[50px] shadow-[5px_0_15px_rgba(0,0,0,0.5)]">
           <div className="flex flex-col leading-none">
-            <span className="text-red-700 font-black italic text-lg tracking-tighter">GAME DAY</span>
+            {/* Changed text color to blue to match theme */}
+            <span className="text-blue-950 font-black italic text-lg tracking-tighter">GAME DAY</span>
             <span className="text-black font-black italic text-3xl tracking-tighter">UPDATES</span>
           </div>
         </div>
