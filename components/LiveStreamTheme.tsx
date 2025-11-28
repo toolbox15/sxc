@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Flame, Beer } from 'lucide-react';
+import ReactPlayer from 'react-player';
 
 // --- DATA STRUCTURE ---
 interface AdItem {
@@ -11,53 +12,70 @@ interface AdItem {
   Status?: string;
 }
 
+// --- 🚨 FLASH SALE OVERLAY ---
+const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
+  return (
+    <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-black/80 backdrop-blur-md">
+      <motion.div 
+        className="text-center p-8 border-y-8 border-orange-500 bg-black w-full"
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+      >
+        <h2 className="text-5xl font-black text-white italic uppercase mb-4">🚨 INTERRUPTION 🚨</h2>
+        <h1 className="text-8xl font-black text-orange-500 uppercase">{item.Title}</h1>
+        <p className="text-white text-4xl mt-4">{item.Description}</p>
+      </motion.div>
+    </div>
+  );
+};
+
 // --- MAIN COMPONENT ---
 const LiveStreamTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   
-  // 1. FILTER DATA
   const sidebarFood = ads.filter(ad => ad.Category === 'Kickoff');
   const sidebarDrinks = ads.filter(ad => ad.Category === 'Draft Picks');
-  const alerts = ads.filter(ad => ad.Category === 'ALERT');
+  const alerts = ads.filter(ad => ad.Category === 'ALERT'); 
+  const activeAlert = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
 
-  // 2. VIDEO SOURCE 
-  // Looks for a row with Category "STREAM". If missing, plays a demo video.
   const streamRow = ads.find(ad => ad.Category === 'STREAM');
-  const videoUrl = streamRow ? streamRow.Price : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"; 
+  const videoUrl = streamRow ? streamRow.Price : "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"; 
 
   return (
     <div className="w-full h-screen bg-black flex flex-col overflow-hidden font-sans">
       
+      {activeAlert && <FlashSaleOverlay item={activeAlert} />}
+
       {/* --- TOP SECTION (Video + Sidebar) --- */}
-      <div className="flex flex-1 overflow-hidden h-[90%]">
+      <div className="flex flex-1 overflow-hidden h-[88%]"> {/* Reduced height slightly to give ticker room */}
         
-        {/* 📺 VIDEO PLAYER (80% Width) */}
-        <div className="w-[80%] h-full relative bg-black border-r-4 border-blue-900">
-          <video 
-            src={videoUrl} 
-            autoPlay 
-            muted 
-            loop 
-            className="w-full h-full object-cover"
+        {/* 📺 VIDEO PLAYER */}
+        <div className="w-[80%] h-full relative bg-black">
+          <ReactPlayer
+            url={videoUrl}
+            playing={true}
+            loop={true}
+            muted={true}
+            width="100%"
+            height="100%"
+            style={{ objectFit: 'cover' }}
+            config={{ file: { attributes: { style: { width: '100%', height: '100%', objectFit: 'cover' } } } }}
           />
-          <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 font-bold text-xs rounded animate-pulse">
+          <div className="absolute top-6 left-6 bg-red-600 text-white px-4 py-1 font-bold text-sm rounded animate-pulse pointer-events-none">
             LIVE
           </div>
         </div>
 
-        {/* 📋 SIDEBAR MENU (20% Width) */}
-        <div className="w-[20%] h-full bg-blue-950 flex flex-col">
-          {/* Header */}
-          <div className="bg-orange-600 p-3 text-center shadow-lg z-10">
-            <h2 className="text-white text-lg font-black italic uppercase">Game Day Menu</h2>
+        {/* 📋 SIDEBAR MENU */}
+        <div className="w-[20%] h-full bg-slate-900 border-l border-slate-700 flex flex-col">
+          <div className="bg-blue-950 p-4 text-center border-b-4 border-orange-500 z-10">
+            <h2 className="text-white text-xl font-black italic uppercase">Game Day<br/><span className="text-orange-500">Menu</span></h2>
           </div>
 
-          {/* Scrolling List */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-6">
-            {/* Eats */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-900">
             <div>
-              <div className="flex items-center gap-2 mb-2 text-orange-500 border-b border-blue-800 pb-1">
-                <Flame size={16} />
-                <h3 className="font-bold text-md uppercase">Eats</h3>
+              <div className="flex items-center gap-2 mb-2 text-orange-500 border-b border-slate-700 pb-1">
+                <Flame size={18} />
+                <h3 className="font-bold text-lg uppercase">Eats</h3>
               </div>
               {sidebarFood.map((item, i) => (
                 <div key={i} className="mb-3">
@@ -69,17 +87,16 @@ const LiveStreamTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
               ))}
             </div>
 
-            {/* Drinks */}
             <div>
-              <div className="flex items-center gap-2 mb-2 text-blue-300 border-b border-blue-800 pb-1">
-                <Beer size={16} />
-                <h3 className="font-bold text-md uppercase">Drinks</h3>
+              <div className="flex items-center gap-2 mb-2 text-blue-400 border-b border-slate-700 pb-1">
+                <Beer size={18} />
+                <h3 className="font-bold text-lg uppercase">Drinks</h3>
               </div>
               {sidebarDrinks.map((item, i) => (
                 <div key={i} className="mb-3">
                   <div className="flex justify-between text-white font-bold text-sm">
                     <span>{item.Title}</span>
-                    <span className="text-blue-300">{item.Price}</span>
+                    <span className="text-blue-400">{item.Price}</span>
                   </div>
                 </div>
               ))}
@@ -88,30 +105,42 @@ const LiveStreamTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         </div>
       </div>
 
-      {/* --- BOTTOM TICKER (10% Height) --- */}
-      <div className="h-[10%] bg-blue-900 border-t-4 border-orange-600 flex items-center relative overflow-hidden">
-        <div className="bg-orange-600 h-full px-8 flex items-center z-10 shadow-xl">
-          <span className="text-white font-black italic text-2xl">UPDATES</span>
+      {/* --- BOTTOM TICKER (The L-Shape Horizontal) --- */}
+      <div className="h-[12%] relative flex items-end">
+        
+        {/* BACKGROUND SHAPE with Rounded Top-Left Corner */}
+        <div className="absolute inset-0 bg-blue-950 border-t-4 border-orange-500 rounded-tl-[40px] z-0 shadow-2xl"></div>
+
+        {/* 🛑 STATIC LABEL (The "Fixed" Part) */}
+        {/* This sits ON TOP (z-20) so text scrolls BEHIND it */}
+        <div className="relative z-20 h-full flex items-center pl-10 pr-6 bg-blue-900 rounded-tl-[40px] border-r-4 border-orange-600 shadow-xl">
+          <div className="flex flex-col leading-tight">
+            <span className="text-white font-black italic text-xl tracking-tighter">GAME DAY</span>
+            <span className="text-orange-500 font-black italic text-3xl tracking-tighter">UPDATES</span>
+          </div>
         </div>
         
-        {/* Scrolling Text Animation */}
-        <motion.div 
-          className="whitespace-nowrap absolute left-full flex items-center gap-16"
-          animate={{ x: '-150vw' }} 
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        >
-          {alerts.length > 0 ? (
-             alerts.map((item, i) => (
-               <span key={i} className="text-white text-3xl font-bold uppercase text-yellow-400 flex items-center gap-4">
-                 🚨 {item.Title}: {item.Description}
+        {/* 🏃‍♂️ SCROLLING TEXT AREA */}
+        <div className="flex-1 h-full relative overflow-hidden flex items-center z-10 ml-4">
+          <motion.div 
+            className="whitespace-nowrap absolute left-full flex items-center gap-16"
+            animate={{ x: '-150vw' }} 
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          >
+            {alerts.length > 0 ? (
+               alerts.map((item, i) => (
+                 <span key={i} className="text-white text-4xl font-bold uppercase flex items-center gap-4 drop-shadow-md">
+                   <span className="text-yellow-400">🚨 {item.Title}:</span> {item.Description}
+                 </span>
+               ))
+            ) : (
+               <span className="text-slate-300 text-3xl font-bold uppercase tracking-wider">
+                 Welcome to the Sports Lounge • Ask your server about daily specials • Enjoy the game!
                </span>
-             ))
-          ) : (
-             <span className="text-white text-3xl font-bold uppercase text-slate-300">
-               Welcome to the Sports Lounge • Ask about our daily specials • Enjoy the game!
-             </span>
-          )}
-        </motion.div>
+            )}
+          </motion.div>
+        </div>
+
       </div>
 
     </div>
