@@ -108,22 +108,20 @@ const LiveStreamTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       {/* --- BOTTOM TICKER (The Bears Blue Bar) --- */}
       <div className="h-[12%] relative flex items-center bg-blue-950 z-20">
 
-        {/* 🐻 BEARS STRIPES (Jersey Style) */}
-        {/* Top light orange stripe */}
+        {/* 🐻 BEARS STRIPES (Z-40) */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-orange-400 z-40"></div>
-        
-        {/* 👇 CHANGED: Moved this down to 'top-2' to create a gap between lines */}
         <div className="absolute top-2 left-0 right-0 h-1 bg-orange-600 z-40"></div>
         
-        {/* 🛑 STATIC LABEL (Rounded Box) */}
-        <div className="relative z-30 h-full flex items-center pl-8 pr-12 bg-white rounded-tr-[50px] shadow-[5px_0_15px_rgba(0,0,0,0.5)]">
+        {/* 🛑 STATIC LABEL (White Box) */}
+        {/* FIXED: Changed to z-50 so it sits ON TOP of the stripes and text */}
+        <div className="relative z-50 h-full flex items-center pl-8 pr-12 bg-white rounded-tr-[50px] shadow-[5px_0_15px_rgba(0,0,0,0.5)]">
           <div className="flex flex-col leading-none">
             <span className="text-red-600 font-black italic text-lg tracking-tighter">GAME DAY</span>
             <span className="text-black font-black italic text-3xl tracking-tighter">UPDATES</span>
           </div>
         </div>
         
-        {/* 🏃‍♂️ SCROLLING TEXT AREA */}
+        {/* 🏃‍♂️ SCROLLING TEXT AREA (Z-10) */}
         <div className="flex-1 h-full relative overflow-hidden flex items-center z-10">
           <motion.div 
             className="whitespace-nowrap absolute left-full flex items-center gap-16"
