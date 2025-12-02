@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
+// IMPORT THE SLOT MACHINE COMPONENT
+import { SlotMachine } from '../components/SlotMachine';
 
 // --- DATA STRUCTURE ---
 interface AdItem {
@@ -9,6 +11,7 @@ interface AdItem {
   Description?: string;
   Category: string;
   Color?: string;
+  Status?: string; // Added Status to interface
 }
 
 // --- PLACEHOLDER DATA ---
@@ -134,14 +137,29 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const mains = ads.filter(ad => ad.Category === 'Main Event').length > 0 ? ads.filter(ad => ad.Category === 'Main Event') : DUMMY_MENU.main_event;
   const drinks = ads.filter(ad => ad.Category === 'Draft Picks').length > 0 ? ads.filter(ad => ad.Category === 'Draft Picks') : DUMMY_MENU.draft_picks;
 
+  // 1. Check for "ALERT" (Flash Sale)
   const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
+
+  // 2. Check for "GAME" (Slot Machine)
+  // This logic looks for a row with Category: GAME and Status: Active
+  const gameActive = ads.some(ad => ad.Category === 'GAME' && ad.Status === 'Active');
 
   return (
     <div 
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
-      {alertAd && <FlashSaleOverlay item={alertAd} />}
+      {/* --- OVERLAYS --- */}
+      
+      {/* A. SLOT MACHINE OVERLAY (Highest Priority) */}
+      {gameActive && (
+        <div className="absolute inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md">
+           <SlotMachine triggerSpin={true} />
+        </div>
+      )}
+
+      {/* B. FLASH SALE OVERLAY */}
+      {alertAd && !gameActive && <FlashSaleOverlay item={alertAd} />}
 
       {/* ✅ CORRECTED OVERLAY: Very light (20%) so Green Grass shows through */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-blue-950/10 to-blue-950/20 z-0"></div>
