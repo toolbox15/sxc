@@ -35,27 +35,48 @@ const DUMMY_MENU = {
   ]
 };
 
-// --- 🚨 SIREN EFFECT (Spinning Red Lights) ---
+// --- 🚨 NEW: FLASHING SIREN LIGHTS (The physical lights on the banner) ---
+const FlashingSirenLight = ({ side }: { side: 'left' | 'right' }) => {
+  const positionClass = side === 'left' ? '-left-28' : '-right-28';
+  
+  return (
+    <motion.div
+      className={`absolute top-1/2 -translate-y-1/2 ${positionClass} z-30 w-24 h-24 rounded-full border-4 border-gray-900 bg-red-600 shadow-[0_0_40px_rgba(255,0,0,0.8)] overflow-hidden`}
+      // Flashing Animation
+      animate={{
+        backgroundColor: ['#991b1b', '#ff0000', '#991b1b'], // Dark red to bright red
+        boxShadow: [
+          '0 0 20px rgba(255,0,0,0.5)', 
+          '0 0 80px rgba(255,50,50,1)', 
+          '0 0 20px rgba(255,0,0,0.5)'
+        ],
+        scale: [1, 1.05, 1]
+      }}
+      transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
+    >
+        {/* Inner glowing bulb hotspot */}
+       <motion.div 
+         className="absolute inset-2 rounded-full bg-red-300 blur-md"
+         animate={{ opacity: [0.5, 1, 0.5] }}
+         transition={{ duration: 0.6, repeat: Infinity }}
+       />
+    </motion.div>
+  );
+};
+
+// --- 🚨 SIREN EFFECT (Spinning background beams) ---
 const SirenEffect = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-[60]">
-      {/* Left Siren */}
       <motion.div 
         className="absolute -top-20 -left-20 w-[600px] h-[600px] bg-gradient-conic from-red-600/80 via-transparent to-transparent rounded-full blur-3xl mix-blend-screen"
         animate={{ rotate: 360 }}
         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
       />
-      {/* Right Siren (Spinning Opposite Way) */}
       <motion.div 
         className="absolute -top-20 -right-20 w-[600px] h-[600px] bg-gradient-conic from-red-600/80 via-transparent to-transparent rounded-full blur-3xl mix-blend-screen"
         animate={{ rotate: -360 }}
         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-      />
-      {/* Strobe Overlay */}
-      <motion.div 
-        className="absolute inset-0 bg-white"
-        animate={{ opacity: [0, 0.1, 0] }}
-        transition={{ duration: 0.1, repeat: Infinity }}
       />
     </div>
   );
@@ -140,7 +161,6 @@ const RunningPlayer = () => {
     <motion.img
       src="/player-run.gif"
       alt="Running Player"
-      // ✅ Solid, no ghosting
       className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-2xl opacity-100"
       initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }}
       animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }}
@@ -154,19 +174,23 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
       
-      {/* 1. SIRENS (NEW!) */}
       <SirenEffect />
-
-      {/* 2. CONFETTI */}
       <ConfettiEffect />
 
       <motion.div className="absolute inset-0 bg-orange-600/30" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
+      
+      {/* MAIN TEXT CONTENT BOX */}
       <motion.div 
-        className="relative z-10 text-center p-4 w-full"
+        className="relative z-10 text-center p-8 w-full max-w-4xl bg-blue-950/50 backdrop-blur-md border-y-8 border-orange-500"
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", bounce: 0.5 }}
       >
+        {/* --- THE NEW FLASHING LIGHTS --- */}
+        <FlashingSirenLight side="left" />
+        <FlashingSirenLight side="right" />
+        {/* ------------------------------- */}
+
         <h2 className="text-5xl font-black text-white italic uppercase tracking-widest mb-8 drop-shadow-md">🚨 FIELD ALERT 🚨</h2>
         <h1 className="text-8xl md:text-[9rem] font-black text-orange-500 uppercase drop-shadow-[0_10px_10px_rgba(0,0,0,1)] leading-none mb-8">{item.Title}</h1>
         <motion.div 
@@ -191,7 +215,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
   const gameActive = ads.some(ad => ad.Category === 'GAME' && ad.Status === 'Active');
 
-  // --- 🔊 SOUND LOGIC ---
+  // --- 🔊 SOUND LOGIC (LOOPING) ---
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
