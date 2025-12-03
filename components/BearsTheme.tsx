@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
 import { SlotMachine } from './SlotMachine';
@@ -122,13 +122,12 @@ const RunningPlayer = () => {
   );
 };
 
-// --- 🚨 FLASH SALE OVERLAY (NO RUNNER) ---
+// --- 🚨 FLASH SALE OVERLAY ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
       <ConfettiEffect />
       <motion.div className="absolute inset-0 bg-orange-600/30" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
-      
       <motion.div 
         className="relative z-10 text-center p-4 w-full"
         initial={{ scale: 0.5, opacity: 0 }}
@@ -145,8 +144,6 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
           <p className="text-blue-950 text-5xl md:text-6xl font-black uppercase leading-tight">{item.Description || "LIMITED TIME!"}</p>
         </motion.div>
       </motion.div>
-      
-      {/* REMOVED RUNNER FROM HERE */}
     </div>
   );
 };
@@ -161,13 +158,35 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
   const gameActive = ads.some(ad => ad.Category === 'GAME' && ad.Status === 'Active');
 
-  // --- 🔊 SOUND LOGIC ---
+  // --- 🔊 SOUND LOGIC (LOOPING) ---
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
+    // Play Airhorn LOOP if Alert is active
     if (alertAd && !gameActive) {
-      const audio = new Audio('/airhorn.mp3');
-      audio.volume = 0.7;
-      audio.play().catch(e => console.log("Audio blocked:", e));
+      if (!audioRef.current) {
+        audioRef.current = new Audio('/airhorn.mp3');
+        audioRef.current.loop = true; // 🔊 THIS MAKES THE SOUND LOOP
+        audioRef.current.volume = 0.7;
+      }
+      // Only play if it's not already playing
+      if (audioRef.current.paused) {
+        audioRef.current.play().catch(e => console.log("Audio blocked (User interaction required):", e));
+      }
+    } else {
+      // Stop sound instantly if alert is inactive
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
     }
+    
+    // Cleanup on unmount
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
   }, [alertAd, gameActive]);
 
   return (
@@ -175,15 +194,17 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
+      {/* SLOT MACHINE */}
       {gameActive && (
         <div className="absolute inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md">
            <SlotMachine triggerSpin={true} />
         </div>
       )}
 
+      {/* FLASH SALE OVERLAY */}
       {alertAd && !gameActive && <FlashSaleOverlay item={alertAd} />}
 
-      {/* OVERLAY (20% Opacity) */}
+      {/* OVERLAY */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-blue-950/10 to-blue-950/20 z-0"></div>
 
       <StadiumFlashEffect />
