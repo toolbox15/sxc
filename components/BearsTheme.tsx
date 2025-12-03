@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
-// IMPORT THE SLOT MACHINE
 import { SlotMachine } from './SlotMachine';
 
 // --- DATA STRUCTURE ---
@@ -109,14 +108,14 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER (BLENDED + SLOW) ---
+// --- 🏃‍♂️ RUNNING PLAYER (SOLID VISIBILITY) ---
 const RunningPlayer = () => {
   return (
     <motion.img
       src="/player-run.gif"
       alt="Running Player"
-      // FIX: brightness-90, contrast-200, opacity-80, mix-blend-overlay
-      className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-200 drop-shadow-xl opacity-80 mix-blend-overlay"
+      // UPDATED: Removed 'mix-blend-overlay' and set 'opacity-100' for full visibility
+      className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-xl opacity-100"
       initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }}
       animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }}
       transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }}
@@ -146,8 +145,10 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
           <p className="text-blue-950 text-5xl md:text-6xl font-black uppercase leading-tight">{item.Description || "LIMITED TIME!"}</p>
         </motion.div>
       </motion.div>
+      
+      {/* RUNNER IN OVERLAY (Also updated to be solid) */}
       <motion.div className="absolute bottom-[50px] w-auto h-auto z-30" initial={{ left: '-20%' }} animate={{ left: '120%' }} transition={{ duration: 4, repeat: Infinity, ease: "linear" }}>
-        <img src="/player-run.gif" alt="Runner" className="h-80 w-auto drop-shadow-2xl" />
+        <img src="/player-run.gif" alt="Runner" className="h-80 w-auto drop-shadow-2xl opacity-100" />
       </motion.div>
     </div>
   );
@@ -165,7 +166,6 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
   // --- 🔊 SOUND LOGIC ---
   useEffect(() => {
-    // Play Airhorn on Alert
     if (alertAd && !gameActive) {
       const audio = new Audio('/airhorn.mp3');
       audio.volume = 0.7;
@@ -178,23 +178,21 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
-      {/* A. SLOT MACHINE OVERLAY */}
       {gameActive && (
         <div className="absolute inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md">
            <SlotMachine triggerSpin={true} />
         </div>
       )}
 
-      {/* B. FLASH SALE OVERLAY */}
       {alertAd && !gameActive && <FlashSaleOverlay item={alertAd} />}
 
-      {/* C. FIELD OVERLAY */}
+      {/* OVERLAY (20% Opacity) */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-blue-950/10 to-blue-950/20 z-0"></div>
 
       <StadiumFlashEffect />
       <RunningPlayer />
 
-      {/* --- DECORATIVE ASSETS (ANCHORED) --- */}
+      {/* --- DECORATIVE ASSETS --- */}
       <div className="absolute bottom-[-40px] left-[-60px] z-10">
           <div className="absolute bottom-[50px] left-[80px] w-[200px] h-[40px] bg-black/60 blur-xl rounded-full pointer-events-none"></div>
           <BubblesEffect />
