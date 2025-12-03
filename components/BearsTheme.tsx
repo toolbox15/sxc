@@ -35,6 +35,32 @@ const DUMMY_MENU = {
   ]
 };
 
+// --- 🚨 SIREN EFFECT (Spinning Red Lights) ---
+const SirenEffect = () => {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[60]">
+      {/* Left Siren */}
+      <motion.div 
+        className="absolute -top-20 -left-20 w-[600px] h-[600px] bg-gradient-conic from-red-600/80 via-transparent to-transparent rounded-full blur-3xl mix-blend-screen"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+      />
+      {/* Right Siren (Spinning Opposite Way) */}
+      <motion.div 
+        className="absolute -top-20 -right-20 w-[600px] h-[600px] bg-gradient-conic from-red-600/80 via-transparent to-transparent rounded-full blur-3xl mix-blend-screen"
+        animate={{ rotate: -360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+      />
+      {/* Strobe Overlay */}
+      <motion.div 
+        className="absolute inset-0 bg-white"
+        animate={{ opacity: [0, 0.1, 0] }}
+        transition={{ duration: 0.1, repeat: Infinity }}
+      />
+    </div>
+  );
+};
+
 // --- 🎉 CONFETTI ENGINE ---
 const ConfettiEffect = () => {
   const particles = Array.from({ length: 150 });
@@ -114,6 +140,7 @@ const RunningPlayer = () => {
     <motion.img
       src="/player-run.gif"
       alt="Running Player"
+      // ✅ Solid, no ghosting
       className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-2xl opacity-100"
       initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }}
       animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }}
@@ -122,11 +149,17 @@ const RunningPlayer = () => {
   );
 };
 
-// --- 🚨 FLASH SALE OVERLAY ---
+// --- 🚨 FLASH SALE OVERLAY (WITH SIRENS) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
+      
+      {/* 1. SIRENS (NEW!) */}
+      <SirenEffect />
+
+      {/* 2. CONFETTI */}
       <ConfettiEffect />
+
       <motion.div className="absolute inset-0 bg-orange-600/30" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
       <motion.div 
         className="relative z-10 text-center p-4 w-full"
@@ -158,30 +191,25 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
   const gameActive = ads.some(ad => ad.Category === 'GAME' && ad.Status === 'Active');
 
-  // --- 🔊 SOUND LOGIC (LOOPING) ---
+  // --- 🔊 SOUND LOGIC ---
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Play Airhorn LOOP if Alert is active
     if (alertAd && !gameActive) {
       if (!audioRef.current) {
         audioRef.current = new Audio('/airhorn.mp3');
-        audioRef.current.loop = true; // 🔊 THIS MAKES THE SOUND LOOP
+        audioRef.current.loop = true; 
         audioRef.current.volume = 0.7;
       }
-      // Only play if it's not already playing
       if (audioRef.current.paused) {
-        audioRef.current.play().catch(e => console.log("Audio blocked (User interaction required):", e));
+        audioRef.current.play().catch(e => console.log("Audio blocked:", e));
       }
     } else {
-      // Stop sound instantly if alert is inactive
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
     }
-    
-    // Cleanup on unmount
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -194,17 +222,17 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
-      {/* SLOT MACHINE */}
+      {/* A. SLOT MACHINE */}
       {gameActive && (
         <div className="absolute inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md">
            <SlotMachine triggerSpin={true} />
         </div>
       )}
 
-      {/* FLASH SALE OVERLAY */}
+      {/* B. FLASH SALE OVERLAY */}
       {alertAd && !gameActive && <FlashSaleOverlay item={alertAd} />}
 
-      {/* OVERLAY */}
+      {/* OVERLAY (20% Opacity) */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-blue-950/10 to-blue-950/20 z-0"></div>
 
       <StadiumFlashEffect />
@@ -230,7 +258,6 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       {/* --- CONTENT GRID --- */}
       <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
         
-        {/* HEADER */}
         <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4">
           <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">
             Game Day <span className="text-orange-500">Specials</span>
