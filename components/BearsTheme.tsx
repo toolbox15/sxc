@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
 import { SlotMachine } from './SlotMachine';
@@ -35,7 +35,7 @@ const DUMMY_MENU = {
   ]
 };
 
-// --- 🎉 CONFETTI ENGINE ---
+// --- 🎉 CONFETTI ENGINE (INFINITE LOOP) ---
 const ConfettiEffect = () => {
   const particles = Array.from({ length: 150 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -48,6 +48,7 @@ const ConfettiEffect = () => {
           className="absolute w-3 h-3 bg-white"
           initial={{ y: -100, x: `${random(0, 100)}vw`, opacity: 1, scale: random(0.5, 1.2), rotate: random(0, 360) }}
           animate={{ y: '120vh', x: `calc(${random(0, 100)}vw + ${random(-200, 200)}px)`, opacity: 0, rotate: random(180, 720) }}
+          // REPEAT: INFINITY ensures it never stops raining
           transition={{ duration: random(2, 5), ease: "easeOut", repeat: Infinity, delay: random(0, 2) }}
           style={{ backgroundColor: ['#FFD700', '#FFFFFF', '#FF8C00', '#0057B8'][Math.floor(random(0, 4))] }}
         />
@@ -56,22 +57,10 @@ const ConfettiEffect = () => {
   );
 };
 
-// --- ANIMATION SETTINGS ---
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, x: -50 },
-  visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
-};
-
-// --- 🍺 BUBBLES EFFECT ---
+// --- DECORATIVE ANIMATIONS ---
 const BubblesEffect = () => {
   const bubbles = Array.from({ length: 30 }); 
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
-
   return (
     <div className="absolute bottom-[120px] left-[50px] w-[140px] h-[300px] pointer-events-none overflow-hidden z-20 opacity-50">
       {bubbles.map((_, i) => (
@@ -88,11 +77,9 @@ const BubblesEffect = () => {
   );
 };
 
-// --- STADIUM FLASH EFFECT ---
 const StadiumFlashEffect = () => {
   const flashes = Array.from({ length: 15 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
-
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {flashes.map((_, i) => (
@@ -108,14 +95,13 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER (SOLID VISIBILITY) ---
+// --- RUNNING PLAYER (BACKGROUND) ---
 const RunningPlayer = () => {
   return (
     <motion.img
       src="/player-run.gif"
       alt="Running Player"
-      // UPDATED: Removed 'mix-blend-overlay' and set 'opacity-100' for full visibility
-      className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-xl opacity-100"
+      className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-200 drop-shadow-xl opacity-80 mix-blend-overlay"
       initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }}
       animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }}
       transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }}
@@ -123,7 +109,7 @@ const RunningPlayer = () => {
   );
 };
 
-// --- 🚨 FLASH SALE OVERLAY ---
+// --- 🚨 FLASH SALE OVERLAY (INFINITE) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
@@ -146,8 +132,12 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
         </motion.div>
       </motion.div>
       
-      {/* RUNNER IN OVERLAY (Also updated to be solid) */}
-      <motion.div className="absolute bottom-[50px] w-auto h-auto z-30" initial={{ left: '-20%' }} animate={{ left: '120%' }} transition={{ duration: 4, repeat: Infinity, ease: "linear" }}>
+      {/* RUNNER IN OVERLAY (Loops Forever) */}
+      <motion.div className="absolute bottom-[50px] w-auto h-auto z-30" 
+        initial={{ left: '-20%' }} 
+        animate={{ left: '120%' }} 
+        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+      >
         <img src="/player-run.gif" alt="Runner" className="h-80 w-auto drop-shadow-2xl opacity-100" />
       </motion.div>
     </div>
@@ -164,14 +154,36 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
   const gameActive = ads.some(ad => ad.Category === 'GAME' && ad.Status === 'Active');
 
-  // --- 🔊 SOUND LOGIC ---
+  // --- 🔊 SOUND LOGIC (LOOPING) ---
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
+    // Play Airhorn LOOP if Alert is active
     if (alertAd && !gameActive) {
-      const audio = new Audio('/airhorn.mp3');
-      audio.volume = 0.7;
-      audio.play().catch(e => console.log("Audio blocked:", e));
+      if (!audioRef.current) {
+        audioRef.current = new Audio('/airhorn.mp3');
+        audioRef.current.loop = true; // 🔊 THIS MAKES THE SOUND LOOP
+        audioRef.current.volume = 0.7;
+      }
+      audioRef.current.play().catch(e => console.log("Audio blocked (User interaction required):", e));
+    } else {
+      // Stop sound if alert is inactive
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
     }
+    // Cleanup on unmount
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
   }, [alertAd, gameActive]);
+
+  // --- LAYOUT ANIMATION ---
+  const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+  const itemVariants = { hidden: { opacity: 0, x: -50 }, visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } } };
 
   return (
     <div 
@@ -184,11 +196,10 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         </div>
       )}
 
+      {/* 🚨 FLASH SALE (Infinite Loop until Inactive) */}
       {alertAd && !gameActive && <FlashSaleOverlay item={alertAd} />}
 
-      {/* OVERLAY (20% Opacity) */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-blue-950/10 to-blue-950/20 z-0"></div>
-
       <StadiumFlashEffect />
       <RunningPlayer />
 
@@ -201,20 +212,13 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       <div className="absolute bottom-[10px] right-[30px] z-10">
         <div className="absolute bottom-[20px] left-[30px] w-[150px] h-[30px] bg-black/60 blur-xl rounded-full pointer-events-none"></div>
-        <motion.img 
-          src="/football.png" 
-          className="h-[350px] w-auto drop-shadow-2xl"
-          animate={{ scale: [1, 1.02, 1] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        />
+        <motion.img src="/football.png" className="h-[350px] w-auto drop-shadow-2xl" animate={{ scale: [1, 1.02, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} />
       </div>
 
-      {/* --- CONTENT GRID --- */}
+      {/* --- MENU CONTENT --- */}
       <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
         <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4">
-          <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">
-            Game Day <span className="text-orange-500">Specials</span>
-          </h1>
+          <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">Game Day <span className="text-orange-500">Specials</span></h1>
         </div>
 
         {/* LEFT */}
