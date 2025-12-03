@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
 import { SlotMachine } from './SlotMachine';
@@ -108,15 +108,13 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER (SOLID & VISIBLE) ---
+// --- 🏃‍♂️ RUNNING PLAYER (Background Only) ---
 const RunningPlayer = () => {
   return (
     <motion.img
       src="/player-run.gif"
       alt="Running Player"
-      // ✅ FIX APPLIED: Removed 'mix-blend-overlay'. Set opacity to 100.
-      // Keep contrast/brightness to fix white halo.
-      className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-2xl opacity-100"
+      className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-200 drop-shadow-xl opacity-100"
       initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }}
       animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }}
       transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }}
@@ -124,12 +122,14 @@ const RunningPlayer = () => {
   );
 };
 
-// --- 🚨 FLASH SALE OVERLAY ---
+// --- 🚨 FLASH SALE OVERLAY (NO RUNNER, JUST HYPE) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
       <ConfettiEffect />
       <motion.div className="absolute inset-0 bg-orange-600/30" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
+      
+      {/* MAIN TEXT CONTENT */}
       <motion.div 
         className="relative z-10 text-center p-4 w-full"
         initial={{ scale: 0.5, opacity: 0 }}
@@ -146,10 +146,8 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
           <p className="text-blue-950 text-5xl md:text-6xl font-black uppercase leading-tight">{item.Description || "LIMITED TIME!"}</p>
         </motion.div>
       </motion.div>
-      <motion.div className="absolute bottom-[50px] w-auto h-auto z-30" initial={{ left: '-20%' }} animate={{ left: '120%' }} transition={{ duration: 4, repeat: Infinity, ease: "linear" }}>
-        {/* ✅ FIX APPLIED: Alert Runner is also solid opacity-100 */}
-        <img src="/player-run.gif" alt="Runner" className="h-80 w-auto drop-shadow-2xl opacity-100" />
-      </motion.div>
+      
+      {/* REMOVED: The Running Player <div> is gone from here. */}
     </div>
   );
 };
@@ -164,13 +162,36 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
   const gameActive = ads.some(ad => ad.Category === 'GAME' && ad.Status === 'Active');
 
-  // --- 🔊 SOUND LOGIC ---
+  // --- 🔊 SOUND LOGIC (INFINITE LOOP) ---
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
+    // Logic: If Alert is ON and we aren't in Slot Machine mode
     if (alertAd && !gameActive) {
-      const audio = new Audio('/airhorn.mp3');
-      audio.volume = 0.7;
-      audio.play().catch(e => console.log("Audio blocked:", e));
+      // Create audio if it doesn't exist
+      if (!audioRef.current) {
+        audioRef.current = new Audio('/airhorn.mp3');
+        audioRef.current.loop = true; // 🔊 LOOP FOREVER
+        audioRef.current.volume = 0.7;
+      }
+      // Play if not already playing
+      if (audioRef.current.paused) {
+        audioRef.current.play().catch(e => console.log("Audio blocked:", e));
+      }
+    } else {
+      // Stop sound if Alert is OFF
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0; // Rewind
+      }
     }
+    
+    // Cleanup when component unmounts
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
   }, [alertAd, gameActive]);
 
   return (
@@ -184,6 +205,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         </div>
       )}
 
+      {/* FLASH SALE OVERLAY (No Runner) */}
       {alertAd && !gameActive && <FlashSaleOverlay item={alertAd} />}
 
       {/* OVERLAY (20% Opacity) */}
@@ -212,7 +234,6 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       {/* --- CONTENT GRID --- */}
       <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
         
-        {/* HEADER */}
         <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4">
           <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">
             Game Day <span className="text-orange-500">Specials</span>
