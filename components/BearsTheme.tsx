@@ -35,28 +35,18 @@ const DUMMY_MENU = {
   ]
 };
 
-// --- 🚨 PRO SIREN LIGHT (Attached Hardware Style) ---
+// --- 🚨 PRO SIREN LIGHT ---
 const FlashingSirenLight = ({ side }: { side: 'left' | 'right' }) => {
-  // Position: Bolted onto the top corners
   const positionClass = side === 'left' ? '-left-6 -top-6' : '-right-6 -top-6';
-  
   return (
     <div className={`absolute ${positionClass} z-50`}>
-      {/* The Physical Light Case */}
       <div className="w-20 h-20 bg-gray-900 rounded-full border-4 border-gray-400 shadow-lg flex items-center justify-center">
-         {/* The Glowing Bulb */}
          <motion.div
             className="w-14 h-14 bg-red-600 rounded-full shadow-[0_0_30px_#ff0000]"
-            animate={{
-                backgroundColor: ['#500000', '#ff0000', '#500000'], // Flash
-                scale: [1, 1.2, 1],
-                opacity: [0.5, 1, 0.5]
-            }}
+            animate={{ backgroundColor: ['#500000', '#ff0000', '#500000'], scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 0.5, repeat: Infinity, ease: "easeInOut" }}
          />
       </div>
-      
-      {/* The Rotating Beam (Light Throw) */}
       <motion.div 
         className="absolute top-1/2 left-1/2 w-[500px] h-[500px] -translate-x-1/2 -translate-y-1/2 bg-gradient-conic from-red-500/40 via-transparent to-transparent rounded-full mix-blend-screen pointer-events-none"
         animate={{ rotate: side === 'left' ? 360 : -360 }}
@@ -70,7 +60,6 @@ const FlashingSirenLight = ({ side }: { side: 'left' | 'right' }) => {
 const ConfettiEffect = () => {
   const particles = Array.from({ length: 150 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
-
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-[50]">
       {particles.map((_, i) => (
@@ -88,21 +77,13 @@ const ConfettiEffect = () => {
 };
 
 // --- ANIMATION SETTINGS ---
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, x: -50 },
-  visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
-};
+const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+const itemVariants = { hidden: { opacity: 0, x: -50 }, visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } } };
 
 // --- 🍺 BUBBLES EFFECT ---
 const BubblesEffect = () => {
   const bubbles = Array.from({ length: 30 }); 
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
-
   return (
     <div className="absolute bottom-[120px] left-[50px] w-[140px] h-[300px] pointer-events-none overflow-hidden z-20 opacity-50">
       {bubbles.map((_, i) => (
@@ -123,7 +104,6 @@ const BubblesEffect = () => {
 const StadiumFlashEffect = () => {
   const flashes = Array.from({ length: 15 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
-
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {flashes.map((_, i) => (
@@ -153,8 +133,11 @@ const RunningPlayer = () => {
   );
 };
 
-// --- 🚨 PRO FLASH SALE OVERLAY (New Design) ---
+// --- 🚨 FLASH SALE OVERLAY (DYNAMIC HEADER) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
+  // LOGIC: If category is "ALERT", use "FIELD ALERT". Otherwise, use the Category name (e.g., "TOUCHDOWN").
+  const headerText = item.Category === 'ALERT' ? "FIELD ALERT" : item.Category;
+
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
       
@@ -176,17 +159,19 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
         <FlashingSirenLight side="left" />
         <FlashingSirenLight side="right" />
 
-        {/* HEADER BADGE */}
+        {/* HEADER BADGE (Now Dynamic!) */}
         <div className="absolute -top-10 bg-orange-600 text-white px-10 py-4 rounded-xl border-4 border-white shadow-lg transform -rotate-1 z-20">
-           <h2 className="text-4xl font-black italic uppercase tracking-widest drop-shadow-md">FIELD ALERT</h2>
+           <h2 className="text-4xl font-black italic uppercase tracking-widest drop-shadow-md">
+             🚨 {headerText} 🚨
+           </h2>
         </div>
 
-        {/* MAIN TITLE (3D Text Effect) */}
-        <h1 className="relative z-10 text-8xl md:text-[10rem] font-black text-white uppercase italic leading-none mt-8 drop-shadow-[6px_6px_0px_#ea580c]">
+        {/* MAIN TITLE */}
+        <h1 className="relative z-10 text-8xl md:text-[9rem] font-black text-white uppercase italic leading-none mt-8 drop-shadow-[6px_6px_0px_#ea580c]">
           {item.Title}
         </h1>
 
-        {/* SUBTITLE (White Pill) */}
+        {/* SUBTITLE */}
         <div className="relative z-10 mt-8 bg-white px-16 py-4 rounded-full shadow-2xl transform rotate-1">
           <p className="text-blue-950 text-4xl md:text-5xl font-black uppercase tracking-wide">
             {item.Description || "LIMITED TIME ONLY!"}
@@ -206,7 +191,13 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const mains = ads.filter(ad => ad.Category === 'Main Event').length > 0 ? ads.filter(ad => ad.Category === 'Main Event') : DUMMY_MENU.main_event;
   const drinks = ads.filter(ad => ad.Category === 'Draft Picks').length > 0 ? ads.filter(ad => ad.Category === 'Draft Picks') : DUMMY_MENU.draft_picks;
 
-  const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
+  // ✅ NEW LOGIC: Find ANY active item that is NOT a menu category or Game
+  // This allows "TOUCHDOWN" or "HAPPY HOUR" to be used as a Category trigger.
+  const alertAd = ads.find(ad => 
+    ad.Status === 'Active' && 
+    !['Kickoff', 'Main Event', 'Draft Picks', 'GAME'].includes(ad.Category)
+  );
+  
   const gameActive = ads.some(ad => ad.Category === 'GAME' && ad.Status === 'Active');
 
   // --- 🔊 SOUND LOGIC ---
@@ -248,13 +239,13 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
 
       {alertAd && !gameActive && <FlashSaleOverlay item={alertAd} />}
 
-      {/* OVERLAY (20% Opacity) */}
+      {/* OVERLAY */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-blue-950/10 to-blue-950/20 z-0"></div>
 
       <StadiumFlashEffect />
       <RunningPlayer />
 
-      {/* --- DECORATIVE ASSETS --- */}
+      {/* DECORATIVE ASSETS */}
       <div className="absolute bottom-[-40px] left-[-60px] z-10">
           <div className="absolute bottom-[50px] left-[80px] w-[200px] h-[40px] bg-black/60 blur-xl rounded-full pointer-events-none"></div>
           <BubblesEffect />
@@ -271,10 +262,8 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         />
       </div>
 
-      {/* --- CONTENT GRID --- */}
+      {/* CONTENT GRID */}
       <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
-        
-        {/* HEADER */}
         <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4">
           <h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">
             Game Day <span className="text-orange-500">Specials</span>
