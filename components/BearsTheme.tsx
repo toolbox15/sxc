@@ -35,37 +35,33 @@ const DUMMY_MENU = {
   ]
 };
 
-// --- 🚨 FLASHING STROBE LIGHT (ATTACHED TO BANNER) ---
+// --- 🚨 PRO SIREN LIGHT (Attached Hardware Style) ---
 const FlashingSirenLight = ({ side }: { side: 'left' | 'right' }) => {
-  // Position: Bolted to the sides of the box
-  const positionClass = side === 'left' ? '-left-16' : '-right-16';
-  const rotation = side === 'left' ? 1 : -1; // Spin opposite directions
-
+  // Position: Bolted onto the top corners
+  const positionClass = side === 'left' ? '-left-6 -top-6' : '-right-6 -top-6';
+  
   return (
-    <div className={`absolute top-1/2 -translate-y-1/2 ${positionClass} z-50 flex items-center justify-center`}>
+    <div className={`absolute ${positionClass} z-50`}>
+      {/* The Physical Light Case */}
+      <div className="w-20 h-20 bg-gray-900 rounded-full border-4 border-gray-400 shadow-lg flex items-center justify-center">
+         {/* The Glowing Bulb */}
+         <motion.div
+            className="w-14 h-14 bg-red-600 rounded-full shadow-[0_0_30px_#ff0000]"
+            animate={{
+                backgroundColor: ['#500000', '#ff0000', '#500000'], // Flash
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 1, 0.5]
+            }}
+            transition={{ duration: 0.5, repeat: Infinity, ease: "easeInOut" }}
+         />
+      </div>
       
-      {/* 1. THE SPINNING BEAM (The Light Throw) */}
+      {/* The Rotating Beam (Light Throw) */}
       <motion.div 
-        className="absolute w-[800px] h-[800px] bg-gradient-conic from-red-600/90 via-transparent to-transparent rounded-full mix-blend-screen pointer-events-none"
-        style={{ originX: 0.5, originY: 0.5 }}
-        animate={{ rotate: 360 * rotation }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+        className="absolute top-1/2 left-1/2 w-[500px] h-[500px] -translate-x-1/2 -translate-y-1/2 bg-gradient-conic from-red-500/40 via-transparent to-transparent rounded-full mix-blend-screen pointer-events-none"
+        animate={{ rotate: side === 'left' ? 360 : -360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
       />
-
-      {/* 2. THE PHYSICAL BULB (The Hardware) */}
-      <motion.div
-        className="relative z-20 w-32 h-32 rounded-full border-8 border-gray-900 bg-red-600 shadow-[0_0_50px_rgba(255,0,0,1)] overflow-hidden"
-        animate={{
-          backgroundColor: ['#7f1d1d', '#ff0000', '#7f1d1d'], // Flash bright/dark
-          scale: [1, 1.05, 1] // Pulse size
-        }}
-        transition={{ duration: 0.5, repeat: Infinity, ease: "easeInOut" }}
-      >
-        {/* Inner Bulb Highlight */}
-        <div className="absolute top-2 left-2 w-8 h-8 bg-white/50 rounded-full blur-sm" />
-        <div className="absolute inset-0 bg-gradient-radial from-orange-500/50 to-transparent" />
-      </motion.div>
-
     </div>
   );
 };
@@ -76,7 +72,7 @@ const ConfettiEffect = () => {
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-[40]">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-[50]">
       {particles.map((_, i) => (
         <motion.div
           key={i}
@@ -102,10 +98,11 @@ const itemVariants = {
   visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } }
 };
 
-// --- DECORATIVE COMPONENTS ---
+// --- 🍺 BUBBLES EFFECT ---
 const BubblesEffect = () => {
   const bubbles = Array.from({ length: 30 }); 
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
+
   return (
     <div className="absolute bottom-[120px] left-[50px] w-[140px] h-[300px] pointer-events-none overflow-hidden z-20 opacity-50">
       {bubbles.map((_, i) => (
@@ -122,9 +119,11 @@ const BubblesEffect = () => {
   );
 };
 
+// --- STADIUM FLASH EFFECT ---
 const StadiumFlashEffect = () => {
   const flashes = Array.from({ length: 15 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {flashes.map((_, i) => (
@@ -140,7 +139,7 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER (BACKGROUND) ---
+// --- 🏃‍♂️ RUNNING PLAYER ---
 const RunningPlayer = () => {
   return (
     <motion.img
@@ -154,39 +153,46 @@ const RunningPlayer = () => {
   );
 };
 
-// --- 🚨 FLASH SALE OVERLAY (WITH ATTACHED STROBES) ---
+// --- 🚨 PRO FLASH SALE OVERLAY (New Design) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
-    <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-blue-950/95">
+    <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
       
       <ConfettiEffect />
-      <motion.div className="absolute inset-0 bg-orange-600/30" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
-      
-      {/* MAIN TEXT CONTENT BOX */}
+
+      {/* THE CARD CONTAINER */}
       <motion.div 
-        className="relative z-50 text-center p-8 w-full max-w-4xl bg-blue-950 border-y-8 border-orange-500 shadow-2xl"
-        initial={{ scale: 0.5, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+        className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white shadow-[0_0_100px_rgba(234,88,12,0.6)] flex flex-col items-center p-12"
+        initial={{ scale: 0, rotate: -5 }}
+        animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", bounce: 0.5 }}
       >
-        {/* --- 🚨 ATTACHED STROBE LIGHTS --- */}
+        {/* BACKGROUND STRIPES */}
+        <div className="absolute inset-0 overflow-hidden rounded-2xl opacity-20">
+            <div className="w-full h-full bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,#ea580c_20px,#ea580c_40px)]"></div>
+        </div>
+
+        {/* 🚨 THE MOUNTED SIRENS */}
         <FlashingSirenLight side="left" />
         <FlashingSirenLight side="right" />
-        {/* --------------------------------- */}
 
-        <h2 className="text-5xl font-black text-white italic uppercase tracking-widest mb-8 drop-shadow-md relative z-20">
-          🚨 FIELD ALERT 🚨
-        </h2>
-        <h1 className="text-8xl md:text-[9rem] font-black text-orange-500 uppercase drop-shadow-[0_10px_10px_rgba(0,0,0,1)] leading-none mb-8 relative z-20">
+        {/* HEADER BADGE */}
+        <div className="absolute -top-10 bg-orange-600 text-white px-10 py-4 rounded-xl border-4 border-white shadow-lg transform -rotate-1 z-20">
+           <h2 className="text-4xl font-black italic uppercase tracking-widest drop-shadow-md">FIELD ALERT</h2>
+        </div>
+
+        {/* MAIN TITLE (3D Text Effect) */}
+        <h1 className="relative z-10 text-8xl md:text-[10rem] font-black text-white uppercase italic leading-none mt-8 drop-shadow-[6px_6px_0px_#ea580c]">
           {item.Title}
         </h1>
-        <motion.div 
-          className="inline-block bg-white border-8 border-orange-500 px-12 py-6 rounded-3xl shadow-2xl relative z-20"
-          animate={{ scale: [1, 1.05, 1] }} 
-          transition={{ duration: 0.8, repeat: Infinity }}
-        >
-          <p className="text-blue-950 text-5xl md:text-6xl font-black uppercase leading-tight">{item.Description || "LIMITED TIME!"}</p>
-        </motion.div>
+
+        {/* SUBTITLE (White Pill) */}
+        <div className="relative z-10 mt-8 bg-white px-16 py-4 rounded-full shadow-2xl transform rotate-1">
+          <p className="text-blue-950 text-4xl md:text-5xl font-black uppercase tracking-wide">
+            {item.Description || "LIMITED TIME ONLY!"}
+          </p>
+        </div>
+
       </motion.div>
 
     </div>
@@ -204,19 +210,29 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   const gameActive = ads.some(ad => ad.Category === 'GAME' && ad.Status === 'Active');
 
   // --- 🔊 SOUND LOGIC ---
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
     if (alertAd && !gameActive) {
-      const audio = new Audio('/airhorn.mp3');
-      audio.volume = 0.7;
-      audio.loop = true;
-      audio.play().catch(e => console.log("Audio blocked:", e));
-      
-      // Cleanup function to stop sound when alert ends
-      return () => {
-        audio.pause();
-        audio.currentTime = 0;
-      };
+      if (!audioRef.current) {
+        audioRef.current = new Audio('/airhorn.mp3');
+        audioRef.current.loop = true; 
+        audioRef.current.volume = 0.7;
+      }
+      if (audioRef.current.paused) {
+        audioRef.current.play().catch(e => console.log("Audio blocked:", e));
+      }
+    } else {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
     }
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
   }, [alertAd, gameActive]);
 
   return (
@@ -224,14 +240,12 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
       className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans"
       style={{ backgroundImage: "url('/field-bg.png')" }} 
     >
-      {/* SLOT MACHINE */}
       {gameActive && (
         <div className="absolute inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md">
            <SlotMachine triggerSpin={true} />
         </div>
       )}
 
-      {/* FLASH SALE OVERLAY */}
       {alertAd && !gameActive && <FlashSaleOverlay item={alertAd} />}
 
       {/* OVERLAY (20% Opacity) */}
