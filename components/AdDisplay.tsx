@@ -8,7 +8,7 @@ import BearsTheme from './BearsTheme';
 import LiveStreamTheme from './LiveStreamTheme';
 import SlideshowTheme from './SlideshowTheme';
 import SuspendedTheme from './SuspendedTheme';
-import TireShopTheme from './themes/TireShopTheme'; // <--- NEW IMPORT
+import TireShopTheme from './themes/TireShopTheme';
 
 // Define the shape of our Ad data
 interface Ad {
@@ -37,9 +37,9 @@ export default function AdDisplay() {
   const [ads, setAds] = useState<any[]>([]);
   const [theme, setTheme] = useState<string>("Corporate");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isOffline, setIsOffline] = useState<boolean>(false); // Track connection status
+  const [isOffline, setIsOffline] = useState<boolean>(false); 
 
-  // --- 1. DATA FETCHER (WITH BACKUP SYSTEM) ---
+  // --- 1. DATA FETCHER (BUNKER MODE DISABLED) ---
   const fetchData = async () => {
     try {
       if (!API_URL) throw new Error("No API URL");
@@ -53,7 +53,7 @@ export default function AdDisplay() {
       else if (lowerId.includes("bears")) selectedTheme = "Bears";
       else if (lowerId.includes("live") || lowerId.includes("broadcast")) selectedTheme = "Broadcast";
       else if (lowerId.includes("tv") || lowerId.includes("slide")) selectedTheme = "Slideshow";
-      else if (lowerId.includes("tire") || lowerId.includes("auto") || lowerId.includes("shop")) selectedTheme = "TireShop"; // <--- NEW ROUTE
+      else if (lowerId.includes("tire") || lowerId.includes("auto") || lowerId.includes("shop")) selectedTheme = "TireShop";
       
       setTheme(selectedTheme);
 
@@ -71,23 +71,24 @@ export default function AdDisplay() {
           return target === 'All' || target === deviceId;
       });
       
-      // ✅ SUCCESS: Save to Local Backup (Bunker Mode)
-      localStorage.setItem(`backup_${deviceId}`, JSON.stringify(relevantData));
+      // 🚫 DISABLED: Save to Local Backup (Bunker Mode)
+      // localStorage.setItem(`backup_${deviceId}`, JSON.stringify(relevantData));
       
       setAds(relevantData);
       setIsLoading(false);
       setIsOffline(false); 
 
     } catch (error) { 
-      console.warn("Offline Mode Activated");
-      setIsOffline(true); // Trigger red icon
+      console.warn("Offline Mode Triggered, but Bunker Mode is DISABLED.");
+      setIsOffline(true); 
+      setIsLoading(false); // Stop loading spinner so we see the error/blank state
       
-      // 🚨 FAILURE: Load from Local Backup
-      const backup = localStorage.getItem(`backup_${deviceId}`);
-      if (backup) {
-          setAds(JSON.parse(backup));
-          setIsLoading(false);
-      }
+      // 🚫 DISABLED: Load from Local Backup
+      // const backup = localStorage.getItem(`backup_${deviceId}`);
+      // if (backup) {
+      //     setAds(JSON.parse(backup));
+      //     setIsLoading(false);
+      // }
     }
   };
 
@@ -147,7 +148,7 @@ export default function AdDisplay() {
         if (theme === 'Christmas') return <ChristmasTheme ads={ads} />;
         if (theme === 'Broadcast') return <LiveStreamTheme ads={ads} />;
         if (theme === 'Slideshow') return <SlideshowTheme playlist={ads as any[]} />;
-        if (theme === 'TireShop') return <TireShopTheme ads={ads} />; // <--- NEW COMPONENT
+        if (theme === 'TireShop') return <TireShopTheme ads={ads} />;
         
         // 3. Default
         return (
