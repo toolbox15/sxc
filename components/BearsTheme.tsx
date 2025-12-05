@@ -35,28 +35,31 @@ const DUMMY_MENU = {
   ]
 };
 
-// --- 🚨 IMAGE-BASED SIREN COMPONENT ---
-// This component loads your image and spins it.
-const SirenImage = ({ isActive = true }) => {
+// --- 🚨 REALISTIC SIREN COMPONENT ---
+const SirenImage = () => {
   return (
-    <div className="relative z-50 filter drop-shadow-[0_0_30px_rgba(255,0,0,0.8)]">
-      <motion.img
-        // 👇👇👇 MAKE SURE YOUR IMAGE IS NAMED 'siren.png' IN THE PUBLIC FOLDER 👇👇👇
+    <div className="relative z-50">
+      {/* 1. The Physical Siren Image (Static) */}
+      <img
         src="/siren.png" 
-        alt="Rotating Siren"
-        // Adjust w-32 h-32 to make it bigger or smaller
-        className="w-32 h-32 md:w-48 md:h-48 object-contain"
-        // This makes it spin
-        animate={isActive ? { rotate: 360 } : { rotate: 0 }}
-        // Duration: 2 seconds per full rotation. Lower number = faster spin.
-        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+        alt="Siren"
+        className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl"
       />
-       {/* Optional Red Glow Pulse behind the image */}
-       <motion.div 
-         className="absolute inset-0 bg-red-500/30 rounded-full blur-3xl z-[-1]"
-         animate={{ scale: [0.8, 1.2, 0.8], opacity: [0.5, 0.8, 0.5] }}
-         transition={{ duration: 1, repeat: Infinity }}
-       />
+
+      {/* 2. The Flashing Bulb Effect (Overlay) */}
+      <motion.div 
+         className="absolute inset-0 bg-red-500 mix-blend-hard-light rounded-t-full opacity-0"
+         style={{ clipPath: "inset(10% 20% 40% 20%)" }} // Clips glow to just the glass part
+         animate={{ opacity: [0, 1, 0] }} // Flash On/Off
+         transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* 3. The External Glow (Bloom) */}
+      <motion.div 
+         className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-red-600 blur-3xl rounded-full"
+         animate={{ opacity: [0, 0.8, 0], scale: [0.8, 1.5, 0.8] }}
+         transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
+      />
     </div>
   );
 };
@@ -149,7 +152,7 @@ const RunningPlayer = () => {
   );
 };
 
-// --- 🚨 FLASH SALE OVERLAY (WITH IMAGE SIRENS) ---
+// --- 🚨 FLASH SALE OVERLAY ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
@@ -170,12 +173,12 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
 
         {/* 🚨 MOUNTED IMAGE SIRENS (Top Corners) */}
         {/* Left Siren */}
-        <div className="absolute -top-20 -left-20 z-50">
-            <SirenImage isActive={true} />
+        <div className="absolute -top-16 -left-12 z-50">
+            <SirenImage />
         </div>
         {/* Right Siren */}
-        <div className="absolute -top-20 -right-20 z-50">
-            <SirenImage isActive={true} />
+        <div className="absolute -top-16 -right-12 z-50">
+            <SirenImage />
         </div>
 
         {/* HEADER BADGE */}
