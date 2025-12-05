@@ -37,6 +37,12 @@ const DUMMY_MENU = {
 
 // --- 🚨 VINTAGE SIREN CSS (INJECTED) ---
 const sirenStyles = `
+.siren-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .siren-housing {
   position: relative;
   background: linear-gradient(to bottom, #2a2a2a 0%, #1a1a1a 30%, #111 70%, #000 100%);
@@ -45,74 +51,100 @@ const sirenStyles = `
   justify-content: space-between;
   align-items: center;
   padding: 8px;
-  border: 2px solid #444;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 3px solid #555;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  z-index: 20;
 }
 .siren-light {
   position: relative;
   border-radius: 50%;
-  border: 2px solid #000;
+  border: 3px solid #111;
   overflow: hidden;
   transform-style: preserve-3d;
   perspective: 1000px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
 .left-light::before, .right-light::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0, 0, 0, 0.3) 2px, rgba(0, 0, 0, 0.3) 4px);
+  background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0, 0, 0, 0.4) 2px, rgba(0, 0, 0, 0.4) 4px);
   border-radius: 50%;
-  z-index: 1;
+  z-index: 2;
 }
 .light-dome {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  z-index: 2;
+  z-index: 3;
   pointer-events: none;
-  background: radial-gradient(ellipse at top, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  background: radial-gradient(ellipse at top, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
 }
 .siren-light::after {
   content: '';
   position: absolute;
-  top: 10%; left: 10%; width: 30%; height: 30%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.0) 100%);
+  top: 15%; left: 15%; width: 25%; height: 25%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.0) 100%);
   border-radius: 50%;
-  filter: blur(2px);
-  z-index: 3;
+  filter: blur(1px);
+  z-index: 4;
 }
 .siren-divider {
-  width: 20px; height: 100%;
+  width: 24px; height: 100%;
   display: flex; flex-direction: column; justify-content: space-around; align-items: center;
+  background-color: #222;
+  border-left: 1px solid #444;
+  border-right: 1px solid #444;
 }
 .grill {
-  width: 100%; height: 3px;
-  background: linear-gradient(to right, #333 0%, #666 50%, #333 100%);
+  width: 90%; height: 4px;
+  background: linear-gradient(to right, #333 0%, #777 50%, #333 100%);
   border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 `;
 
 // --- 🚨 1960s POLICE SIREN COMPONENT ---
-const PoliceSiren1960s = ({ isActive = true, speed = 0.8, size = "small" }: any) => {
+const PoliceSiren1960s = ({ isActive = true, speed = 1.2, size = "medium" }: any) => {
   // Size configuration
   const sizeConfig: any = {
-    small: { width: 100, lightSize: 30, domeHeight: 15 },
-    medium: { width: 180, lightSize: 45, domeHeight: 22 },
-    large: { width: 240, lightSize: 60, domeHeight: 28 }
+    small: { width: 120, lightSize: 35 },
+    medium: { width: 160, lightSize: 45 },
+    large: { width: 220, lightSize: 60 }
   };
 
   const config = sizeConfig[size];
+  const housingHeight = config.lightSize * 1.4;
+
+  // Animation variants for the rotating internal reflector effect
+  const lightVariants = {
+    on: { 
+        rotateY: [0, 360],
+        backgroundColor: ['#ff0000', '#ff3333', '#ff0000'],
+        boxShadow: [
+            "0 0 20px rgba(255,0,0,0.4), inset 0 0 20px rgba(255,0,0,0.8)", 
+            "0 0 50px rgba(255,0,0,1), inset 0 0 30px rgba(255,0,0,1)", 
+            "0 0 20px rgba(255,0,0,0.4), inset 0 0 20px rgba(255,0,0,0.8)"
+        ]
+    },
+    off: { backgroundColor: '#500000', boxShadow: "none" }
+  };
 
   return (
     <div className="siren-wrapper" style={{ width: config.width }}>
-      <div className="siren-housing" style={{ height: config.lightSize * 1.4 }}>
+      <div className="siren-housing" style={{ height: housingHeight }}>
         
         {/* Left Red Light */}
         <motion.div
           className="siren-light left-light"
-          style={{ width: config.lightSize, height: config.lightSize, background: 'radial-gradient(circle, rgba(255,0,0,1) 0%, rgba(150,0,0,1) 100%)' }}
-          animate={isActive ? { rotateY: [0, 360, 720], boxShadow: ["0 0 10px rgba(255,0,0,0.5)", "0 0 40px rgba(255,0,0,1)", "0 0 10px rgba(255,0,0,0.5)"] } : {}}
-          transition={{ rotateY: { duration: 2 / speed, ease: "linear", repeat: Infinity }, boxShadow: { duration: 1 / speed, ease: "easeInOut", repeat: Infinity } }}
+          style={{ width: config.lightSize, height: config.lightSize, background: 'radial-gradient(circle, #ff0000 0%, #900000 100%)' }}
+          animate={isActive ? "on" : "off"}
+          variants={lightVariants}
+          transition={{ 
+            rotateY: { duration: 1.5 / speed, ease: "linear", repeat: Infinity }, 
+            boxShadow: { duration: 0.75 / speed, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" },
+            backgroundColor: { duration: 0.75 / speed, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }
+          }}
         >
           <div className="light-dome" />
         </motion.div>
@@ -122,24 +154,29 @@ const PoliceSiren1960s = ({ isActive = true, speed = 0.8, size = "small" }: any)
           <div className="grill" /><div className="grill" /><div className="grill" />
         </div>
 
-        {/* Right Red Light */}
+        {/* Right Red Light (Offset animation) */}
         <motion.div
           className="siren-light right-light"
-          style={{ width: config.lightSize, height: config.lightSize, background: 'radial-gradient(circle, rgba(255,0,0,1) 0%, rgba(150,0,0,1) 100%)' }}
-          animate={isActive ? { rotateY: [0, -360, -720], boxShadow: ["0 0 10px rgba(255,0,0,0.5)", "0 0 40px rgba(255,0,0,1)", "0 0 10px rgba(255,0,0,0.5)"] } : {}}
-          transition={{ rotateY: { duration: 2 / speed, ease: "linear", repeat: Infinity, delay: 0.5 }, boxShadow: { duration: 1 / speed, ease: "easeInOut", repeat: Infinity, delay: 0.5 } }}
+          style={{ width: config.lightSize, height: config.lightSize, background: 'radial-gradient(circle, #ff0000 0%, #900000 100%)' }}
+          animate={isActive ? "on" : "off"}
+          variants={lightVariants}
+          transition={{ 
+            rotateY: { duration: 1.5 / speed, ease: "linear", repeat: Infinity, delay: (1.5/speed)/2 }, 
+            boxShadow: { duration: 0.75 / speed, ease: "easeInOut", repeat: Infinity, repeatType: "reverse", delay: (0.75/speed)/2 },
+            backgroundColor: { duration: 0.75 / speed, ease: "easeInOut", repeat: Infinity, repeatType: "reverse", delay: (0.75/speed)/2 }
+          }}
         >
           <div className="light-dome" />
         </motion.div>
 
       </div>
       
-      {/* Spinning Beam Effect */}
+      {/* Spinning Beam Effect (The throw of light onto the background) */}
       {isActive && (
          <motion.div 
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-conic from-red-600/60 via-transparent to-transparent rounded-full mix-blend-screen pointer-events-none z-[-1]"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-conic from-red-600/70 via-transparent to-transparent rounded-full mix-blend-screen pointer-events-none z-10"
             animate={{ rotate: 360 }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 1.5 / speed, repeat: Infinity, ease: "linear" }}
          />
       )}
     </div>
@@ -238,11 +275,14 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
       
+      {/* Injecting the CSS for the sirens here */}
+      <style>{sirenStyles}</style>
+
       <ConfettiEffect />
 
       {/* THE CARD CONTAINER */}
       <motion.div 
-        className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white shadow-[0_0_100px_rgba(234,88,12,0.6)] flex flex-col items-center p-12"
+        className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white shadow-[0_0_100px_rgba(234,88,12,0.6)] flex flex-col items-center p-12 mt-10"
         initial={{ scale: 0, rotate: -5 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", bounce: 0.5 }}
@@ -253,11 +293,12 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
         </div>
 
         {/* 🚨 MOUNTED VINTAGE SIRENS (Top Corners) */}
-        <div className="absolute -top-10 -left-10 z-50">
-            <PoliceSiren1960s isActive={true} speed={1} size="small" />
+        {/* Adjusted positioning to make them look bolted onto the corners */}
+        <div className="absolute -top-12 -left-12 z-50 filter drop-shadow-lg">
+            <PoliceSiren1960s isActive={true} speed={1.2} size="medium" />
         </div>
-        <div className="absolute -top-10 -right-10 z-50">
-            <PoliceSiren1960s isActive={true} speed={1} size="small" />
+        <div className="absolute -top-12 -right-12 z-50 filter drop-shadow-lg">
+            <PoliceSiren1960s isActive={true} speed={1.2} size="medium" />
         </div>
 
         {/* HEADER BADGE */}
@@ -278,8 +319,6 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
         </div>
 
       </motion.div>
-
-      <style>{sirenStyles}</style>
     </div>
   );
 };
