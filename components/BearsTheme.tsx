@@ -35,26 +35,24 @@ const DUMMY_MENU = {
   ]
 };
 
-// --- 🚨 REALISTIC SIREN COMPONENT ---
+// --- 🚨 SIREN IMAGE COMPONENT (Uses your siren.png) ---
 const SirenImage = () => {
   return (
     <div className="relative z-50">
-      {/* 1. The Physical Siren Image (Static) */}
+      {/* The Physical Siren Image */}
       <img
         src="/siren.png" 
         alt="Siren"
         className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl"
       />
-
-      {/* 2. The Flashing Bulb Effect (Overlay) */}
+      {/* The Flashing Bulb Effect Overlay */}
       <motion.div 
          className="absolute inset-0 bg-red-500 mix-blend-hard-light rounded-t-full opacity-0"
-         style={{ clipPath: "inset(10% 20% 40% 20%)" }} // Clips glow to just the glass part
-         animate={{ opacity: [0, 1, 0] }} // Flash On/Off
+         style={{ clipPath: "inset(10% 20% 40% 20%)" }} 
+         animate={{ opacity: [0, 1, 0] }} 
          transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
       />
-
-      {/* 3. The External Glow (Bloom) */}
+      {/* The External Glow */}
       <motion.div 
          className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-red-600 blur-3xl rounded-full"
          animate={{ opacity: [0, 0.8, 0], scale: [0.8, 1.5, 0.8] }}
@@ -63,7 +61,6 @@ const SirenImage = () => {
     </div>
   );
 };
-
 
 // --- 🎉 CONFETTI ENGINE ---
 const ConfettiEffect = () => {
@@ -152,14 +149,14 @@ const RunningPlayer = () => {
   );
 };
 
-// --- 🚨 FLASH SALE OVERLAY ---
+// --- 🚨 EDITABLE FLASH SALE OVERLAY (JUMBOTRON STYLE) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
       
       <ConfettiEffect />
 
-      {/* THE CARD CONTAINER */}
+      {/* THE JUMBOTRON CONTAINER */}
       <motion.div 
         className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white shadow-[0_0_100px_rgba(234,88,12,0.6)] flex flex-col items-center p-12 mt-10"
         initial={{ scale: 0, rotate: -5 }}
@@ -171,7 +168,7 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
             <div className="w-full h-full bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,#ea580c_20px,#ea580c_40px)]"></div>
         </div>
 
-        {/* 🚨 MOUNTED IMAGE SIRENS (Top Corners) */}
+        {/* 🚨 MOUNTED SIRENS (Top Corners) */}
         {/* Left Siren */}
         <div className="absolute -top-16 -left-12 z-50">
             <SirenImage />
@@ -186,14 +183,16 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
            <h2 className="text-4xl font-black italic uppercase tracking-widest drop-shadow-md">FIELD ALERT</h2>
         </div>
 
-        {/* MAIN TITLE */}
-        <h1 className="relative z-10 text-8xl md:text-[10rem] font-black text-white uppercase italic leading-none mt-8 drop-shadow-[6px_6px_0px_#ea580c]">
+        {/* === 📝 LIVE EDITABLE TEXT (FROM GOOGLE SHEET) === */}
+        
+        {/* MAIN TITLE (e.g. TOUCHDOWN BEARS!) */}
+        <h1 className="relative z-10 text-7xl md:text-9xl font-black text-white uppercase italic leading-none mt-8 drop-shadow-[6px_6px_0px_#ea580c] text-center">
           {item.Title}
         </h1>
 
-        {/* SUBTITLE */}
+        {/* SUBTITLE (e.g. 50% OFF WINGS) */}
         <div className="relative z-10 mt-8 bg-white px-16 py-4 rounded-full shadow-2xl transform rotate-1">
-          <p className="text-blue-950 text-4xl md:text-5xl font-black uppercase tracking-wide">
+          <p className="text-blue-950 text-4xl md:text-5xl font-black uppercase tracking-wide text-center">
             {item.Description || "LIMITED TIME ONLY!"}
           </p>
         </div>
@@ -250,6 +249,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         </div>
       )}
 
+      {/* FLASH SALE OVERLAY */}
       {alertAd && !gameActive && <FlashSaleOverlay item={alertAd} />}
 
       {/* OVERLAY (20% Opacity) */}
