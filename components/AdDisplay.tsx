@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { WifiOff } from 'lucide-react';
 
-// Import all themes
+// --- IMPORT ALL THEMES ---
 import ChristmasTheme from './ChristmasTheme';
 import BistroTheme from './BistroTheme';
 import BearsTheme from './BearsTheme';
@@ -9,6 +9,7 @@ import LiveStreamTheme from './LiveStreamTheme';
 import SlideshowTheme from './SlideshowTheme';
 import SuspendedTheme from './SuspendedTheme';
 import TireShopTheme from './themes/TireShopTheme';
+import NeonGameDayTheme from './NeonGameDayTheme'; // <--- NEW IMPORT
 
 // Define the shape of our Ad data
 interface Ad {
@@ -39,7 +40,7 @@ export default function AdDisplay() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOffline, setIsOffline] = useState<boolean>(false); 
 
-  // --- 1. DATA FETCHER (BUNKER MODE DISABLED) ---
+  // --- 1. DATA FETCHER ---
   const fetchData = async () => {
     try {
       if (!API_URL) throw new Error("No API URL");
@@ -53,7 +54,8 @@ export default function AdDisplay() {
       else if (lowerId.includes("bears")) selectedTheme = "Bears";
       else if (lowerId.includes("live") || lowerId.includes("broadcast")) selectedTheme = "Broadcast";
       else if (lowerId.includes("tv") || lowerId.includes("slide")) selectedTheme = "Slideshow";
-      else if (lowerId.includes("tire") || lowerId.includes("auto") || lowerId.includes("shop")) selectedTheme = "TireShop";
+      else if (lowerId.includes("tire") || lowerId.includes("auto")) selectedTheme = "TireShop";
+      else if (lowerId.includes("neon") || lowerId.includes("tech")) selectedTheme = "Neon"; // <--- NEW ROUTE
       
       setTheme(selectedTheme);
 
@@ -71,53 +73,25 @@ export default function AdDisplay() {
           return target === 'All' || target === deviceId;
       });
       
-      // 🚫 DISABLED: Save to Local Backup (Bunker Mode)
-      // localStorage.setItem(`backup_${deviceId}`, JSON.stringify(relevantData));
-      
       setAds(relevantData);
       setIsLoading(false);
       setIsOffline(false); 
 
     } catch (error) { 
-      console.warn("Offline Mode Triggered, but Bunker Mode is DISABLED.");
+      console.warn("Offline Mode Triggered");
       setIsOffline(true); 
-      setIsLoading(false); // Stop loading spinner so we see the error/blank state
-      
-      // 🚫 DISABLED: Load from Local Backup
-      // const backup = localStorage.getItem(`backup_${deviceId}`);
-      // if (backup) {
-      //     setAds(JSON.parse(backup));
-      //     setIsLoading(false);
-      // }
+      setIsLoading(false); 
     }
   };
 
   // --- 2. INTELLIGENT RECONNECT LISTENER ---
   useEffect(() => {
     fetchData(); // Run once on mount
-
-    // A. Standard Poll (Every 30s)
     const interval = setInterval(fetchData, 30000);
-
-    // B. "Internet is Back!" Listener (Instant Trigger)
-    const handleOnline = () => {
-      console.log("Internet Restored! Refreshing Data...");
-      fetchData(); 
-      setIsOffline(false);
-    };
-
-    const sendHeartbeat = async () => {
-      try {
-        await fetch(`${API_URL}?action=heartbeat&device_id=${deviceId}`, { mode: 'no-cors' });
-      } catch (e) {}
-    };
-    const heartbeatInterval = setInterval(sendHeartbeat, 60000);
-
+    const handleOnline = () => { fetchData(); setIsOffline(false); };
     window.addEventListener('online', handleOnline);
-
     return () => {
       clearInterval(interval);
-      clearInterval(heartbeatInterval);
       window.removeEventListener('online', handleOnline);
     };
   }, []);
@@ -129,7 +103,6 @@ export default function AdDisplay() {
   // --- RENDER ---
   return (
     <>
-      {/* ⚠️ OFFLINE INDICATOR (Tiny red icon if net is down) */}
       {isOffline && (
         <div className="absolute top-2 right-2 z-[9999] bg-red-600 text-white p-2 rounded-full opacity-50 animate-pulse">
           <WifiOff size={20} />
@@ -149,6 +122,7 @@ export default function AdDisplay() {
         if (theme === 'Broadcast') return <LiveStreamTheme ads={ads} />;
         if (theme === 'Slideshow') return <SlideshowTheme playlist={ads as any[]} />;
         if (theme === 'TireShop') return <TireShopTheme ads={ads} />;
+        if (theme === 'Neon') return <NeonGameDayTheme ads={ads} />; // <--- NEW RENDER
         
         // 3. Default
         return (
