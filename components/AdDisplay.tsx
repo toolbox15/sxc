@@ -36,7 +36,10 @@ const deviceId = queryParams.get('id') || "Lobby_Screen_1";
 
 export default function AdDisplay() {
   const [ads, setAds] = useState<any[]>([]);
-  const [theme, setTheme] = useState<string>("Corporate");
+  
+  // 🚨 FORCE DEFAULT TO "Neon" (This fixes the white screen issue)
+  const [theme, setTheme] = useState<string>("Neon"); 
+  
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOffline, setIsOffline] = useState<boolean>(false); 
 
@@ -47,7 +50,7 @@ export default function AdDisplay() {
       
       // Determine Theme Logic based on ID
       const lowerId = deviceId.toLowerCase();
-      let selectedTheme = "Corporate";
+      let selectedTheme = "Neon"; // Defaulting logic to Neon too
 
       if (lowerId.includes("joespizza") || lowerId.includes("bbq")) selectedTheme = "Christmas"; 
       else if (lowerId.includes("bistro")) selectedTheme = "Bistro";
@@ -55,7 +58,7 @@ export default function AdDisplay() {
       else if (lowerId.includes("live") || lowerId.includes("broadcast")) selectedTheme = "Broadcast";
       else if (lowerId.includes("tv") || lowerId.includes("slide")) selectedTheme = "Slideshow";
       else if (lowerId.includes("tire") || lowerId.includes("auto")) selectedTheme = "TireShop";
-      else if (lowerId.includes("neon") || lowerId.includes("tech")) selectedTheme = "Neon"; // <--- NEW ROUTE
+      else if (lowerId.includes("neon") || lowerId.includes("tech")) selectedTheme = "Neon"; 
       
       setTheme(selectedTheme);
 
@@ -124,14 +127,8 @@ export default function AdDisplay() {
         if (theme === 'TireShop') return <TireShopTheme ads={ads} />;
         if (theme === 'Neon') return <NeonGameDayTheme ads={ads} />; // <--- NEW RENDER
         
-        // 3. Default
-        return (
-            <div className="bg-white text-black h-screen flex flex-col items-center justify-center">
-                <h1 className="text-4xl font-bold">Welcome to {deviceId}</h1>
-                <p className="mt-4 text-gray-500">Theme: {theme}</p>
-                <p className="text-sm text-gray-400">Waiting for content assignment.</p>
-            </div>
-        );
+        // 3. Default (If we somehow fail, default to Neon anyway)
+        return <NeonGameDayTheme ads={ads} />;
       })()}
     </>
   );
