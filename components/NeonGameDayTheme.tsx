@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 // --- 1. THE TECH CARD COMPONENT (Internal) ---
-// This draws the glowing boxes with L-brackets
+// This draws the glowing boxes with L-brackets automatically
 const TechCard = ({ title, price, children, color = 'blue', delay = 0 }: any) => {
   const colors: any = {
     blue: { outer: 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]', inner: 'border-blue-300', text: 'text-blue-400' },
