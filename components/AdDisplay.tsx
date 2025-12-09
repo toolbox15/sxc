@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { WifiOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// --- IMPORT EXISTING THEMES (Keep these) ---
+// --- IMPORT EXISTING THEMES (Keep these as they were) ---
 import ChristmasTheme from './ChristmasTheme';
 import BistroTheme from './BistroTheme';
 import BearsTheme from './BearsTheme';
@@ -12,7 +12,7 @@ import SuspendedTheme from './SuspendedTheme';
 import TireShopTheme from './themes/TireShopTheme';
 
 // ==========================================
-// 🚨 PART 1: THE NEON THEME (BUILT-IN)
+// 🚨 PART 1: THE NEON THEME (Directly Inside Here)
 // ==========================================
 
 const TechCard = ({ title, price, children, color = 'blue', delay = 0 }: any) => {
@@ -152,4 +152,31 @@ export default function AdDisplay() {
     fetchData(); 
     const interval = setInterval(fetchData, 30000);
     const handleOnline = () => { fetchData(); setIsOffline(false); };
-    window.addEventListener('online', handleOnline
+    window.addEventListener('online', handleOnline);
+    return () => { clearInterval(interval); window.removeEventListener('online', handleOnline); };
+  }, []);
+
+  if (isLoading) return <div className="h-screen w-screen bg-black text-white flex items-center justify-center">Loading System...</div>;
+
+  return (
+    <>
+      {isOffline && <div className="absolute top-2 right-2 z-[9999] bg-red-600 text-white p-2 rounded-full opacity-50 animate-pulse"><WifiOff size={20} /></div>}
+
+      {/* RENDER LOGIC */}
+      {(() => {
+        const isLocked = ads.some((ad: any) => ad.Category === 'LOCKED' && ad.Status === 'Active');
+        if (isLocked) return <SuspendedTheme />;
+
+        if (theme === 'Bears') return <BearsTheme ads={ads} />;
+        if (theme === 'Bistro') return <BistroTheme ads={ads} />;
+        if (theme === 'Christmas') return <ChristmasTheme ads={ads} />;
+        if (theme === 'Broadcast') return <LiveStreamTheme ads={ads} />;
+        if (theme === 'Slideshow') return <SlideshowTheme playlist={ads as any[]} />;
+        if (theme === 'TireShop') return <TireShopTheme ads={ads} />;
+        
+        // DEFAULT FALLBACK IS NOW NEON
+        return <NeonGameDayTheme ads={ads} />;
+      })()}
+    </>
+  );
+}
