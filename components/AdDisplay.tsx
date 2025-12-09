@@ -2,15 +2,14 @@ import { useState, useEffect } from 'react';
 import { WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// --- IMPORT ALL THEMES ---
-// Now that TireShopTheme.tsx exists in the root folder, this works!
+// --- IMPORT THEMES ---
 import ChristmasTheme from './ChristmasTheme';
 import BistroTheme from './BistroTheme';
 import BearsTheme from './BearsTheme';
 import LiveStreamTheme from './LiveStreamTheme';
 import SlideshowTheme from './SlideshowTheme';
 import SuspendedTheme from './SuspendedTheme';
-import TireShopTheme from './TireShopTheme'; // <--- No longer disabled
+import TireShopTheme from './TireShopTheme';
 
 // ==========================================
 // ⚡ INTERNAL NEON THEME (Backup)
@@ -24,7 +23,11 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
     }, 4000); 
     return () => clearInterval(timer);
   }, [items.length]);
-  const currentItem = items[index] || { Title: "LOADING", Price: "...", ImageURL: "" };
+
+  // SAFETY CHECK: If ImageURL is missing, use a fallback to prevent broken icons
+  const currentItem = items[index] || {};
+  const safeImage = currentItem.ImageURL || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80"; // Generic food fallback
+
   return (
     <div className="relative h-full w-full p-1 flex flex-col">
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
@@ -34,11 +37,21 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
       <div className="relative z-10 h-full w-full bg-black/90 flex flex-col border border-white/10 rounded-lg overflow-hidden">
         <div className="flex-1 w-full overflow-hidden relative group">
            <AnimatePresence mode='wait'>
-             <motion.img key={index} src={currentItem.ImageURL} initial={{ x: 300, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -300, opacity: 0 }} transition={{ duration: 0.5 }} className="absolute inset-0 w-full h-full object-cover opacity-90" alt="Content" />
+             <motion.img 
+               key={index} 
+               src={safeImage} 
+               initial={{ x: 300, opacity: 0 }} 
+               animate={{ x: 0, opacity: 1 }} 
+               exit={{ x: -300, opacity: 0 }} 
+               transition={{ duration: 0.5 }} 
+               className="absolute inset-0 w-full h-full object-cover opacity-90" 
+               alt="Content" 
+               onError={(e:any) => {e.target.src = "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80"}} // Double safety
+             />
            </AnimatePresence>
         </div>
         <div className="h-24 shrink-0 bg-gray-900 flex flex-col items-center justify-center border-t-2 border-blue-500/50 p-2 z-20">
-            <h3 className="text-white font-black text-xl uppercase tracking-wider text-center leading-none mb-1">{currentItem.Title}</h3>
+            <h3 className="text-white font-black text-xl uppercase tracking-wider text-center leading-none mb-1">{currentItem.Title || "LOADING..."}</h3>
             <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-white">{currentItem.Price}</span>
         </div>
       </div>
@@ -49,7 +62,9 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
 const NeonGameDayTheme = ({ ads }: any) => {
   const mainItems = ads.filter((ad:any) => ad.Category === 'Main');
   const drinkItems = ads.filter((ad:any) => ad.Category === 'Drinks');
-  const getPair = (i: number) => [mainItems[i] || {}, drinkItems[i] || {}];
+  // Ensure we always have objects to prevent crashes
+  const getPair = (i: number) => [mainItems[i] || {Title:"Loading..."}, drinkItems[i] || {Title:"Loading..."}];
+
   return (
     <div className="w-full h-screen bg-[#050510] flex flex-col font-sans overflow-hidden relative">
       <div className="shrink-0 w-full p-6 flex items-center justify-between border-b-4 border-red-600 bg-black/60 z-20">
@@ -65,7 +80,7 @@ const NeonGameDayTheme = ({ ads }: any) => {
 };
 
 // ==========================================
-// 🚨 MAIN CONTROLLER (v5.0 FINAL)
+// 🚨 MAIN CONTROLLER (CLEAN VERSION)
 // ==========================================
 const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
 const queryParams = new URLSearchParams(window.location.search);
@@ -87,7 +102,7 @@ export default function AdDisplay() {
       else if (lowerId.includes("bears")) selectedTheme = "Bears";
       else if (lowerId.includes("live") || lowerId.includes("broadcast")) selectedTheme = "Broadcast";
       else if (lowerId.includes("tv") || lowerId.includes("slide")) selectedTheme = "Slideshow";
-      else if (lowerId.includes("tire") || lowerId.includes("auto")) selectedTheme = "TireShop"; // <--- Enabled!
+      else if (lowerId.includes("tire") || lowerId.includes("auto")) selectedTheme = "TireShop"; 
       else if (lowerId.includes("neon") || lowerId.includes("tech")) selectedTheme = "Neon"; 
       
       setTheme(selectedTheme);
@@ -106,7 +121,7 @@ export default function AdDisplay() {
 
   useEffect(() => { fetchData(); setInterval(fetchData, 30000); }, []);
 
-  if (isLoading) return <div className="h-screen bg-black text-white flex items-center justify-center">LOADING v5.0...</div>;
+  if (isLoading) return <div className="h-screen bg-black text-white flex items-center justify-center">LOADING SYSTEM...</div>;
 
   return (
     <>
@@ -131,10 +146,7 @@ export default function AdDisplay() {
         );
       })()}
       
-      {/* FINAL DEBUG BOX */}
-      <div className="fixed bottom-0 right-0 bg-green-600 text-white p-2 text-xs font-mono z-[9999]">
-         v5.0 FINAL | ID: {deviceId}
-      </div>
+      {/* NO DEBUG BOX HERE - CLEAN SCREEN */}
     </>
   );
 }
