@@ -2,19 +2,18 @@ import { useState, useEffect } from 'react';
 import { WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// ---------------------------------------------------------
-// 🚨 TEMPORARILY DISABLED EXTERNAL THEMES TO FIX BUILD CRASH
-// ---------------------------------------------------------
-// import ChristmasTheme from './ChristmasTheme';
-// import BistroTheme from './BistroTheme';
-// import BearsTheme from './BearsTheme';
-// import LiveStreamTheme from './LiveStreamTheme';
-// import SlideshowTheme from './SlideshowTheme';
-// import SuspendedTheme from './SuspendedTheme';
-// import TireShopTheme from './themes/TireShopTheme'; 
+// --- IMPORT ALL THEMES ---
+// Now that TireShopTheme.tsx exists in the root folder, this works!
+import ChristmasTheme from './ChristmasTheme';
+import BistroTheme from './BistroTheme';
+import BearsTheme from './BearsTheme';
+import LiveStreamTheme from './LiveStreamTheme';
+import SlideshowTheme from './SlideshowTheme';
+import SuspendedTheme from './SuspendedTheme';
+import TireShopTheme from './TireShopTheme'; // <--- No longer disabled
 
 // ==========================================
-// ⚡ INTERNAL NEON THEME (Safe to use)
+// ⚡ INTERNAL NEON THEME (Backup)
 // ==========================================
 const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) => {
   const [index, setIndex] = useState(0);
@@ -25,42 +24,17 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
     }, 4000); 
     return () => clearInterval(timer);
   }, [items.length]);
-
   const currentItem = items[index] || { Title: "LOADING", Price: "...", ImageURL: "" };
-
   return (
     <div className="relative h-full w-full p-1 flex flex-col">
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
          <div className="absolute inset-0 border-[4px] md:border-[6px] border-transparent rounded-lg" 
-              style={{ 
-                background: `linear-gradient(to bottom right, ${color1}, ${color2}) border-box`,
-                WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
-                WebkitMaskComposite: 'xor',
-                maskComposite: 'exclude'
-              }} 
-         />
+              style={{ background: `linear-gradient(to bottom right, ${color1}, ${color2}) border-box`, WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude' }} />
       </div>
-      <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible">
-        <motion.rect 
-          x="3" y="3" width="99%" height="98%" 
-          fill="none" stroke="white" strokeWidth="3" strokeDasharray="10 20" strokeLinecap="round" rx="6" ry="6" 
-          animate={{ strokeDashoffset: [0, -60] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-        />
-      </svg>
       <div className="relative z-10 h-full w-full bg-black/90 flex flex-col border border-white/10 rounded-lg overflow-hidden">
         <div className="flex-1 w-full overflow-hidden relative group">
            <AnimatePresence mode='wait'>
-             <motion.img 
-               key={index}
-               src={currentItem.ImageURL} 
-               initial={{ x: 300, opacity: 0 }}
-               animate={{ x: 0, opacity: 1 }}
-               exit={{ x: -300, opacity: 0 }}
-               transition={{ duration: 0.5 }}
-               className="absolute inset-0 w-full h-full object-cover opacity-90" 
-               alt="Content" 
-             />
+             <motion.img key={index} src={currentItem.ImageURL} initial={{ x: 300, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -300, opacity: 0 }} transition={{ duration: 0.5 }} className="absolute inset-0 w-full h-full object-cover opacity-90" alt="Content" />
            </AnimatePresence>
         </div>
         <div className="h-24 shrink-0 bg-gray-900 flex flex-col items-center justify-center border-t-2 border-blue-500/50 p-2 z-20">
@@ -76,7 +50,6 @@ const NeonGameDayTheme = ({ ads }: any) => {
   const mainItems = ads.filter((ad:any) => ad.Category === 'Main');
   const drinkItems = ads.filter((ad:any) => ad.Category === 'Drinks');
   const getPair = (i: number) => [mainItems[i] || {}, drinkItems[i] || {}];
-
   return (
     <div className="w-full h-screen bg-[#050510] flex flex-col font-sans overflow-hidden relative">
       <div className="shrink-0 w-full p-6 flex items-center justify-between border-b-4 border-red-600 bg-black/60 z-20">
@@ -92,7 +65,7 @@ const NeonGameDayTheme = ({ ads }: any) => {
 };
 
 // ==========================================
-// 🚨 MAIN CONTROLLER
+// 🚨 MAIN CONTROLLER (v5.0 FINAL)
 // ==========================================
 const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
 const queryParams = new URLSearchParams(window.location.search);
@@ -109,12 +82,18 @@ export default function AdDisplay() {
       const lowerId = deviceId.toLowerCase();
       let selectedTheme = "Corporate";
 
-      // Simple Logic for now
-      if (lowerId.includes("neon") || lowerId.includes("tech")) selectedTheme = "Neon"; 
+      if (lowerId.includes("joespizza") || lowerId.includes("bbq")) selectedTheme = "Christmas"; 
+      else if (lowerId.includes("bistro")) selectedTheme = "Bistro";
+      else if (lowerId.includes("bears")) selectedTheme = "Bears";
+      else if (lowerId.includes("live") || lowerId.includes("broadcast")) selectedTheme = "Broadcast";
+      else if (lowerId.includes("tv") || lowerId.includes("slide")) selectedTheme = "Slideshow";
+      else if (lowerId.includes("tire") || lowerId.includes("auto")) selectedTheme = "TireShop"; // <--- Enabled!
+      else if (lowerId.includes("neon") || lowerId.includes("tech")) selectedTheme = "Neon"; 
       
       setTheme(selectedTheme);
 
-      const res = await fetch(`${API_URL}?tab=Ads`);
+      const tabName = selectedTheme === "Slideshow" ? "Playlist" : "Ads";
+      const res = await fetch(`${API_URL}?tab=${tabName}`);
       const data = await res.json();
       const relevantData = data.filter((item: any) => {
           const target = item.Target_Screen || item.Client_ID;
@@ -127,29 +106,34 @@ export default function AdDisplay() {
 
   useEffect(() => { fetchData(); setInterval(fetchData, 30000); }, []);
 
-  if (isLoading) return <div className="h-screen bg-black text-white flex items-center justify-center">LOADING v3.0...</div>;
+  if (isLoading) return <div className="h-screen bg-black text-white flex items-center justify-center">LOADING v5.0...</div>;
 
   return (
     <>
       {(() => {
-        // ONLY NEON IS ACTIVE RIGHT NOW
+        const isLocked = ads.some((ad: any) => ad.Category === 'LOCKED' && ad.Status === 'Active');
+        if (isLocked) return <SuspendedTheme />;
+
+        if (theme === 'Bears') return <BearsTheme ads={ads} />;
+        if (theme === 'Bistro') return <BistroTheme ads={ads} />;
+        if (theme === 'Christmas') return <ChristmasTheme ads={ads} />;
+        if (theme === 'Broadcast') return <LiveStreamTheme ads={ads} />;
+        if (theme === 'Slideshow') return <SlideshowTheme playlist={ads} />;
+        if (theme === 'TireShop') return <TireShopTheme ads={ads} />;
         if (theme === 'Neon') return <NeonGameDayTheme ads={ads} />;
         
-        // Default Corporate Screen (White)
         return (
             <div className="bg-white text-black h-screen flex flex-col items-center justify-center">
                 <h1 className="text-4xl font-bold">Welcome to {deviceId}</h1>
                 <p className="mt-4 text-gray-500">Theme: {theme}</p>
-                <div className="p-4 bg-gray-100 rounded text-sm text-gray-600 mt-4">
-                   Other themes are temporarily disabled to fix the crash.
-                </div>
+                <p className="text-sm text-gray-400">Waiting for content.</p>
             </div>
         );
       })()}
-
-      {/* DEBUG BOX: IF YOU SEE THIS, THE UPDATE WORKED */}
-      <div className="fixed bottom-0 right-0 bg-red-600 text-white p-2 text-xs font-mono z-[9999]">
-         v3.0 RESET | ID: {deviceId}
+      
+      {/* FINAL DEBUG BOX */}
+      <div className="fixed bottom-0 right-0 bg-green-600 text-white p-2 text-xs font-mono z-[9999]">
+         v5.0 FINAL | ID: {deviceId}
       </div>
     </>
   );
