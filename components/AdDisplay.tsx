@@ -2,20 +2,19 @@ import { useState, useEffect } from 'react';
 import { WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// --- IMPORT EXTERNAL THEMES ---
-// I have adjusted these paths to be safer
-import ChristmasTheme from './ChristmasTheme';
-import BistroTheme from './BistroTheme';
-import BearsTheme from './BearsTheme';
-import LiveStreamTheme from './LiveStreamTheme';
-import SlideshowTheme from './SlideshowTheme';
-import SuspendedTheme from './SuspendedTheme';
-// 🚨 FIX: Changed from './themes/TireShopTheme' to './TireShopTheme'
-// If this file is actually in a folder, we might need to change it back, but let's try flat first.
-import TireShopTheme from './TireShopTheme'; 
+// ---------------------------------------------------------
+// 🚨 TEMPORARILY DISABLED EXTERNAL THEMES TO FIX BUILD CRASH
+// ---------------------------------------------------------
+// import ChristmasTheme from './ChristmasTheme';
+// import BistroTheme from './BistroTheme';
+// import BearsTheme from './BearsTheme';
+// import LiveStreamTheme from './LiveStreamTheme';
+// import SlideshowTheme from './SlideshowTheme';
+// import SuspendedTheme from './SuspendedTheme';
+// import TireShopTheme from './themes/TireShopTheme'; 
 
 // ==========================================
-// ⚡ INTERNAL NEON THEME (Kept Safe)
+// ⚡ INTERNAL NEON THEME (Safe to use)
 // ==========================================
 const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) => {
   const [index, setIndex] = useState(0);
@@ -93,7 +92,7 @@ const NeonGameDayTheme = ({ ads }: any) => {
 };
 
 // ==========================================
-// 🚨 MAIN CONTROLLER (THE ROUTER)
+// 🚨 MAIN CONTROLLER
 // ==========================================
 const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
 const queryParams = new URLSearchParams(window.location.search);
@@ -101,33 +100,21 @@ const deviceId = queryParams.get('id') || "Lobby_Screen_1";
 
 export default function AdDisplay() {
   const [ads, setAds] = useState<any[]>([]);
-  // 1. DEFAULT IS NOW CORPORATE (This lets you escape Neon)
   const [theme, setTheme] = useState<string>("Corporate"); 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  
-  // 2. DEBUGGER: This red box proves the code is new
-  const debugMode = true; 
 
   const fetchData = async () => {
     try {
       if (!API_URL) return;
-      
       const lowerId = deviceId.toLowerCase();
       let selectedTheme = "Corporate";
 
-      // 3. ROUTER LOGIC RESTORED
-      if (lowerId.includes("joespizza") || lowerId.includes("bbq")) selectedTheme = "Christmas"; 
-      else if (lowerId.includes("bistro")) selectedTheme = "Bistro";
-      else if (lowerId.includes("bears")) selectedTheme = "Bears";
-      else if (lowerId.includes("live") || lowerId.includes("broadcast")) selectedTheme = "Broadcast";
-      else if (lowerId.includes("tv") || lowerId.includes("slide")) selectedTheme = "Slideshow";
-      else if (lowerId.includes("tire") || lowerId.includes("auto")) selectedTheme = "TireShop";
-      else if (lowerId.includes("neon") || lowerId.includes("tech")) selectedTheme = "Neon"; 
+      // Simple Logic for now
+      if (lowerId.includes("neon") || lowerId.includes("tech")) selectedTheme = "Neon"; 
       
       setTheme(selectedTheme);
 
-      const tabName = selectedTheme === "Slideshow" ? "Playlist" : "Ads";
-      const res = await fetch(`${API_URL}?tab=${tabName}`);
+      const res = await fetch(`${API_URL}?tab=Ads`);
       const data = await res.json();
       const relevantData = data.filter((item: any) => {
           const target = item.Target_Screen || item.Client_ID;
@@ -140,21 +127,12 @@ export default function AdDisplay() {
 
   useEffect(() => { fetchData(); setInterval(fetchData, 30000); }, []);
 
-  if (isLoading) return <div className="h-screen bg-black text-white flex items-center justify-center">LOADING...</div>;
+  if (isLoading) return <div className="h-screen bg-black text-white flex items-center justify-center">LOADING v3.0...</div>;
 
   return (
     <>
-      {/* THEME RENDERER */}
       {(() => {
-        // Try to load external themes. If these fail, we will see the Red Box but blank screen.
-        if (theme === 'Bears') return <BearsTheme ads={ads} />;
-        if (theme === 'Bistro') return <BistroTheme ads={ads} />;
-        if (theme === 'Christmas') return <ChristmasTheme ads={ads} />;
-        if (theme === 'Broadcast') return <LiveStreamTheme ads={ads} />;
-        if (theme === 'Slideshow') return <SlideshowTheme playlist={ads} />;
-        // Note: I am assuming TireShopTheme is in the same folder now
-        if (theme === 'TireShop') return <TireShopTheme ads={ads} />;
-        
+        // ONLY NEON IS ACTIVE RIGHT NOW
         if (theme === 'Neon') return <NeonGameDayTheme ads={ads} />;
         
         // Default Corporate Screen (White)
@@ -162,17 +140,17 @@ export default function AdDisplay() {
             <div className="bg-white text-black h-screen flex flex-col items-center justify-center">
                 <h1 className="text-4xl font-bold">Welcome to {deviceId}</h1>
                 <p className="mt-4 text-gray-500">Theme: {theme}</p>
-                <p className="text-sm text-gray-400">Waiting for content.</p>
+                <div className="p-4 bg-gray-100 rounded text-sm text-gray-600 mt-4">
+                   Other themes are temporarily disabled to fix the crash.
+                </div>
             </div>
         );
       })()}
-      
-      {/* 4. RED DEBUG BOX (Bottom Right) */}
-      {debugMode && (
-        <div className="fixed bottom-0 right-0 bg-red-600 text-white p-2 text-xs font-mono z-[9999]">
-           ID: {deviceId} | THEME: {theme} | V: 2.0
-        </div>
-      )}
+
+      {/* DEBUG BOX: IF YOU SEE THIS, THE UPDATE WORKED */}
+      <div className="fixed bottom-0 right-0 bg-red-600 text-white p-2 text-xs font-mono z-[9999]">
+         v3.0 RESET | ID: {deviceId}
+      </div>
     </>
   );
 }
