@@ -38,9 +38,9 @@ const CinematicTheme = ({ ads }: any) => {
       { Title: "FRUIT & YOGURT PARFAIT", Price: "$7.00", Description: "Greek yogurt, seasonal fruit, chia seeds" }
   ];
 
-  // 🚨 THE FIX: I added the extra .mp4 to match your file upload
-  // Because you uploaded "sweets.mp4.mp4", we must ask for exactly that.
-  const VIDEO_URL = "/sweets.mp4.mp4"; 
+  // 🚨 YOUR DROPBOX LINK IS HERE
+  // I replaced "dl=0" with "raw=1" so it streams directly to the TV.
+  const VIDEO_URL = "https://www.dropbox.com/scl/fi/6drj22j683vsi1xtadeah/sweets.mp4.mp4?rlkey=8laih4aofdt3czb3buqfu8m9x&st=amzn5tvz&raw=1";
 
   return (
     <div className="flex w-full h-screen bg-orange-50 font-sans overflow-hidden">
