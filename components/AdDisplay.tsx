@@ -2,15 +2,25 @@ import { useState, useEffect } from 'react';
 import { WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// ==========================================
-// 🔄 COMPONENT: SLIDING NEON CARD
-// ==========================================
+// --- IMPORT EXTERNAL THEMES ---
+// (Make sure these files exist in your folder!)
+import ChristmasTheme from './ChristmasTheme';
+import BistroTheme from './BistroTheme';
+import BearsTheme from './BearsTheme';
+import LiveStreamTheme from './LiveStreamTheme';
+import SlideshowTheme from './SlideshowTheme';
+import SuspendedTheme from './SuspendedTheme';
+import TireShopTheme from './themes/TireShopTheme';
+
+// =========================================================
+// ⚡ INTERNAL NEON THEME (Kept inside here to prevent crashes)
+// =========================================================
+
 const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) => {
   const [index, setIndex] = useState(0);
 
-  // FASTER CYCLE: Switches every 4 seconds so you see it working
   useEffect(() => {
-    if (items.length < 2) return; // Don't run timer if only 1 item
+    if (items.length < 2) return; 
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % items.length);
     }, 4000); 
@@ -21,8 +31,6 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
 
   return (
     <div className="relative h-full w-full p-1 flex flex-col">
-      
-      {/* 1. ANIMATED BORDER */}
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
          <div className="absolute inset-0 border-[4px] md:border-[6px] border-transparent rounded-lg" 
               style={{ 
@@ -41,15 +49,11 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
         />
       </svg>
-
-      {/* 2. INNER CONTENT (The Slider) */}
       <div className="relative z-10 h-full w-full bg-black/90 flex flex-col border border-white/10 rounded-lg overflow-hidden">
-        
-        {/* SLIDING IMAGE AREA */}
         <div className="flex-1 w-full overflow-hidden relative group">
            <AnimatePresence mode='wait'>
              <motion.img 
-               key={index} // Changing this KEY forces React to re-draw (animate) the image
+               key={index}
                src={currentItem.ImageURL} 
                initial={{ x: 300, opacity: 0 }}
                animate={{ x: 0, opacity: 1 }}
@@ -61,8 +65,6 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
            </AnimatePresence>
            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
         </div>
-
-        {/* SLIDING TEXT AREA */}
         <div className="h-24 shrink-0 bg-gray-900 flex flex-col items-center justify-center border-t-2 border-blue-500/50 p-2 z-20">
             <AnimatePresence mode='wait'>
                 <motion.div 
@@ -87,53 +89,17 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
   );
 };
 
-// ==========================================
-// 🚨 MAIN CONTROLLER
-// ==========================================
-const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
-const queryParams = new URLSearchParams(window.location.search);
-const deviceId = queryParams.get('id') || "Lobby_Screen_1"; 
+const NeonGameDayTheme = ({ ads }: any) => {
+  const mainItems = ads.filter((ad:any) => ad.Category === 'Main');
+  const drinkItems = ads.filter((ad:any) => ad.Category === 'Drinks' || ad.Category === 'Draft Picks');
+  const offers = ads.filter((ad:any) => ad.Category === 'Offer');
 
-// --- FALLBACK IMAGES (So it always slides) ---
-const DEFAULT_BEER = { Title: "ICE COLD BEER", Price: "$6.00", ImageURL: "https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=800&q=80" };
-const DEFAULT_FOOD = { Title: "EPIC BURGER", Price: "$15.00", ImageURL: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80" };
+  const DEFAULT_BEER = { Title: "ICE COLD BEER", Price: "$6.00", ImageURL: "https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=800&q=80" };
+  const DEFAULT_FOOD = { Title: "EPIC BURGER", Price: "$15.00", ImageURL: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80" };
 
-export default function AdDisplay() {
-  const [ads, setAds] = useState<any[]>([]);
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!API_URL) return;
-        const res = await fetch(`${API_URL}?tab=Ads`);
-        const data = await res.json();
-        const relevantData = data.filter((item: any) => {
-            const target = item.Target_Screen || item.Client_ID;
-            return !target || target === 'All' || target === deviceId;
-        });
-        setAds(relevantData);
-      } catch (error) {}
-    };
-    fetchData();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const mainItems = ads.filter(ad => ad.Category === 'Main');
-  const drinkItems = ads.filter(ad => ad.Category === 'Drinks' || ad.Category === 'Draft Picks');
-  const offers = ads.filter(ad => ad.Category === 'Offer');
-
-  // --- FORCE PAIRING LOGIC ---
-  // If we find a food, we try to find a drink. 
-  // If no drink exists in data, we USE DEFAULT_BEER so it still slides.
   const getPair = (index: number) => {
-     // Get Food (or default if missing)
      const food = mainItems[index] || DEFAULT_FOOD;
-     
-     // Get Drink (or default if missing)
-     // This guarantees we ALWAYS have 2 items, so animation ALWAYS runs.
      const drink = drinkItems[index] || DEFAULT_BEER; 
-     
      return [food, drink]; 
   };
 
@@ -145,7 +111,6 @@ export default function AdDisplay() {
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-b from-blue-900/10 to-black pointer-events-none" />
 
-      {/* HEADER */}
       <div className="shrink-0 w-full p-4 md:p-6 flex items-center justify-between border-b-4 border-red-600 bg-black/60 shadow-xl z-20">
           <h1 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter drop-shadow-[4px_4px_0_#b91c1c]">
             GAME DAY <span className="text-blue-500">MENU</span>
@@ -157,14 +122,12 @@ export default function AdDisplay() {
           </div>
       </div>
 
-      {/* MAIN GRID - Forces 3 Sliding Cards */}
       <div className="flex-1 min-h-0 w-full p-4 md:p-8 grid grid-cols-3 gap-4 md:gap-8 z-10">
           <SlideshowCard items={getPair(0)} color1="#ff0000" color2="#0000ff" />
           <SlideshowCard items={getPair(1)} color1="#0088ff" color2="#00ffff" />
           <SlideshowCard items={getPair(2)} color1="#ff8800" color2="#ffff00" />
       </div>
 
-      {/* FOOTER */}
       <div className="shrink-0 w-full p-4 md:p-6 flex gap-4 md:gap-6 z-20 bg-black/40 backdrop-blur-sm">
          <div className="flex-1 border-2 border-dashed border-gray-600 bg-gray-900/90 rounded-lg flex items-center justify-center p-4 shadow-lg">
             <span className="text-yellow-400 font-black text-2xl md:text-3xl uppercase animate-pulse mr-3">{offer1.Title}:</span>
@@ -177,4 +140,81 @@ export default function AdDisplay() {
       </div>
     </div>
   );
-}
+};
+
+// ==========================================
+// 🚨 MAIN CONTROLLER (THE TRAFFIC COP)
+// ==========================================
+const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
+const queryParams = new URLSearchParams(window.location.search);
+const deviceId = queryParams.get('id') || "Lobby_Screen_1"; 
+
+export default function AdDisplay() {
+  const [ads, setAds] = useState<any[]>([]);
+  // 1. CHANGED DEFAULT BACK TO 'Corporate' so the logic decides
+  const [theme, setTheme] = useState<string>("Corporate"); 
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isOffline, setIsOffline] = useState<boolean>(false); 
+
+  const fetchData = async () => {
+    try {
+      if (!API_URL) throw new Error("No API URL");
+      
+      // 2. RESTORED THEME SWITCHING LOGIC
+      const lowerId = deviceId.toLowerCase();
+      let selectedTheme = "Corporate";
+
+      if (lowerId.includes("joespizza") || lowerId.includes("bbq")) selectedTheme = "Christmas"; 
+      else if (lowerId.includes("bistro")) selectedTheme = "Bistro";
+      else if (lowerId.includes("bears")) selectedTheme = "Bears";
+      else if (lowerId.includes("live") || lowerId.includes("broadcast")) selectedTheme = "Broadcast";
+      else if (lowerId.includes("tv") || lowerId.includes("slide")) selectedTheme = "Slideshow";
+      else if (lowerId.includes("tire") || lowerId.includes("auto")) selectedTheme = "TireShop";
+      else if (lowerId.includes("neon") || lowerId.includes("tech")) selectedTheme = "Neon"; 
+      
+      setTheme(selectedTheme);
+
+      const tabName = selectedTheme === "Slideshow" ? "Playlist" : "Ads";
+      const res = await fetch(`${API_URL}?tab=${tabName}`);
+      
+      if (!res.ok) throw new Error("Network Error");
+      
+      const data = await res.json();
+      const relevantData = data.filter((item: any) => {
+          const target = item.Target_Screen || item.Client_ID;
+          if (!target) return false; 
+          return target === 'All' || target === deviceId;
+      });
+      
+      setAds(relevantData);
+      setIsLoading(false);
+      setIsOffline(false); 
+
+    } catch (error) { 
+      setIsOffline(true); 
+      setIsLoading(false); 
+    }
+  };
+
+  useEffect(() => {
+    fetchData(); 
+    const interval = setInterval(fetchData, 30000);
+    const handleOnline = () => { fetchData(); setIsOffline(false); };
+    window.addEventListener('online', handleOnline);
+    return () => { clearInterval(interval); window.removeEventListener('online', handleOnline); };
+  }, []);
+
+  if (isLoading) {
+    return <div className="h-screen w-screen bg-black text-white flex items-center justify-center">Loading System...</div>;
+  }
+
+  return (
+    <>
+      {isOffline && (
+        <div className="absolute top-2 right-2 z-[9999] bg-red-600 text-white p-2 rounded-full opacity-50 animate-pulse">
+          <WifiOff size={20} />
+        </div>
+      )}
+
+      {/* 3. RESTORED RENDER SWITCH */}
+      {(() =>
