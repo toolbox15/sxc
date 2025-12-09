@@ -10,6 +10,7 @@ import LiveStreamTheme from './LiveStreamTheme';
 import SlideshowTheme from './SlideshowTheme';
 import SuspendedTheme from './SuspendedTheme';
 import TireShopTheme from './TireShopTheme';
+import CinematicTheme from './CinematicTheme'; // <--- NEW IMPORT
 
 // ==========================================
 // ⚡ INTERNAL NEON THEME (Backup)
@@ -18,36 +19,20 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
   const [index, setIndex] = useState(0);
   useEffect(() => {
     if (items.length < 2) return; 
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % items.length);
-    }, 4000); 
+    const timer = setInterval(() => { setIndex((prev) => (prev + 1) % items.length); }, 4000); 
     return () => clearInterval(timer);
   }, [items.length]);
-
-  // SAFETY CHECK: If ImageURL is missing, use a fallback to prevent broken icons
   const currentItem = items[index] || {};
-  const safeImage = currentItem.ImageURL || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80"; // Generic food fallback
-
+  const safeImage = currentItem.ImageURL || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80";
   return (
     <div className="relative h-full w-full p-1 flex flex-col">
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
-         <div className="absolute inset-0 border-[4px] md:border-[6px] border-transparent rounded-lg" 
-              style={{ background: `linear-gradient(to bottom right, ${color1}, ${color2}) border-box`, WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude' }} />
+         <div className="absolute inset-0 border-[4px] md:border-[6px] border-transparent rounded-lg" style={{ background: `linear-gradient(to bottom right, ${color1}, ${color2}) border-box`, WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude' }} />
       </div>
       <div className="relative z-10 h-full w-full bg-black/90 flex flex-col border border-white/10 rounded-lg overflow-hidden">
         <div className="flex-1 w-full overflow-hidden relative group">
            <AnimatePresence mode='wait'>
-             <motion.img 
-               key={index} 
-               src={safeImage} 
-               initial={{ x: 300, opacity: 0 }} 
-               animate={{ x: 0, opacity: 1 }} 
-               exit={{ x: -300, opacity: 0 }} 
-               transition={{ duration: 0.5 }} 
-               className="absolute inset-0 w-full h-full object-cover opacity-90" 
-               alt="Content" 
-               onError={(e:any) => {e.target.src = "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80"}} // Double safety
-             />
+             <motion.img key={index} src={safeImage} initial={{ x: 300, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -300, opacity: 0 }} transition={{ duration: 0.5 }} className="absolute inset-0 w-full h-full object-cover opacity-90" alt="Content" />
            </AnimatePresence>
         </div>
         <div className="h-24 shrink-0 bg-gray-900 flex flex-col items-center justify-center border-t-2 border-blue-500/50 p-2 z-20">
@@ -58,13 +43,10 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
     </div>
   );
 };
-
 const NeonGameDayTheme = ({ ads }: any) => {
   const mainItems = ads.filter((ad:any) => ad.Category === 'Main');
   const drinkItems = ads.filter((ad:any) => ad.Category === 'Drinks');
-  // Ensure we always have objects to prevent crashes
   const getPair = (i: number) => [mainItems[i] || {Title:"Loading..."}, drinkItems[i] || {Title:"Loading..."}];
-
   return (
     <div className="w-full h-screen bg-[#050510] flex flex-col font-sans overflow-hidden relative">
       <div className="shrink-0 w-full p-6 flex items-center justify-between border-b-4 border-red-600 bg-black/60 z-20">
@@ -80,7 +62,7 @@ const NeonGameDayTheme = ({ ads }: any) => {
 };
 
 // ==========================================
-// 🚨 MAIN CONTROLLER (CLEAN VERSION)
+// 🚨 MAIN CONTROLLER (v6.0 CINEMATIC ENABLED)
 // ==========================================
 const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
 const queryParams = new URLSearchParams(window.location.search);
@@ -104,6 +86,7 @@ export default function AdDisplay() {
       else if (lowerId.includes("tv") || lowerId.includes("slide")) selectedTheme = "Slideshow";
       else if (lowerId.includes("tire") || lowerId.includes("auto")) selectedTheme = "TireShop"; 
       else if (lowerId.includes("neon") || lowerId.includes("tech")) selectedTheme = "Neon"; 
+      else if (lowerId.includes("cinema") || lowerId.includes("burger")) selectedTheme = "Cinematic"; // <--- NEW ROUTE
       
       setTheme(selectedTheme);
 
@@ -121,7 +104,7 @@ export default function AdDisplay() {
 
   useEffect(() => { fetchData(); setInterval(fetchData, 30000); }, []);
 
-  if (isLoading) return <div className="h-screen bg-black text-white flex items-center justify-center">LOADING SYSTEM...</div>;
+  if (isLoading) return <div className="h-screen bg-black text-white flex items-center justify-center">LOADING...</div>;
 
   return (
     <>
@@ -136,17 +119,15 @@ export default function AdDisplay() {
         if (theme === 'Slideshow') return <SlideshowTheme playlist={ads} />;
         if (theme === 'TireShop') return <TireShopTheme ads={ads} />;
         if (theme === 'Neon') return <NeonGameDayTheme ads={ads} />;
+        if (theme === 'Cinematic') return <CinematicTheme ads={ads} />; // <--- NEW RENDER
         
         return (
             <div className="bg-white text-black h-screen flex flex-col items-center justify-center">
                 <h1 className="text-4xl font-bold">Welcome to {deviceId}</h1>
                 <p className="mt-4 text-gray-500">Theme: {theme}</p>
-                <p className="text-sm text-gray-400">Waiting for content.</p>
             </div>
         );
       })()}
-      
-      {/* NO DEBUG BOX HERE - CLEAN SCREEN */}
     </>
   );
 }
