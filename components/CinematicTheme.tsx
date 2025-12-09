@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 // --- THEME: "SUNSHINE & SORBET" (Women & Kids) ---
-// Colors: Cream, Pink, Teal, Coral.
 
 const MenuItem = ({ title, price, description, i }: any) => (
   <motion.div 
@@ -39,10 +38,9 @@ const CinematicTheme = ({ ads }: any) => {
       { Title: "FRUIT & YOGURT PARFAIT", Price: "$7.00", Description: "Greek yogurt, seasonal fruit, chia seeds" }
   ];
 
-  // --- NEW STABLE VIDEO SOURCE (Mixkit) ---
-  // This link is for a Strawberry Ice Cream Cone
-  // If this breaks, DOWNLOAD a video to your 'public' folder and use: src="/myvideo.mp4"
-  const VIDEO_URL = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-cone-with-strawberry-ice-cream-43513-large.mp4";
+  // 🚨 THE FIX: I added the extra .mp4 to match your file upload
+  // Because you uploaded "sweets.mp4.mp4", we must ask for exactly that.
+  const VIDEO_URL = "/sweets.mp4.mp4"; 
 
   return (
     <div className="flex w-full h-screen bg-orange-50 font-sans overflow-hidden">
@@ -56,11 +54,11 @@ const CinematicTheme = ({ ads }: any) => {
           loop 
           muted 
           playsInline
-          // POSTER: Shows instantly if video fails
-          poster="https://images.unsplash.com/photo-1563729768-6af584641071?q=80&w=800&auto=format&fit=crop"
+          autoPlay
           src={VIDEO_URL} 
         />
 
+        {/* OVERLAY TEXT */}
         <div className="absolute bottom-12 left-12 max-w-md z-10">
            <div className="bg-rose-400 text-white font-black text-xs px-3 py-1 rounded-full inline-block mb-3 uppercase tracking-widest shadow-sm">Sweet Treat</div>
            <h1 className="text-6xl font-black text-gray-800 leading-none drop-shadow-sm">
