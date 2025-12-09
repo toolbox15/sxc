@@ -5,16 +5,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 // ==========================================
 // 🔄 COMPONENT: SLIDING NEON CARD
 // ==========================================
-// This card accepts an ARRAY of items and slides between them.
-
 const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) => {
   const [index, setIndex] = useState(0);
 
-  // CYCLE TIMER: Switches content every 6 seconds
+  // FASTER CYCLE: Switches every 4 seconds so you see it working
   useEffect(() => {
+    if (items.length < 2) return; // Don't run timer if only 1 item
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % items.length);
-    }, 6000);
+    }, 4000); 
     return () => clearInterval(timer);
   }, [items.length]);
 
@@ -23,7 +22,7 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
   return (
     <div className="relative h-full w-full p-1 flex flex-col">
       
-      {/* 1. ANIMATED BORDER (Overlay) */}
+      {/* 1. ANIMATED BORDER */}
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
          <div className="absolute inset-0 border-[4px] md:border-[6px] border-transparent rounded-lg" 
               style={{ 
@@ -34,8 +33,6 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
               }} 
          />
       </div>
-      
-      {/* RUNNING LIGHTS */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible">
         <motion.rect 
           x="3" y="3" width="99%" height="98%" 
@@ -52,14 +49,14 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
         <div className="flex-1 w-full overflow-hidden relative group">
            <AnimatePresence mode='wait'>
              <motion.img 
-               key={index} // Key change triggers animation
+               key={index} // Changing this KEY forces React to re-draw (animate) the image
                src={currentItem.ImageURL} 
                initial={{ x: 300, opacity: 0 }}
                animate={{ x: 0, opacity: 1 }}
                exit={{ x: -300, opacity: 0 }}
-               transition={{ duration: 0.5 }}
+               transition={{ duration: 0.5, ease: "easeInOut" }}
                className="absolute inset-0 w-full h-full object-cover opacity-90" 
-               alt="Food" 
+               alt="Content" 
              />
            </AnimatePresence>
            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
@@ -73,6 +70,7 @@ const SlideshowCard = ({ items, color1 = "#ff0000", color2 = "#0088ff" }: any) =
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
                   className="flex flex-col items-center"
                 >
                     <h3 className="text-white font-black text-lg md:text-2xl uppercase tracking-wider text-center leading-none mb-1">
@@ -96,6 +94,10 @@ const API_URL = import.meta.env.VITE_GOOGLE_SHEET_API_URL;
 const queryParams = new URLSearchParams(window.location.search);
 const deviceId = queryParams.get('id') || "Lobby_Screen_1"; 
 
+// --- FALLBACK IMAGES (So it always slides) ---
+const DEFAULT_BEER = { Title: "ICE COLD BEER", Price: "$6.00", ImageURL: "https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=800&q=80" };
+const DEFAULT_FOOD = { Title: "EPIC BURGER", Price: "$15.00", ImageURL: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80" };
+
 export default function AdDisplay() {
   const [ads, setAds] = useState<any[]>([]);
   
@@ -117,28 +119,29 @@ export default function AdDisplay() {
     return () => clearInterval(interval);
   }, []);
 
-  // --- DATA PAIRING LOGIC ---
-  // We pair "Main" items with "Drink" items so they slide back and forth
   const mainItems = ads.filter(ad => ad.Category === 'Main');
   const drinkItems = ads.filter(ad => ad.Category === 'Drinks' || ad.Category === 'Draft Picks');
   const offers = ads.filter(ad => ad.Category === 'Offer');
 
-  // Helper to get pairs. If no drink, just show food.
+  // --- FORCE PAIRING LOGIC ---
+  // If we find a food, we try to find a drink. 
+  // If no drink exists in data, we USE DEFAULT_BEER so it still slides.
   const getPair = (index: number) => {
-     const food = mainItems[index] || { Title: "LOAD FOOD", Price: "$--", ImageURL: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=800&q=80" };
-     const drink = drinkItems[index]; 
-     return drink ? [food, drink] : [food]; // Slides between Food -> Drink
+     // Get Food (or default if missing)
+     const food = mainItems[index] || DEFAULT_FOOD;
+     
+     // Get Drink (or default if missing)
+     // This guarantees we ALWAYS have 2 items, so animation ALWAYS runs.
+     const drink = drinkItems[index] || DEFAULT_BEER; 
+     
+     return [food, drink]; 
   };
 
   const offer1 = offers[0] || { Title: "HALF-OFF APPS", Description: "UNTIL KICKOFF" };
   const offer2 = offers[1] || { Title: "BEER OF THE MONTH", Description: "HAZY HOPPER - $7" };
 
   return (
-    // YOU CAN REPLACE BG COLOR WITH YOUR PHOTOSHOP IMAGE URL HERE
-    // Example: bg-[url('/my-photoshop-bg.png')]
     <div className="w-full h-screen bg-[#050510] flex flex-col font-sans overflow-hidden relative">
-      
-      {/* BACKGROUND */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-b from-blue-900/10 to-black pointer-events-none" />
 
@@ -154,15 +157,10 @@ export default function AdDisplay() {
           </div>
       </div>
 
-      {/* MAIN GRID - NOW USING SLIDESHOW CARDS */}
+      {/* MAIN GRID - Forces 3 Sliding Cards */}
       <div className="flex-1 min-h-0 w-full p-4 md:p-8 grid grid-cols-3 gap-4 md:gap-8 z-10">
-          {/* Card 1: Slides Food 1 <-> Drink 1 */}
           <SlideshowCard items={getPair(0)} color1="#ff0000" color2="#0000ff" />
-          
-          {/* Card 2: Slides Food 2 <-> Drink 2 */}
           <SlideshowCard items={getPair(1)} color1="#0088ff" color2="#00ffff" />
-          
-          {/* Card 3: Slides Food 3 <-> Drink 3 */}
           <SlideshowCard items={getPair(2)} color1="#ff8800" color2="#ffff00" />
       </div>
 
@@ -177,7 +175,6 @@ export default function AdDisplay() {
             <span className="text-white font-bold text-xl md:text-2xl tracking-widest">{offer2.Description}</span>
          </div>
       </div>
-
     </div>
   );
 }
