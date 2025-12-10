@@ -1,121 +1,128 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-// --- 1. THE TECH CARD COMPONENT (Internal) ---
-// This draws the glowing boxes with L-brackets automatically
-const TechCard = ({ title, price, children, color = 'blue', delay = 0 }: any) => {
-  const colors: any = {
-    blue: { outer: 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]', inner: 'border-blue-300', text: 'text-blue-400' },
-    red: { outer: 'border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.6)]', inner: 'border-red-400', text: 'text-red-500' },
-    orange: { outer: 'border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.6)]', inner: 'border-orange-300', text: 'text-orange-400' }
-  };
-  const c = colors[color] || colors.blue;
-
+// --- 1. THE TRACING BORDER ANIMATION ---
+// This creates the "Ants Marching" LED effect around your boxes
+const TracingBorder = ({ children }: any) => {
   return (
-    <motion.div 
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ delay, duration: 0.5 }}
-      className="relative h-full w-full bg-black/80 flex flex-col p-1"
-    >
-      {/* L-BRACKET CORNERS */}
-      <div className={`absolute -top-[2px] -left-[2px] w-6 h-6 border-t-4 border-l-4 ${c.outer} z-20`} />
-      <div className={`absolute -top-[2px] -right-[2px] w-6 h-6 border-t-4 border-r-4 ${c.outer} z-20`} />
-      <div className={`absolute -bottom-[2px] -left-[2px] w-6 h-6 border-b-4 border-l-4 ${c.outer} z-20`} />
-      <div className={`absolute -bottom-[2px] -right-[2px] w-6 h-6 border-b-4 border-r-4 ${c.outer} z-20`} />
-
-      {/* INNER CONTENT */}
-      <div className={`relative h-full w-full border ${c.inner} border-opacity-50 flex flex-col z-0`}>
-        <div className="h-3/4 w-full overflow-hidden relative">
-           {children}
-           {/* Scanline Overlay */}
-           <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] pointer-events-none" />
-        </div>
-        <div className="h-1/4 bg-gray-900/90 border-t border-white/10 flex flex-col items-center justify-center">
-            <h3 className="text-white font-black text-xl uppercase tracking-wider drop-shadow-md">{title}</h3>
-            <span className={`text-3xl font-black ${c.text} drop-shadow-[0_0_10px_currentColor]`}>{price}</span>
-        </div>
+    <div className="relative w-full h-full">
+      {/* Animated Gradient Layer */}
+      <div className="absolute -inset-[3px] rounded-sm overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute inset-[-100%]"
+          style={{
+            backgroundImage: `conic-gradient(from 0deg, transparent 0 340deg, #00FF00 360deg)`, // Green Tail
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute inset-[-100%]"
+          style={{
+            backgroundImage: `conic-gradient(from 180deg, transparent 0 340deg, #FFFF00 360deg)`, // Yellow Tail
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+        />
       </div>
-    </motion.div>
+      
+      {/* Black Mask (Keeps content readable inside the border) */}
+      <div className="absolute inset-0 bg-black/80 z-0" />
+      
+      {/* The Actual Content */}
+      <div className="relative z-10 w-full h-full">
+        {children}
+      </div>
+    </div>
   );
 };
 
-// --- 2. THE MAIN THEME ---
-const DUMMY_MENU = {
-  featured: [
-    { Title: "VOLCANO NACHOS", Price: "$14.99", ImageURL: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=800&q=80", Category: "Main" },
-    { Title: "TOUCHDOWN WINGS", Price: "$12.99", ImageURL: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=800&q=80", Category: "Main" },
-    { Title: "MVP BURGER", Price: "$16.99", ImageURL: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80", Category: "Main" }
-  ],
-  offers: [
-    { Title: "HALF-OFF APPS", Description: "UNTIL KICKOFF" },
-    { Title: "BEER OF THE MONTH", Description: "HAZY HOPPER - $7" }
-  ]
+// --- 2. THE FOOD CARD COMPONENT ---
+const FoodCard = ({ item }: any) => {
+  if (!item) return null;
+  return (
+    <div className="w-full h-full flex flex-col p-2">
+      {/* Image Area (Top 60%) */}
+      <div className="h-[60%] w-full relative overflow-hidden mb-2">
+        <img 
+          src={item.ImageURL || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"} 
+          className="w-full h-full object-cover rounded-sm"
+          alt={item.Title} 
+        />
+      </div>
+      {/* Text Area (Bottom 40%) */}
+      <div className="flex-1 flex flex-col items-center justify-center text-center leading-none">
+        <h3 className="text-white font-black text-xl md:text-2xl uppercase tracking-tighter mb-1 font-sans">{item.Title}</h3>
+        <span className="text-2xl md:text-3xl font-black text-yellow-400 drop-shadow-md">{item.Price}</span>
+      </div>
+    </div>
+  );
 };
 
-const NeonGameDayTheme: React.FC<{ ads?: any[] }> = ({ ads = [] }) => {
-  // Safe filter to prevent crashes if ads are missing
-  const featured = ads && ads.filter(ad => ad.Category === 'Main').length > 0 
-      ? ads.filter(ad => ad.Category === 'Main') 
-      : DUMMY_MENU.featured;
+const GameDayTheme = ({ ads }: any) => {
+  // Filter Data
+  const mainItems = ads.filter((ad:any) => ad.Category === 'Main');
 
-  const offers = ads && ads.filter(ad => ad.Category === 'Offer').length > 0
-      ? ads.filter(ad => ad.Category === 'Offer')
-      : DUMMY_MENU.offers;
+  // Fallback Data
+  const foods = mainItems.length > 0 ? mainItems : [
+    { Title: "VOLCANO NACHOS", Price: "$14.99", ImageURL: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=800&q=80" },
+    { Title: "TOUCHDOWN WINGS", Price: "$12.99", ImageURL: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=800&q=80" },
+    { Title: "MVP BURGER", Price: "$16.99", ImageURL: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80" }
+  ];
+
+  // 🚨 UPDATED: This is your exact background image link
+  const BG_IMAGE = "https://www.dropbox.com/scl/fi/b78mrroli2c27sn2sz83y/gameday-bg.jpg?rlkey=hshroxnwsw2yea5ayds77mz3j&st=m3wtcx3r&raw=1"; 
 
   return (
-    <div className="w-full h-screen bg-black p-8 flex flex-col gap-6 relative overflow-hidden font-sans">
+    <div className="w-full h-screen bg-black overflow-hidden relative font-sans">
       
-      {/* BACKGROUND */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#1a1a2e_0%,#000000_100%)] z-0" />
+      {/* 1. THE STATIC BACKGROUND IMAGE */}
+      <img 
+        src={BG_IMAGE} 
+        className="absolute inset-0 w-full h-full object-cover z-0" 
+        alt="Background" 
+      />
+
+      {/* 2. THE OVERLAY LAYER (Absolute Positioning to match the boxes) */}
       
-      {/* HEADER */}
-      <div className="relative z-10 h-[15%] w-full flex items-center justify-between border-b-4 border-red-600 bg-black/50 px-8 rounded-xl shadow-[0_0_30px_rgba(220,38,38,0.4)]">
-          <div className="flex flex-col">
-             <h1 className="text-6xl font-black text-white italic tracking-tighter drop-shadow-[4px_4px_0_#b91c1c]">
-               GAME DAY <span className="text-blue-500">MENU</span>
-             </h1>
-          </div>
-          <div className="flex items-center gap-6 border-2 border-white/20 bg-black px-6 py-2 rounded-lg">
-             <div className="text-center">
-                <div className="text-gray-400 text-xs font-bold">HOME</div>
-                <div className="text-4xl font-black text-white">24</div>
-             </div>
-             <div className="text-red-500 font-bold animate-pulse">VS</div>
-             <div className="text-center">
-                <div className="text-gray-400 text-xs font-bold">AWAY</div>
-                <div className="text-4xl font-black text-white">21</div>
-             </div>
-          </div>
+      {/* BOX 1 (Left) */}
+      <div style={{ position: 'absolute', top: '26%', left: '9.5%', width: '25%', height: '39%' }}>
+        <TracingBorder>
+           <FoodCard item={foods[0]} />
+        </TracingBorder>
       </div>
 
-      {/* MAIN CONTENT GRID */}
-      <div className="relative z-10 h-[65%] grid grid-cols-3 gap-8 px-4">
-          <TechCard title={featured[0]?.Title} price={featured[0]?.Price} color="red" delay={0.1}>
-             <img src={featured[0]?.ImageURL} className="w-full h-full object-cover" alt="Food" />
-          </TechCard>
-          
-          <TechCard title={featured[1]?.Title || "Loading..."} price={featured[1]?.Price || ""} color="blue" delay={0.3}>
-             <img src={featured[1]?.ImageURL || ""} className="w-full h-full object-cover" alt="Food" />
-          </TechCard>
-
-          <TechCard title={featured[2]?.Title || "Loading..."} price={featured[2]?.Price || ""} color="orange" delay={0.5}>
-             <img src={featured[2]?.ImageURL || ""} className="w-full h-full object-cover" alt="Food" />
-          </TechCard>
+      {/* BOX 2 (Middle) */}
+      <div style={{ position: 'absolute', top: '26%', left: '37.5%', width: '25%', height: '39%' }}>
+        <TracingBorder>
+           <FoodCard item={foods[1] || foods[0]} />
+        </TracingBorder>
       </div>
 
-      {/* FOOTER */}
-      <div className="relative z-10 h-[15%] flex gap-4">
-        {offers.map((offer: any, i: number) => (
-            <div key={i} className="flex-1 border-2 border-dashed border-gray-700 bg-gray-900/80 rounded-lg flex items-center justify-center gap-4 shadow-lg">
-                <span className="text-yellow-400 font-black text-2xl uppercase animate-pulse">{offer.Title}:</span>
-                <span className="text-white font-bold text-xl tracking-widest">{offer.Description}</span>
-            </div>
-        ))}
+      {/* BOX 3 (Right) */}
+      <div style={{ position: 'absolute', top: '26%', left: '65.5%', width: '25%', height: '39%' }}>
+        <TracingBorder>
+           <FoodCard item={foods[2] || foods[0]} />
+        </TracingBorder>
+      </div>
+
+      {/* 3. LIVE SCORES (Top Right Corner Overlay) */}
+      {/* This sits exactly where the scoreboard is in your design */}
+      <div className="absolute top-[4%] right-[3%] w-[25%] h-[18%] bg-black/80 border-2 border-cyan-400 rounded-lg flex flex-col items-center justify-center shadow-[0_0_20px_#06b6d4]">
+          <h2 className="text-yellow-400 font-black text-xl uppercase tracking-widest leading-none mb-1">LIVE SCORES</h2>
+          <div className="flex w-full justify-between px-8 text-gray-300 text-xs font-bold tracking-widest">
+              <span>KC</span>
+              <span>SF</span>
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+              <span className="text-4xl font-mono font-bold text-white">24</span>
+              <span className="bg-green-600 text-black font-black px-2 py-0.5 text-xs rounded animate-pulse">4TH QTR</span>
+              <span className="text-4xl font-mono font-bold text-white">17</span>
+          </div>
       </div>
 
     </div>
   );
 };
 
-export default NeonGameDayTheme;
+export default GameDayTheme;
