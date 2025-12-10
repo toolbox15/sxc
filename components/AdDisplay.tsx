@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-// --- SPACE MENU (SHRUNK VERSION) ---
+// --- SPACE MENU (FIXED SCALING) ---
 const SpaceMenuFinal = () => {
   const items = [
     { Title: "VOLCANO NACHOS", Price: "$14.99", ImageURL: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d" },
@@ -17,7 +17,7 @@ const SpaceMenuFinal = () => {
       {/* Image Height reduced to 60% to show more text space */}
       <img src={item.ImageURL} className="h-[60%] w-full object-cover rounded-sm mb-2 shadow-lg" alt="Food" />
       <div className="text-center">
-         {/* Font sizes reduced slightly to fit better */}
+         {/* Font sizes adjusted */}
          <h3 className="text-white font-black text-xl lg:text-2xl uppercase mb-1 leading-none">{item.Title}</h3>
          <span className="text-2xl lg:text-3xl font-black text-yellow-400 drop-shadow-md">{item.Price}</span>
       </div>
@@ -26,13 +26,13 @@ const SpaceMenuFinal = () => {
 
   return (
     <div className="w-full h-screen bg-black overflow-hidden relative font-sans">
-      <img src={BG_IMAGE} className="absolute inset-0 w-full h-full object-cover z-0" alt="Background" />
-
-      {/* UPDATED DIMENSIONS:
-         I reduced the Width from 25% -> 23%
-         I reduced the Height from 39% -> 37%
-         I adjusted Top/Left to center them perfectly inside the white lines.
-      */}
+      
+      {/* 🛑 THE FIX IS HERE: object-fill forces the image to see ALL borders */}
+      <img 
+        src={BG_IMAGE} 
+        className="absolute inset-0 w-full h-full object-fill z-0" 
+        alt="Background" 
+      />
 
       {/* LEFT BOX */}
       <div style={{ position: 'absolute', top: '27%', left: '10.5%', width: '23%', height: '37%' }}>
