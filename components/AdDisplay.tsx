@@ -2,54 +2,36 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-// --- 1. THE TRACING NEON BORDER COMPONENT ---
-// This creates the moving light effect AND a solid black background to cover the old lines.
-const NeonFrame = ({ children }: any) => {
+// --- 1. THE OUTER SCREEN GLOW (THE BIG BORDER) ---
+const ScreenBorder = () => {
   return (
-    <div className="relative w-full h-full p-[3px] overflow-hidden rounded-lg bg-black">
+    // We position this 1.5% from the edge to sit on top of your white dotted line
+    <div className="absolute inset-[1.5%] z-50 pointer-events-none rounded-xl overflow-hidden">
       
-      {/* A. The "Tracing" Animation Layer */}
-      {/* This spins a gradient behind the black box to look like moving lights */}
-      <motion.div
-        className="absolute inset-[-150%]"
-        style={{
-          background: 'conic-gradient(from 0deg, transparent 0 340deg, #00FF00 360deg)' // Green Light
-        }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-      />
-      <motion.div
-        className="absolute inset-[-150%]"
-        style={{
-          background: 'conic-gradient(from 180deg, transparent 0 340deg, #FFFF00 360deg)' // Yellow Light
-        }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-      />
-
-      {/* B. The "Mask" Layer */}
-      {/* This creates the black center so only the edges glow */}
-      <div className="absolute inset-[3px] bg-black rounded-lg z-10" />
-
-      {/* C. The Content Layer */}
-      <div className="relative z-20 w-full h-full">
-        {children}
+      {/* The Moving Gradient Layer */}
+      <div className="absolute inset-0 p-[4px]"> {/* Thickness of the glowing line */}
+        
+        <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#00FF00_360deg)] animate-[spin_4s_linear_infinite]" />
+        <div className="absolute inset-[-100%] bg-[conic-gradient(from_180deg,transparent_0_340deg,#FFFF00_360deg)] animate-[spin_4s_linear_infinite]" />
+        
+        {/* The Black Inner Mask (Creates the hollow center) */}
+        <div className="absolute inset-[4px] bg-transparent border-2 border-white/20 rounded-lg" /> 
       </div>
     </div>
   );
 };
 
-// --- 2. THE CONTENT (FOOD ITEM) ---
+// --- 2. FOOD CARD (Clean & Simple) ---
 const FoodItem = ({ item }:any) => {
   if (!item) return null;
   return (
-    <div className="w-full h-full flex flex-col p-2">
+    <div className="w-full h-full flex flex-col p-1">
       <img 
         src={item.ImageURL} 
-        className="h-[60%] w-full object-cover rounded-sm mb-2 shadow-lg z-20" 
+        className="h-[60%] w-full object-cover rounded-sm mb-2 shadow-lg" 
         alt="Food" 
       />
-      <div className="text-center z-20">
+      <div className="text-center">
          <h3 className="text-white font-black text-xl lg:text-2xl uppercase mb-1 leading-none tracking-tighter">
             {item.Title}
          </h3>
@@ -61,7 +43,7 @@ const FoodItem = ({ item }:any) => {
   );
 };
 
-// --- 3. THE SPACE MENU LAYOUT ---
+// --- 3. THE MENU LAYOUT ---
 const SpaceMenuFinal = () => {
   const items = [
     { Title: "VOLCANO NACHOS", Price: "$14.99", ImageURL: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d" },
@@ -74,39 +56,33 @@ const SpaceMenuFinal = () => {
   return (
     <div className="w-full h-screen bg-black overflow-hidden relative font-sans">
       
-      {/* Background Image - We still use "fill" to stretch it */}
+      {/* A. The Glowing Frame around the WHOLE screen */}
+      <ScreenBorder />
+
+      {/* B. The Background Image */}
       <img 
         src={BG_IMAGE} 
         className="absolute inset-0 w-full h-full object-fill z-0" 
         alt="Background" 
       />
 
-      {/* LAYOUT STRATEGY: 
-         We make these boxes slightly LARGER than the white lines in your picture.
-         Because they have a black background, they will sit ON TOP of the white lines
-         and cover them up.
-      */}
-
+      {/* C. The Food Items (Centered in their boxes) */}
+      
       {/* LEFT BOX */}
-      <div style={{ position: 'absolute', top: '26.5%', left: '11.5%', width: '23%', height: '37%' }}>
-        <NeonFrame>
-           <FoodItem item={items[0]} />
-        </NeonFrame>
+      <div style={{ position: 'absolute', top: '27%', left: '10.5%', width: '23%', height: '37%' }}>
+        <FoodItem item={items[0]} />
       </div>
 
       {/* MIDDLE BOX */}
-      <div style={{ position: 'absolute', top: '26.5%', left: '38.5%', width: '23%', height: '37%' }}>
-        <NeonFrame>
-           <FoodItem item={items[1]} />
-        </NeonFrame>
+      <div style={{ position: 'absolute', top: '27%', left: '38.5%', width: '23%', height: '37%' }}>
+        <FoodItem item={items[1]} />
       </div>
 
       {/* RIGHT BOX */}
-      <div style={{ position: 'absolute', top: '26.5%', left: '65.5%', width: '23%', height: '37%' }}>
-        <NeonFrame>
-           <FoodItem item={items[2]} />
-        </NeonFrame>
+      <div style={{ position: 'absolute', top: '27%', left: '66.5%', width: '23%', height: '37%' }}>
+        <FoodItem item={items[2]} />
       </div>
+
     </div>
   );
 };
