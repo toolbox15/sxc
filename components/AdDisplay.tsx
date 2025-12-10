@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-// Import the other themes (we keep these as they work)
-import CinematicTheme from './CinematicTheme';
-import GameDayTheme from './GameDayTheme';
+// 🛑 NOTICE: NO IMPORTS FROM OTHER FILES
+// This prevents "File Not Found" errors from breaking your build.
 
-// --- 1. THE SPACE THEME (DEFINED RIGHT HERE) ---
-// We define it inside this file so it CANNOT fail to load.
+// --- INTERNAL COMPONENT: THE SPACE MENU ---
 const SpaceMenuInternal = ({ ads }: any) => {
   // Hardcoded backup data
   const backupData = [
@@ -56,29 +54,21 @@ const InternalFoodCard = ({ item }: any) => {
   );
 };
 
-// --- 2. THE MAIN ROUTER ---
+// --- THE ROUTER ---
 const AdDisplay = () => {
   const [searchParams] = useSearchParams();
   const theme = searchParams.get('id'); 
 
-  // Hardcoded backup data for the other themes
+  // Hardcoded backup data
   const backupAds = [
-    { Category: 'Main', Title: 'TEST NACHOS', Price: '$14.99' },
-    { Category: 'Main', Title: 'TEST WINGS', Price: '$12.99' }
+    { Category: 'Main', Title: 'TEST NACHOS', Price: '$14.99' }
   ];
 
   console.log("Current Theme requested:", theme);
 
-  // If URL is .../?id=Static -> USE THE INTERNAL THEME ABOVE
-  if (theme === 'Static') {
-    return <SpaceMenuInternal ads={backupAds} />;
-  }
-  
-  if (theme === 'Neon' || theme === 'Sports') {
-    return <GameDayTheme ads={backupAds} />;
-  }
-
-  return <CinematicTheme ads={backupAds} />;
+  // 🛑 SCORCHED EARTH: We show the Space Menu for EVERY ID.
+  // This guarantees we see it, no matter what URL you type.
+  return <SpaceMenuInternal ads={backupAds} />;
 };
 
 export default AdDisplay;
