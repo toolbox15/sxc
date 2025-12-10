@@ -1,27 +1,30 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 // --- 1. THE OUTER SCREEN GLOW (THE BIG BORDER) ---
 const ScreenBorder = () => {
   return (
-    // We position this 1.5% from the edge to sit on top of your white dotted line
-    <div className="absolute inset-[1.5%] z-50 pointer-events-none rounded-xl overflow-hidden">
+    // FIX: Changed inset-[1.5%] to inset-0 so it touches the very edges
+    <div className="absolute inset-0 z-50 pointer-events-none overflow-hidden rounded-none">
       
       {/* The Moving Gradient Layer */}
-      <div className="absolute inset-0 p-[4px]"> {/* Thickness of the glowing line */}
+      <div className="absolute inset-0 p-[10px]"> {/* Matches the thickness of your dotted line */}
         
+        {/* Green Tail */}
         <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#00FF00_360deg)] animate-[spin_4s_linear_infinite]" />
+        
+        {/* Yellow Tail */}
         <div className="absolute inset-[-100%] bg-[conic-gradient(from_180deg,transparent_0_340deg,#FFFF00_360deg)] animate-[spin_4s_linear_infinite]" />
         
-        {/* The Black Inner Mask (Creates the hollow center) */}
-        <div className="absolute inset-[4px] bg-transparent border-2 border-white/20 rounded-lg" /> 
+        {/* The Black Inner Mask (This cuts out the center so you can see the menu) */}
+        {/* We leave a transparent gap for the border to shine through */}
+        <div className="absolute inset-[10px] bg-transparent" /> 
       </div>
     </div>
   );
 };
 
-// --- 2. FOOD CARD (Clean & Simple) ---
+// --- 2. FOOD CARD ---
 const FoodItem = ({ item }:any) => {
   if (!item) return null;
   return (
@@ -56,17 +59,17 @@ const SpaceMenuFinal = () => {
   return (
     <div className="w-full h-screen bg-black overflow-hidden relative font-sans">
       
-      {/* A. The Glowing Frame around the WHOLE screen */}
+      {/* A. The Glowing Frame (Now perfectly aligned to the edge) */}
       <ScreenBorder />
 
-      {/* B. The Background Image */}
+      {/* B. The Background Image (Stretched to fit) */}
       <img 
         src={BG_IMAGE} 
         className="absolute inset-0 w-full h-full object-fill z-0" 
         alt="Background" 
       />
 
-      {/* C. The Food Items (Centered in their boxes) */}
+      {/* C. The Food Items */}
       
       {/* LEFT BOX */}
       <div style={{ position: 'absolute', top: '27%', left: '10.5%', width: '23%', height: '37%' }}>
