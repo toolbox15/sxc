@@ -1,10 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-// 🛑 NOTICE: NO IMPORTS FROM OTHER FILES
-// This prevents "File Not Found" errors from breaking your build.
+// 🛑 NOTICE: I removed 'useState' and 'useEffect' because we aren't using them.
+// This prevents the "Unused Variable" error that blocked your last update.
 
-// --- INTERNAL COMPONENT: THE SPACE MENU ---
+// --- 1. HELPER COMPONENT (MUST BE AT THE TOP) ---
+// We put this first so the computer knows what it is before we try to use it.
+const InternalFoodCard = ({ item }: any) => {
+  if (!item) return null;
+  return (
+    <div className="w-full h-full flex flex-col p-2">
+      <div className="h-[65%] w-full relative overflow-hidden mb-2 rounded-sm shadow-lg">
+        <img 
+          src={item.ImageURL} 
+          className="w-full h-full object-cover" 
+          alt={item.Title} 
+        />
+      </div>
+      <div className="flex-1 flex flex-col items-center justify-start text-center leading-none">
+        <h3 className="text-white font-black text-xl md:text-2xl uppercase tracking-tighter mb-1 font-sans">
+          {item.Title}
+        </h3>
+        <span className="text-2xl md:text-3xl font-black text-yellow-400 drop-shadow-md">
+          {item.Price}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+// --- 2. THE SPACE MENU (MIDDLE) ---
 const SpaceMenuInternal = ({ ads }: any) => {
   // Hardcoded backup data
   const backupData = [
@@ -18,7 +43,11 @@ const SpaceMenuInternal = ({ ads }: any) => {
 
   return (
     <div className="w-full h-screen bg-black overflow-hidden relative font-sans">
-      <img src={BG_IMAGE} className="absolute inset-0 w-full h-full object-cover z-0" alt="Background" />
+      <img 
+        src={BG_IMAGE} 
+        className="absolute inset-0 w-full h-full object-cover z-0" 
+        alt="Background" 
+      />
 
       {/* LEFT BOX */}
       <div style={{ position: 'absolute', top: '26%', left: '9.5%', width: '25%', height: '39%' }}>
@@ -38,36 +67,19 @@ const SpaceMenuInternal = ({ ads }: any) => {
   );
 };
 
-// Helper for the Space Theme
-const InternalFoodCard = ({ item }: any) => {
-  if (!item) return null;
-  return (
-    <div className="w-full h-full flex flex-col p-2">
-      <div className="h-[65%] w-full relative overflow-hidden mb-2 rounded-sm shadow-lg">
-        <img src={item.ImageURL} className="w-full h-full object-cover" alt={item.Title} />
-      </div>
-      <div className="flex-1 flex flex-col items-center justify-start text-center leading-none">
-        <h3 className="text-white font-black text-xl md:text-2xl uppercase tracking-tighter mb-1 font-sans">{item.Title}</h3>
-        <span className="text-2xl md:text-3xl font-black text-yellow-400 drop-shadow-md">{item.Price}</span>
-      </div>
-    </div>
-  );
-};
-
-// --- THE ROUTER ---
+// --- 3. THE ROUTER (BOTTOM) ---
 const AdDisplay = () => {
   const [searchParams] = useSearchParams();
   const theme = searchParams.get('id'); 
 
-  // Hardcoded backup data
+  // Hardcoded backup data to pass down
   const backupAds = [
     { Category: 'Main', Title: 'TEST NACHOS', Price: '$14.99' }
   ];
 
   console.log("Current Theme requested:", theme);
 
-  // 🛑 SCORCHED EARTH: We show the Space Menu for EVERY ID.
-  // This guarantees we see it, no matter what URL you type.
+  // WE FORCE THE SPACE MENU TO LOAD
   return <SpaceMenuInternal ads={backupAds} />;
 };
 
