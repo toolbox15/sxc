@@ -1,4 +1,4 @@
-import React from 'react';
+ import React from 'react';
 
 // --- SIMPLE FOOD CARD COMPONENT ---
 const StaticFoodCard = ({ item }: any) => {
@@ -39,7 +39,7 @@ const StaticGameDayTheme = ({ ads }: any) => {
     { Title: "MVP BURGER", Price: "$16.99", ImageURL: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80" }
   ];
 
-  // 3. YOUR DROPBOX LINK (With raw=1 to make it work)
+  // 3. YOUR DROPBOX LINK
   const BG_IMAGE = "https://www.dropbox.com/scl/fi/b78mrroli2c27sn2sz83y/gameday-bg.jpg?rlkey=hshroxnwsw2yea5ayds77mz3j&st=m3wtcx3r&raw=1"; 
 
   return (
@@ -53,8 +53,6 @@ const StaticGameDayTheme = ({ ads }: any) => {
       />
 
       {/* CONTENT OVERLAY */}
-      {/* These percentages position the food EXACTLY inside your white boxes */}
-      
       {/* LEFT BOX */}
       <div style={{ position: 'absolute', top: '26%', left: '9.5%', width: '25%', height: '39%' }}>
         <StaticFoodCard item={foods[0]} />
