@@ -4,34 +4,49 @@ import { useSearchParams } from 'react-router-dom';
 // 1. IMPORT ALL YOUR THEMES
 import CinematicTheme from './CinematicTheme';
 import GameDayTheme from './GameDayTheme';
-import StaticGameDayTheme from './StaticGameDayTheme'; // <--- The new one!
+import StaticGameDayTheme from './StaticGameDayTheme';
 
 const AdDisplay = () => {
-  const [ads, setAds] = useState([]);
+  // Initialize with an empty array to prevent crashes
+  const [ads, setAds] = useState([]); 
   const [searchParams] = useSearchParams();
-  const theme = searchParams.get('id'); // This reads the "?id=" part of the URL
+  const theme = searchParams.get('id'); 
 
   useEffect(() => {
-    // ⚠️ IMPORTANT: Make sure this URL matches your actual Google Sheet API
-    fetch('https://sheetdb.io/api/v1/YOUR_SHEET_ID_HERE') 
-      .then((response) => response.json())
-      .then((data) => setAds(data))
-      .catch((error) => console.error('Error fetching data:', error));
+    // ⚠️ REPLACE THIS WITH YOUR REAL ID IF YOU HAVE IT
+    // If you don't have it right now, this fake one will fail gracefully 
+    // and show your hard-coded "backup" menu items (Nachos/Wings) instead of a white screen.
+    const SHEET_ID = 'YOUR_SHEET_ID_HERE'; 
+
+    fetch(`https://sheetdb.io/api/v1/${SHEET_ID}`) 
+      .then((response) => {
+        if (!response.ok) throw new Error("Network response was not ok");
+        return response.json();
+      })
+      .then((data) => {
+        // SAFETY CHECK: Only set ads if we actually got a list (Array)
+        if (Array.isArray(data)) {
+          setAds(data);
+        } else {
+          console.warn("API returned invalid data, using backup items.");
+        }
+      })
+      .catch((error) => console.log('Using backup data (API Error or Invalid ID)'));
   }, []);
 
   // 2. THE ROUTER LOGIC
   
-  // If URL is ?id=Static -> Show the new "No Animation" theme
+  // Pass the "ads" data to the themes. 
+  // If "ads" is empty, the themes will automatically use their own backup data.
+
   if (theme === 'Static') {
     return <StaticGameDayTheme ads={ads} />;
   }
   
-  // If URL is ?id=Neon -> Show the animated Sports theme
   if (theme === 'Neon' || theme === 'Sports') {
     return <GameDayTheme ads={ads} />;
   }
 
-  // If URL is empty or anything else -> Show the Cinematic Theme
   return <CinematicTheme ads={ads} />;
 };
 
