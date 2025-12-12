@@ -6,7 +6,7 @@ import React from 'react';
 const VarsityHeader = ({ text, subtext }: any) => {
   return (
     // PADDING RIGHT 20% to shift the visual center to the LEFT
-    <div className="flex flex-row items-baseline justify-center w-full gap-3 pr-[20%]">
+    <div className="flex flex-row items-baseline justify-center w-full gap-3 pr-[30%]">
       
       {/* "GAME DAY" - REDUCED SIZE BY 5% */}
       <h1 className="relative text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter uppercase"
