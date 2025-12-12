@@ -2,15 +2,15 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 // ==========================================
-// 1. THE NEW "GAME DAY" COMPONENTS
+// 1. THE VARSITY HEADER (Side-by-Side & Sized to Fit)
 // ==========================================
-
-// A. The Side-by-Side Pulsating Header
 const VarsityHeader = ({ text, subtext }: any) => {
   return (
-    <div className="flex flex-row items-baseline justify-center w-full z-20 mt-[3%] gap-4">
-      {/* Pulsating Main Text */}
-      <h1 className="relative text-6xl md:text-8xl font-black tracking-wider uppercase animate-pulse-glow"
+    // Changed mt-[3%] to mt-[1%] to pull it up slightly
+    <div className="flex flex-row items-baseline justify-center w-full z-20 mt-[1%] gap-4">
+      
+      {/* MAIN TEXT ("GAME DAY") - Reduced size slightly to prevent overlap */}
+      <h1 className="relative text-5xl md:text-7xl font-black tracking-wider uppercase animate-pulse-glow"
           style={{
             fontFamily: "'Impact', 'Arial Black', sans-serif",
             backgroundImage: "linear-gradient(to right, #ff3333, #ffffff, #3366ff), radial-gradient(circle, rgba(0,0,0,0.8) 1px, transparent 1px)",
@@ -25,8 +25,9 @@ const VarsityHeader = ({ text, subtext }: any) => {
       >
         {text}
       </h1>
-      {/* Subtext */}
-      <h2 className="text-4xl md:text-6xl font-bold text-blue-400 uppercase tracking-widest"
+
+      {/* SUBTEXT ("EATS & DRINKS") */}
+      <h2 className="text-3xl md:text-5xl font-bold text-blue-400 uppercase tracking-widest"
           style={{ 
             textShadow: "0 0 20px #0000FF, 0 0 40px #0000FF", 
             mixBlendMode: "plus-lighter" 
@@ -34,7 +35,8 @@ const VarsityHeader = ({ text, subtext }: any) => {
       >
         {subtext}
       </h2>
-      {/* Pulse Animation Styles */}
+
+      {/* Animation Styles */}
       <style>{`
         @keyframes pulse-white-glow {
           0%, 100% { filter: drop-shadow(0 0 10px rgba(255,255,255,0.6)); }
@@ -48,7 +50,10 @@ const VarsityHeader = ({ text, subtext }: any) => {
   );
 };
 
-// B. The Food Card (Left & Middle)
+// ==========================================
+// 2. FOOD & DRINK COMPONENTS
+// ==========================================
+
 const FoodItem = ({ item }:any) => {
   if (!item) return null;
   return (
@@ -62,7 +67,6 @@ const FoodItem = ({ item }:any) => {
   );
 };
 
-// C. The Drink List (Right Box)
 const DrinkList = () => {
   const drinks = [
     { name: "BUD LIGHT DRAFT", price: "$5.00" },
@@ -90,7 +94,10 @@ const DrinkList = () => {
   );
 };
 
-// D. The Full Layout (SpaceMenuFinal)
+// ==========================================
+// 3. THE MAIN LAYOUT (SpaceMenuFinal)
+// ==========================================
+
 const SpaceMenuFinal = ({ ads }: any) => {
   const foodItems = (ads && ads.length > 0) ? ads : [
     { Title: "VOLCANO NACHOS", Price: "$14.99", ImageURL: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d" },
@@ -101,40 +108,56 @@ const SpaceMenuFinal = ({ ads }: any) => {
   return (
     <div className="w-full h-screen bg-black overflow-hidden relative font-sans">
       <video src={BG_VIDEO} className="absolute inset-0 w-full h-full object-fill z-0" autoPlay loop muted playsInline />
+      
+      {/* HEADER LAYER */}
       <div className="absolute top-0 w-full h-[25%] flex items-center justify-center z-10">
          <VarsityHeader text="GAME DAY" subtext="EATS & DRINKS" />
       </div>
+
+      {/* CONTENT LAYER */}
       <div className="absolute inset-0 z-10">
-          {/* Left Box */}
-          <div style={{ position: 'absolute', top: '28%', left: '10%', width: '24%', height: '45%' }}><FoodItem item={foodItems[0]} /></div>
-          {/* Middle Box */}
-          <div style={{ position: 'absolute', top: '28%', left: '38%', width: '24%', height: '45%' }}><FoodItem item={foodItems[1]} /></div>
-          {/* Right Box - DRINK LIST */}
-          <div style={{ position: 'absolute', top: '28%', left: '66%', width: '24%', height: '45%' }}><DrinkList /></div>
+          {/* I adjusted 'top' from 28% to 30% to give the header more breathing room */}
+          
+          {/* Left Box (Food) */}
+          <div style={{ position: 'absolute', top: '30%', left: '10%', width: '24%', height: '45%' }}>
+            <FoodItem item={foodItems[0]} />
+          </div>
+
+          {/* Middle Box (Food) */}
+          <div style={{ position: 'absolute', top: '30%', left: '38%', width: '24%', height: '45%' }}>
+            <FoodItem item={foodItems[1]} />
+          </div>
+
+          {/* Right Box (Drink List) */}
+          <div style={{ position: 'absolute', top: '30%', left: '66%', width: '24%', height: '45%' }}>
+            <DrinkList />
+          </div>
       </div>
     </div>
   );
 };
 
 // ==========================================
-// 2. PLACEHOLDERS FOR OTHER THEMES
-// (We define these HERE so the build cannot fail)
+// 4. PLACEHOLDER THEMES (Defined internally to prevent build errors)
 // ==========================================
 
-const SimpleCinematic = () => (
+const InternalCinematic = () => (
   <div className="w-full h-screen bg-gray-900 flex items-center justify-center text-white">
-    <h1 className="text-4xl">Cinematic Theme (Corporate)</h1>
+    <div className="text-center">
+      <h1 className="text-6xl font-bold mb-4">CINEMATIC THEME</h1>
+      <p>Theme loaded successfully.</p>
+    </div>
   </div>
 );
 
-const SimpleNeon = () => (
-  <div className="w-full h-screen bg-black flex items-center justify-center text-green-500">
-    <h1 className="text-4xl font-mono">NEON THEME ACTIVE</h1>
+const InternalNeon = () => (
+  <div className="w-full h-screen bg-black flex items-center justify-center text-green-500 border-4 border-green-500">
+    <h1 className="text-6xl font-mono animate-pulse">NEON THEME</h1>
   </div>
 );
 
 // ==========================================
-// 3. THE MAIN ROUTER
+// 5. MAIN ROUTER
 // ==========================================
 
 const AdDisplay = () => {
@@ -148,22 +171,16 @@ const AdDisplay = () => {
 
   console.log("Current Theme requested:", theme);
 
-  // 🛑 ROUTER LOGIC RESTORED
-  
-  // 1. If ?id=Static -> Show the New Game Day Video Menu
   if (theme === 'Static') {
     return <SpaceMenuFinal ads={backupAds} />;
   }
   
-  // 2. If ?id=Neon -> Show Neon
   if (theme === 'Neon' || theme === 'Sports') {
-    // Once this builds, you can change this back to <GameDayTheme />
-    return <SimpleNeon />; 
+    return <InternalNeon />;
   }
 
-  // 3. Default -> Show Corporate
-  // Once this builds, you can change this back to <CinematicTheme />
-  return <SimpleCinematic />;
+  // Default Fallback
+  return <InternalCinematic />;
 };
 
 export default AdDisplay;
