@@ -1,13 +1,14 @@
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
 
 // ==========================================
-// 1. HEADER (Side-by-Side & Sized to Fit)
+// 1. THE HEADER (Restored & Aligned)
 // ==========================================
 const VarsityHeader = ({ text, subtext }: any) => {
   return (
-    <div className="flex flex-row items-baseline justify-center w-full z-20 mt-[1%] gap-4">
-      {/* "GAME DAY" with Pulse Animation */}
+    // ADJUSTMENT: mt-[2%] centers it inside the video's neon frame
+    <div className="flex flex-row items-baseline justify-center w-full z-20 mt-[2%] gap-4">
+      
+      {/* "GAME DAY" - Side by Side */}
       <h1 className="relative text-5xl md:text-7xl font-black tracking-wider uppercase animate-pulse-glow"
           style={{
             fontFamily: "'Impact', 'Arial Black', sans-serif",
@@ -50,6 +51,7 @@ const VarsityHeader = ({ text, subtext }: any) => {
 // ==========================================
 // 2. CONTENT COMPONENTS
 // ==========================================
+
 const FoodItem = ({ item }:any) => {
   if (!item) return null;
   return (
@@ -93,52 +95,53 @@ const DrinkList = () => {
 // ==========================================
 // 3. MAIN LAYOUT
 // ==========================================
-const SpaceMenuFinal = ({ ads }: any) => {
-  const foodItems = (ads && ads.length > 0) ? ads : [
+
+const FinalMenu = () => {
+  const foodItems = [
     { Title: "VOLCANO NACHOS", Price: "$14.99", ImageURL: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d" },
     { Title: "TOUCHDOWN WINGS", Price: "$12.99", ImageURL: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f" },
   ];
+  
   const BG_VIDEO = "https://www.dropbox.com/scl/fi/1mdvf7p08f4xwo4rnp19f/bkgrd-menu.mp4?rlkey=f75w50969ivhhb7lzy8p34had&st=bc8bz5jb&raw=1"; 
 
   return (
     <div className="w-full h-screen bg-black overflow-hidden relative font-sans">
-      <video src={BG_VIDEO} className="absolute inset-0 w-full h-full object-fill z-0" autoPlay loop muted playsInline />
       
-      {/* HEADER */}
+      {/* 1. BACKGROUND VIDEO */}
+      <video 
+        src={BG_VIDEO} 
+        className="absolute inset-0 w-full h-full object-fill z-0" 
+        autoPlay loop muted playsInline 
+      />
+      
+      {/* 2. HEADER TEXT (Restored) */}
       <div className="absolute top-0 w-full h-[25%] flex items-center justify-center z-10">
          <VarsityHeader text="GAME DAY" subtext="EATS & DRINKS" />
       </div>
 
-      {/* CONTENT - ADJUSTED POSITION TO FIX OVERLAP */}
+      {/* 3. CONTENT LAYOUT */}
       <div className="absolute inset-0 z-10">
+          
+          {/* Top 30% ensures it sits BELOW the header text */}
+          
+          {/* Left Box */}
           <div style={{ position: 'absolute', top: '30%', left: '10%', width: '24%', height: '45%' }}>
             <FoodItem item={foodItems[0]} />
           </div>
+
+          {/* Middle Box */}
           <div style={{ position: 'absolute', top: '30%', left: '38%', width: '24%', height: '45%' }}>
             <FoodItem item={foodItems[1]} />
           </div>
+
+          {/* Right Box (Drink List) */}
           <div style={{ position: 'absolute', top: '30%', left: '66%', width: '24%', height: '45%' }}>
             <DrinkList />
           </div>
+
       </div>
     </div>
   );
-};
-
-// ==========================================
-// 4. ROUTER & FALLBACKS (NO IMPORTS)
-// ==========================================
-const InternalCinematic = () => <div className="w-full h-screen bg-gray-900 flex items-center justify-center text-white"><h1 className="text-4xl">CINEMATIC THEME</h1></div>;
-const InternalNeon = () => <div className="w-full h-screen bg-black flex items-center justify-center text-green-500"><h1 className="text-4xl">NEON THEME</h1></div>;
-
-const FinalMenu = () => {
-  const [searchParams] = useSearchParams();
-  const theme = searchParams.get('id'); 
-  const backupAds = [{ Category: 'Main', Title: 'TEST', Price: '$0.00' }];
-
-  if (theme === 'Static') return <SpaceMenuFinal ads={backupAds} />;
-  if (theme === 'Neon' || theme === 'Sports') return <InternalNeon />;
-  return <InternalCinematic />;
 };
 
 export default FinalMenu;
