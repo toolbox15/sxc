@@ -1,12 +1,14 @@
 import React from 'react';
 
 // ==========================================
-// 1. HEADER (Varsity Style - Scaled Down)
+// 1. HEADER (Varsity GAME DAY + White EATS & DRINKS + Moved Left)
 // ==========================================
 const VarsityHeader = ({ text, subtext }: any) => {
   return (
-    <div className="flex flex-row items-baseline justify-center w-full gap-3">
-      {/* "GAME DAY" - Varsity Style */}
+    // PADDING RIGHT 20% to shift the visual center to the LEFT
+    <div className="flex flex-row items-baseline justify-center w-full gap-3 pr-[20%]">
+      
+      {/* "GAME DAY" - RESTORED TO VARSITY STYLE (Red Outline + Texture) */}
       <h1 className="relative text-5xl md:text-6xl lg:text-8xl font-black tracking-tighter uppercase"
           style={{
             fontFamily: "'Impact', 'Arial Black', sans-serif",
@@ -23,11 +25,12 @@ const VarsityHeader = ({ text, subtext }: any) => {
         {text}
       </h1>
 
-      {/* "EATS & DRINKS" - Neon Blue */}
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-blue-500 uppercase tracking-widest"
+      {/* "EATS & DRINKS" - CHANGED TO SOLID WHITE */}
+      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase tracking-widest"
           style={{ 
             fontFamily: "'Arial', sans-serif",
-            textShadow: "0 0 15px #0000FF", 
+            // White Glow
+            textShadow: "0 0 15px rgba(255, 255, 255, 0.8)", 
             mixBlendMode: "screen" 
           }}
       >
@@ -38,7 +41,7 @@ const VarsityHeader = ({ text, subtext }: any) => {
 };
 
 // ==========================================
-// 2. FOOD MENU (Slightly Smaller for TV Fit)
+// 2. FOOD MENU (TV Size)
 // ==========================================
 const FoodMenuList = ({ items }: any) => {
   return (
@@ -50,7 +53,7 @@ const FoodMenuList = ({ items }: any) => {
         {items.map((item: any, index: number) => (
           <div key={index} className="flex items-center w-full relative group">
             
-            {/* ICON (Reduced from w-28 to w-20 to fit TV better) */}
+            {/* ICON (w-20) */}
             <div className="relative mr-4">
               <img 
                 src={item.IconURL} 
@@ -80,7 +83,7 @@ const FoodMenuList = ({ items }: any) => {
 };
 
 // ==========================================
-// 3. DRINK LIST (Scaled Down)
+// 3. DRINK LIST (TV Size)
 // ==========================================
 const DrinkList = () => {
   const drinks = [
@@ -121,7 +124,7 @@ const DrinkList = () => {
 };
 
 // ==========================================
-// 4. MAIN LAYOUT (TV SAFE ZONE)
+// 4. MAIN LAYOUT (TV SAFE ZONE 94%)
 // ==========================================
 const FinalMenu = () => {
   const foodItems = [
@@ -137,10 +140,7 @@ const FinalMenu = () => {
   return (
     <div className="w-full h-screen bg-black flex items-center justify-center overflow-hidden">
       
-      {/* TV OVERSCAN FIX:
-         I set the width/height to 94%. This creates a black border around the edge
-         of the screen, ensuring your glowing neon border is FULLY VISIBLE and not cut off.
-      */}
+      {/* 94% CONTAINER TO FIX TV OVERSCAN */}
       <div className="relative w-[94%] h-[94%] aspect-video shadow-2xl overflow-hidden bg-black border border-gray-900">
         
         {/* VIDEO */}
