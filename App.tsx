@@ -1,10 +1,10 @@
-import AdDisplay from './components/AdDisplay';
+import React from 'react';
+import FinalMenu from './components/FinalMenu'; 
 
 function App() {
   return (
     <div className="min-h-screen bg-black">
-      {/* This loads your new Google Sheet component */}
-      <AdDisplay />
+      <FinalMenu />
     </div>
   );
 }
