@@ -1,12 +1,12 @@
 import React from 'react';
 
 // ==========================================
-// 1. HEADER (Varsity GAME DAY + White EATS & DRINKS + Moved Left)
+// 1. HEADER (Varsity GAME DAY + White EATS & DRINKS + Stacked Layout)
 // ==========================================
 const VarsityHeader = ({ text, subtext }: any) => {
   return (
-    // PADDING RIGHT 20% to shift the visual center to the LEFT
-    <div className="flex flex-row items-baseline justify-center w-full gap-3 pr-[20%]">
+    // Changed from flex-row to flex-column, centered container
+    <div className="flex flex-col items-center justify-center w-full">
       
       {/* "GAME DAY" - RESTORED TO VARSITY STYLE (Red Outline + Texture) */}
       <h1 className="relative text-5xl md:text-6xl lg:text-8xl font-black tracking-tighter uppercase"
@@ -25,8 +25,8 @@ const VarsityHeader = ({ text, subtext }: any) => {
         {text}
       </h1>
 
-      {/* "EATS & DRINKS" - CHANGED TO SOLID WHITE */}
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase tracking-widest"
+      {/* "EATS & DRINKS" - MOVED DOWN BY 5% (mt-[5%]) */}
+      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase tracking-widest mt-[5%]"
           style={{ 
             fontFamily: "'Arial', sans-serif",
             // White Glow
@@ -150,20 +150,20 @@ const FinalMenu = () => {
           autoPlay loop muted playsInline 
         />
         
-        {/* HEADER AREA */}
-        <div className="absolute top-0 left-0 w-full h-[22%] flex items-center justify-center z-20 pt-[1.5%]">
+        {/* HEADER AREA - Adjusted height to accommodate stacked layout */}
+        <div className="absolute top-0 left-0 w-full h-[28%] flex items-center justify-center z-20 pt-[1.5%]">
            <VarsityHeader text="GAME DAY" subtext="EATS & DRINKS" />
         </div>
 
-        {/* CONTENT AREA */}
+        {/* CONTENT AREA - Adjusted top position for stacked header */}
         <div className="absolute inset-0 z-10">
             {/* Left Box (Food) - Reduced by 20% from 58% to 46.4% */}
-            <div style={{ position: 'absolute', top: '26%', left: '5%', width: '46.4%', height: '70%' }}>
+            <div style={{ position: 'absolute', top: '32%', left: '5%', width: '46.4%', height: '64%' }}>
               <FoodMenuList items={foodItems} />
             </div>
 
             {/* Right Box (Drinks) - Moved left to maintain gap */}
-            <div style={{ position: 'absolute', top: '26%', left: '56.4%', width: '28%', height: '70%' }}>
+            <div style={{ position: 'absolute', top: '32%', left: '56.4%', width: '28%', height: '64%' }}>
               <DrinkList />
             </div>
         </div>
