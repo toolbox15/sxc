@@ -8,8 +8,8 @@ const VarsityHeader = ({ text, subtext }: any) => {
     // PADDING RIGHT 20% to shift the visual center to the LEFT
     <div className="flex flex-row items-baseline justify-center w-full gap-3 pr-[20%]">
       
-      {/* "GAME DAY" - RESTORED TO VARSITY STYLE (Red Outline + Texture) */}
-      <h1 className="relative text-5xl md:text-6xl lg:text-8xl font-black tracking-tighter uppercase"
+      {/* "GAME DAY" - REDUCED SIZE BY 5% */}
+      <h1 className="relative text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter uppercase"
           style={{
             fontFamily: "'Impact', 'Arial Black', sans-serif",
             // Dot Texture + Gradient
@@ -25,8 +25,8 @@ const VarsityHeader = ({ text, subtext }: any) => {
         {text}
       </h1>
 
-      {/* "EATS & DRINKS" - CHANGED TO SOLID WHITE - MOVED DOWN 2% */}
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase tracking-widest relative top-[2%]"
+      {/* "EATS & DRINKS" - REDUCED SIZE BY 5% */}
+      <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white uppercase tracking-widest relative top-[2%]"
           style={{ 
             fontFamily: "'Arial', sans-serif",
             // White Glow
