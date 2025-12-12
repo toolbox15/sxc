@@ -41,37 +41,37 @@ const VarsityHeader = ({ text, subtext }: any) => {
 };
 
 // ==========================================
-// 2. FOOD MENU (TV Size)
+// 2. FOOD MENU (TV Size) - UPDATED TEXT SIZES
 // ==========================================
 const FoodMenuList = ({ items }: any) => {
   return (
     <div className="w-full h-full flex flex-col p-2">
-      <h3 className="text-white font-black text-3xl uppercase mb-4 tracking-wider border-b-4 border-red-600 pb-1 inline-block w-full drop-shadow-md">
+      <h3 className="text-white font-black text-2xl uppercase mb-3 tracking-wider border-b-4 border-red-600 pb-1 inline-block w-full drop-shadow-md">
         GAME DAY BITES
       </h3>
       <div className="flex flex-col gap-5"> 
         {items.map((item: any, index: number) => (
           <div key={index} className="flex items-center w-full relative group">
             
-            {/* ICON (w-20) */}
+            {/* ICON (w-16) - Reduced from w-20 */}
             <div className="relative mr-4">
               <img 
                 src={item.IconURL} 
                 alt={item.Title} 
-                className="w-20 h-20 object-cover rounded-full border-2 border-white shadow-[0_0_10px_rgba(0,0,0,0.8)] z-10 relative" 
+                className="w-16 h-16 object-cover rounded-full border-2 border-white shadow-[0_0_10px_rgba(0,0,0,0.8)] z-10 relative" 
               />
             </div>
             
             {/* Text Container */}
             <div className="flex items-end gap-2 flex-1 mb-2">
-              <span className="text-white font-bold text-2xl uppercase tracking-tight shadow-black drop-shadow-md whitespace-nowrap">
+              <span className="text-white font-bold text-xl uppercase tracking-tight shadow-black drop-shadow-md whitespace-nowrap">
                 {item.Title}
               </span>
               
               {/* WHITE DASHED LINE */}
               <div className="flex-1 border-b-4 border-dotted border-white/60 mb-2 opacity-80"></div>
               
-              <span className="text-yellow-400 font-black text-3xl shadow-black drop-shadow-md whitespace-nowrap">
+              <span className="text-yellow-400 font-black text-2xl shadow-black drop-shadow-md whitespace-nowrap">
                 {item.Price}
               </span>
             </div>
@@ -124,7 +124,7 @@ const DrinkList = () => {
 };
 
 // ==========================================
-// 4. MAIN LAYOUT (TV SAFE ZONE 94%)
+// 4. MAIN LAYOUT (TV SAFE ZONE 94%) - UPDATED SIZES
 // ==========================================
 const FinalMenu = () => {
   const foodItems = [
@@ -157,13 +157,13 @@ const FinalMenu = () => {
 
         {/* CONTENT AREA */}
         <div className="absolute inset-0 z-10">
-            {/* Left Box (Food) */}
-            <div style={{ position: 'absolute', top: '26%', left: '5%', width: '58%', height: '70%' }}>
+            {/* Left Box (Food) - Reduced by 20% from 58% to 46.4% */}
+            <div style={{ position: 'absolute', top: '26%', left: '5%', width: '46.4%', height: '70%' }}>
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Right Box (Drinks) */}
-            <div style={{ position: 'absolute', top: '26%', left: '68%', width: '28%', height: '70%' }}>
+            {/* Right Box (Drinks) - Moved left to maintain gap */}
+            <div style={{ position: 'absolute', top: '26%', left: '56.4%', width: '28%', height: '70%' }}>
               <DrinkList />
             </div>
         </div>
