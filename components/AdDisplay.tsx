@@ -1,25 +1,38 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-// --- 1. THE OUTER SCREEN GLOW (THE BIG BORDER) ---
-const ScreenBorder = () => {
+// --- 1. THE VARSITY HEADER (The Text) ---
+// This types "GAME DAY" on top of your video's empty box.
+const VarsityHeader = ({ text, subtext }: any) => {
   return (
-    // FIX: Changed inset-[1.5%] to inset-0 so it touches the very edges
-    <div className="absolute inset-0 z-50 pointer-events-none overflow-hidden rounded-none">
+    <div className="flex flex-col items-center justify-center w-full z-20 mt-[2%]">
       
-      {/* The Moving Gradient Layer */}
-      <div className="absolute inset-0 p-[10px]"> {/* Matches the thickness of your dotted line */}
-        
-        {/* Green Tail */}
-        <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#00FF00_360deg)] animate-[spin_4s_linear_infinite]" />
-        
-        {/* Yellow Tail */}
-        <div className="absolute inset-[-100%] bg-[conic-gradient(from_180deg,transparent_0_340deg,#FFFF00_360deg)] animate-[spin_4s_linear_infinite]" />
-        
-        {/* The Black Inner Mask (This cuts out the center so you can see the menu) */}
-        {/* We leave a transparent gap for the border to shine through */}
-        <div className="absolute inset-[10px] bg-transparent" /> 
-      </div>
+      {/* MAIN TEXT ("GAME DAY") */}
+      <h1 className="relative text-7xl md:text-8xl font-black tracking-wider uppercase"
+          style={{
+            fontFamily: "'Impact', 'Arial Black', sans-serif",
+            backgroundImage: "linear-gradient(to right, #ff3333, #ffffff, #3366ff), radial-gradient(circle, rgba(0,0,0,0.8) 1px, transparent 1px)",
+            backgroundSize: "100% 100%, 4px 4px",
+            backgroundBlendMode: "multiply",
+            mixBlendMode: "screen", // Blends with the video sparkles
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            WebkitTextStroke: "2px rgba(255,255,255,0.8)",
+            filter: "drop-shadow(0 0 15px rgba(255,50,50,0.6))"
+          }}
+      >
+        {text}
+      </h1>
+
+      {/* SUBTEXT ("EATS & DRINKS") */}
+      <h2 className="text-4xl md:text-5xl font-bold text-blue-400 uppercase tracking-widest mt-[-10px]"
+          style={{
+             textShadow: "0 0 20px #0000FF",
+             mixBlendMode: "plus-lighter"
+          }}
+      >
+        {subtext}
+      </h2>
     </div>
   );
 };
@@ -46,7 +59,7 @@ const FoodItem = ({ item }:any) => {
   );
 };
 
-// --- 3. THE MENU LAYOUT ---
+// --- 3. THE MAIN LAYOUT ---
 const SpaceMenuFinal = () => {
   const items = [
     { Title: "VOLCANO NACHOS", Price: "$14.99", ImageURL: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d" },
@@ -54,36 +67,43 @@ const SpaceMenuFinal = () => {
     { Title: "MVP BURGER", Price: "$16.99", ImageURL: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd" }
   ];
 
-  const BG_IMAGE = "https://www.dropbox.com/scl/fi/b78mrroli2c27sn2sz83y/gameday-bg.jpg?rlkey=hshroxnwsw2yea5ayds77mz3j&st=m3wtcx3r&raw=1"; 
+  // 🎥 YOUR VIDEO LINK (with raw=1 to force playback)
+  const BG_VIDEO = "https://www.dropbox.com/scl/fi/1mdvf7p08f4xwo4rnp19f/bkgrd-menu.mp4?rlkey=f75w50969ivhhb7lzy8p34had&st=bc8bz5jb&raw=1"; 
 
   return (
     <div className="w-full h-screen bg-black overflow-hidden relative font-sans">
       
-      {/* A. The Glowing Frame (Now perfectly aligned to the edge) */}
-      <ScreenBorder />
-
-      {/* B. The Background Image (Stretched to fit) */}
-      <img 
-        src={BG_IMAGE} 
+      {/* LAYER 1: THE VIDEO (Bottom) */}
+      <video 
+        src={BG_VIDEO} 
         className="absolute inset-0 w-full h-full object-fill z-0" 
-        alt="Background" 
+        autoPlay 
+        loop 
+        muted 
+        playsInline 
       />
 
-      {/* C. The Food Items */}
-      
-      {/* LEFT BOX */}
-      <div style={{ position: 'absolute', top: '27%', left: '10.5%', width: '23%', height: '37%' }}>
-        <FoodItem item={items[0]} />
+      {/* LAYER 2: HEADER TEXT (Middle) */}
+      <div className="absolute top-0 w-full h-[25%] flex items-center justify-center z-10">
+         <VarsityHeader text="GAME DAY" subtext="EATS & DRINKS" />
       </div>
 
-      {/* MIDDLE BOX */}
-      <div style={{ position: 'absolute', top: '27%', left: '38.5%', width: '23%', height: '37%' }}>
-        <FoodItem item={items[1]} />
-      </div>
+      {/* LAYER 3: FOOD CONTENT (Top) */}
+      <div className="absolute inset-0 z-10">
+          {/* Left Box */}
+          <div style={{ position: 'absolute', top: '27%', left: '10.5%', width: '23%', height: '37%' }}>
+            <FoodItem item={items[0]} />
+          </div>
 
-      {/* RIGHT BOX */}
-      <div style={{ position: 'absolute', top: '27%', left: '66.5%', width: '23%', height: '37%' }}>
-        <FoodItem item={items[2]} />
+          {/* Middle Box */}
+          <div style={{ position: 'absolute', top: '27%', left: '38.5%', width: '23%', height: '37%' }}>
+            <FoodItem item={items[1]} />
+          </div>
+
+          {/* Right Box */}
+          <div style={{ position: 'absolute', top: '27%', left: '66.5%', width: '23%', height: '37%' }}>
+            <FoodItem item={items[2]} />
+          </div>
       </div>
 
     </div>
