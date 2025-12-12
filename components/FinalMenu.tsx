@@ -1,15 +1,13 @@
 import React from 'react';
 
 // ==========================================
-// 1. THE HEADER (Restored & Aligned)
+// 1. THE HEADER (Centered & Scaled)
 // ==========================================
 const VarsityHeader = ({ text, subtext }: any) => {
   return (
-    // ADJUSTMENT: mt-[2%] centers it inside the video's neon frame
-    <div className="flex flex-row items-baseline justify-center w-full z-20 mt-[2%] gap-4">
-      
-      {/* "GAME DAY" - Side by Side */}
-      <h1 className="relative text-5xl md:text-7xl font-black tracking-wider uppercase animate-pulse-glow"
+    <div className="flex flex-row items-baseline justify-center w-full gap-4">
+      {/* "GAME DAY" */}
+      <h1 className="relative text-6xl md:text-8xl font-black tracking-wider uppercase animate-pulse-glow"
           style={{
             fontFamily: "'Impact', 'Arial Black', sans-serif",
             backgroundImage: "linear-gradient(to right, #ff3333, #ffffff, #3366ff), radial-gradient(circle, rgba(0,0,0,0.8) 1px, transparent 1px)",
@@ -26,7 +24,7 @@ const VarsityHeader = ({ text, subtext }: any) => {
       </h1>
 
       {/* "EATS & DRINKS" */}
-      <h2 className="text-3xl md:text-5xl font-bold text-blue-400 uppercase tracking-widest"
+      <h2 className="text-4xl md:text-5xl font-bold text-blue-400 uppercase tracking-widest"
           style={{ 
             textShadow: "0 0 20px #0000FF, 0 0 40px #0000FF", 
             mixBlendMode: "plus-lighter" 
@@ -49,42 +47,19 @@ const VarsityHeader = ({ text, subtext }: any) => {
 };
 
 // ==========================================
-// 2. CONTENT COMPONENTS
+// 2. FOOD LIST (White Text)
 // ==========================================
-
-const FoodItem = ({ item }:any) => {
-  if (!item) return null;
+const FoodMenuList = ({ items }: any) => {
   return (
-    <div className="w-full h-full flex flex-col p-1 relative group">
-      <img src={item.ImageURL} className="h-[65%] w-full object-cover rounded-md mb-2 shadow-lg border-2 border-white/10" alt="Food" />
-      <div className="text-center bg-black/60 p-2 rounded-md backdrop-blur-sm">
-         <h3 className="text-white font-black text-xl lg:text-2xl uppercase mb-1 leading-none tracking-tighter">{item.Title}</h3>
-         <span className="text-2xl lg:text-3xl font-black text-yellow-400 drop-shadow-md">{item.Price}</span>
-      </div>
-    </div>
-  );
-};
-
-const DrinkList = () => {
-  const drinks = [
-    { name: "BUD LIGHT DRAFT", price: "$5.00" },
-    { name: "MODELO ESPECIAL", price: "$6.00" },
-    { name: "LAGUNITAS IPA", price: "$7.50" },
-    { name: "TITO'S & SODA", price: "$8.00" },
-    { name: "SPICY MARGARITA", price: "$10.00" },
-    { name: "GAME DAY SHOT", price: "$5.00" }
-  ];
-
-  return (
-    <div className="w-full h-full flex flex-col p-4 bg-black/50 rounded-lg border border-white/20 backdrop-blur-md">
-      <div className="border-b-2 border-red-600 mb-3 pb-1">
-        <h3 className="text-white font-black text-2xl uppercase italic tracking-wider">ON TAP & SHOTS</h3>
-      </div>
-      <div className="flex flex-col gap-3 overflow-hidden">
-        {drinks.map((drink, index) => (
-          <div key={index} className="flex justify-between items-center border-b border-white/10 pb-1">
-            <span className="text-white font-bold text-lg uppercase truncate mr-2">{drink.name}</span>
-            <span className="text-yellow-400 font-black text-xl">{drink.price}</span>
+    <div className="w-full h-full flex flex-col p-4">
+      <h3 className="text-white font-black text-3xl uppercase mb-4 tracking-wider border-b-2 border-red-600 pb-2 inline-block w-full">
+        GAME DAY BITES
+      </h3>
+      <div className="flex flex-col gap-4">
+        {items.map((item: any, index: number) => (
+          <div key={index} className="flex justify-between items-center w-full border-b border-white/10 pb-2">
+            <span className="text-white font-bold text-2xl uppercase tracking-tight shadow-black drop-shadow-md">{item.Title}</span>
+            <span className="text-yellow-400 font-black text-3xl shadow-black drop-shadow-md">{item.Price}</span>
           </div>
         ))}
       </div>
@@ -93,13 +68,46 @@ const DrinkList = () => {
 };
 
 // ==========================================
-// 3. MAIN LAYOUT
+// 3. DRINK LIST (White Text)
 // ==========================================
+const DrinkList = () => {
+  const drinks = [
+    { name: "BUD LIGHT DRAFT", price: "$5.00" },
+    { name: "MODELO ESPECIAL", price: "$6.00" },
+    { name: "LAGUNITAS IPA", price: "$7.50" },
+    { name: "TITO'S & SODA", price: "$8.00" },
+    { name: "SPICY MARGARITA", price: "$10.00" },
+    { name: "GAME DAY SHOT", price: "$5.00" },
+    { name: "BUCKET OF BEERS", price: "$25.00" }
+  ];
 
+  return (
+    <div className="w-full h-full flex flex-col p-4">
+       <h3 className="text-white font-black text-3xl uppercase mb-4 tracking-wider border-b-2 border-red-600 pb-2 inline-block w-full">
+         ICE COLD DRINKS
+       </h3>
+      <div className="flex flex-col gap-4 w-full">
+        {drinks.map((drink, index) => (
+          <div key={index} className="flex justify-between items-center w-full border-b border-white/20 pb-2">
+            <span className="text-white font-bold text-xl uppercase mr-2 shadow-black drop-shadow-md">{drink.name}</span>
+            <span className="text-yellow-400 font-black text-2xl shadow-black drop-shadow-md">{drink.price}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
+// 4. MAIN LAYOUT (16:9 Precision)
+// ==========================================
 const FinalMenu = () => {
   const foodItems = [
-    { Title: "VOLCANO NACHOS", Price: "$14.99", ImageURL: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d" },
-    { Title: "TOUCHDOWN WINGS", Price: "$12.99", ImageURL: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f" },
+    { Title: "VOLCANO NACHOS", Price: "$14.99" },
+    { Title: "TOUCHDOWN WINGS (12)", Price: "$12.99" },
+    { Title: "MVP DOUBLE BURGER", Price: "$16.99" },
+    { Title: "LOADED FRIES", Price: "$9.99" },
+    { Title: "PRETZEL BITES & QUESO", Price: "$11.99" },
   ];
   
   const BG_VIDEO = "https://www.dropbox.com/scl/fi/1mdvf7p08f4xwo4rnp19f/bkgrd-menu.mp4?rlkey=f75w50969ivhhb7lzy8p34had&st=bc8bz5jb&raw=1"; 
@@ -107,35 +115,32 @@ const FinalMenu = () => {
   return (
     <div className="w-full h-screen bg-black overflow-hidden relative font-sans">
       
-      {/* 1. BACKGROUND VIDEO */}
+      {/* VIDEO BACKGROUND */}
       <video 
         src={BG_VIDEO} 
         className="absolute inset-0 w-full h-full object-fill z-0" 
         autoPlay loop muted playsInline 
       />
       
-      {/* 2. HEADER TEXT (Restored) */}
-      <div className="absolute top-0 w-full h-[25%] flex items-center justify-center z-10">
+      {/* HEADER CONTAINER - Centered in the top 22% of the screen */}
+      <div className="absolute top-0 left-0 w-full h-[22%] flex items-center justify-center z-20 pt-[1%]">
          <VarsityHeader text="GAME DAY" subtext="EATS & DRINKS" />
       </div>
 
-      {/* 3. CONTENT LAYOUT */}
+      {/* MAIN CONTENT AREA */}
       <div className="absolute inset-0 z-10">
           
-          {/* Top 30% ensures it sits BELOW the header text */}
-          
-          {/* Left Box */}
-          <div style={{ position: 'absolute', top: '30%', left: '10%', width: '24%', height: '45%' }}>
-            <FoodItem item={foodItems[0]} />
+          {/* FOOD LIST (Left Side) 
+              Aligned to fill the space below the header and to the left of the drink box 
+          */}
+          <div style={{ position: 'absolute', top: '25%', left: '5%', width: '58%', height: '70%' }}>
+            <FoodMenuList items={foodItems} />
           </div>
 
-          {/* Middle Box */}
-          <div style={{ position: 'absolute', top: '30%', left: '38%', width: '24%', height: '45%' }}>
-            <FoodItem item={foodItems[1]} />
-          </div>
-
-          {/* Right Box (Drink List) */}
-          <div style={{ position: 'absolute', top: '30%', left: '66%', width: '24%', height: '45%' }}>
+          {/* DRINK LIST (Right Side)
+              Aligned to fit inside the tall Golden Box on the right 
+          */}
+          <div style={{ position: 'absolute', top: '25%', left: '66%', width: '28%', height: '70%' }}>
             <DrinkList />
           </div>
 
