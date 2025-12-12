@@ -45,7 +45,7 @@ const VarsityHeader = ({ text, subtext }: any) => {
 };
 
 // ==========================================
-// 2. NEW: FOOD MENU LIST WITH ICONS
+// 2. NEW: FOOD MENU LIST WITH LARGER ICONS & DASHES
 // ==========================================
 const FoodMenuList = ({ items }: any) => {
   if (!items) return null;
@@ -57,13 +57,15 @@ const FoodMenuList = ({ items }: any) => {
       <div className="flex flex-col gap-5">
         {items.map((item: any, index: number) => (
           <div key={index} className="flex items-center w-full">
-            {/* Small Icon/Picture */}
-            <img src={item.IconURL} alt={item.Title} className="w-12 h-12 object-cover rounded-full mr-4 border-2 border-white/20" />
+            {/* Larger Icon/Picture (w-20 h-20) */}
+            <img src={item.IconURL} alt={item.Title} className="w-20 h-20 object-cover rounded-full mr-4 border-2 border-white/20 shadow-lg" />
             
-            {/* Title and Price container */}
-            <div className="flex justify-between items-center flex-1">
-              <span className="text-white font-bold text-2xl uppercase tracking-tight shadow-black drop-shadow-md">{item.Title}</span>
-              <span className="text-yellow-400 font-black text-3xl shadow-black drop-shadow-md">{item.Price}</span>
+            {/* Title, Dashes, and Price container */}
+            <div className="flex items-end gap-2 flex-1">
+              <span className="text-white font-bold text-2xl uppercase tracking-tight shadow-black drop-shadow-md whitespace-nowrap">{item.Title}</span>
+              {/* White dashed line filling the space */}
+              <div className="flex-1 border-b-2 border-dashed border-white/50 mb-2"></div>
+              <span className="text-yellow-400 font-black text-3xl shadow-black drop-shadow-md whitespace-nowrap">{item.Price}</span>
             </div>
           </div>
         ))}
@@ -73,7 +75,7 @@ const FoodMenuList = ({ items }: any) => {
 };
 
 // ==========================================
-// 3. UPDATED: DRINK LIST (Fixed Overflow)
+// 3. UPDATED: DRINK LIST
 // ==========================================
 const DrinkList = () => {
   const drinks = [
