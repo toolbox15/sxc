@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // ==========================================
-// 1. PROMOTIONAL CAROUSEL (With Drink-Themed Images - No Progress Bar)
+// 1. PROMOTIONAL CAROUSEL (Updated with Beer Keg Images)
 // ==========================================
 const PromotionalCarousel = () => {
   const promotions = [
@@ -10,24 +10,24 @@ const PromotionalCarousel = () => {
       title: "HAPPY HOUR", 
       subtitle: "4PM - 7PM", 
       detail: "$2 OFF ALL DRAFTS",
-      // Metal bucket full of ice and beer bottles
-      imageUrl: "https://images.unsplash.com/photo-1629203851126-d8c3329f3872?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      // Classic beer keg with tap in a bar
+      imageUrl: "https://images.unsplash.com/photo-1513258496099-48168024aec0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-yellow-300"
     },
     { 
-      title: "FEATURED COCKTAIL", 
-      subtitle: "TOUCHDOWN MARGARITA", 
-      detail: "WITH GRAND MARNIER",
-      // Metal bucket with cocktail gear and glasses
-      imageUrl: "https://images.unsplash.com/photo-1578985545060-4c5e0e0263f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      title: "DRAFT SPECIAL", 
+      subtitle: "LOCAL BREWS", 
+      detail: "$5 PINTS ALL DAY",
+      // Close-up of frosty beer keg with condensation
+      imageUrl: "https://images.unsplash.com/photo-1585697243097-8f2dd8e012a8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-lime-300"
     },
     { 
-      title: "GAME DAY SPECIAL", 
-      subtitle: "BEER BUCKET", 
+      title: "KEG TAP PARTY", 
+      subtitle: "BEER BUCKET DEAL", 
       detail: "5 FOR $20",
-      // Frosty beer keg close-up
-      imageUrl: "https://images.unsplash.com/photo-1559526324-4b87b5e5c7c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      // Professional brewery kegs with taps ready to serve
+      imageUrl: "https://images.unsplash.com/photo-1559526324-4b87b5e5c7c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-white"
     }
   ];
@@ -240,11 +240,11 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Promotional Carousel with Drink Images - MOVED RIGHT BY 0.5% */}
+            {/* Promotional Carousel with Beer Keg Images - Moved right by 0.5% */}
             <div style={{ 
               position: 'absolute', 
               top: '12%', 
-              left: '66.9%',  // Changed from '66.4%' to '66.9%' (moved right by 0.5%)
+              left: '66.9%',  // Moved right by 0.5%
               width: '28%', 
               height: '200px',
               zIndex: 30
