@@ -40,7 +40,7 @@ const PromotionalCarousel = () => {
   }, []);
   
   return (
-    <div className="w-full h-[250px] overflow-hidden rounded-lg border-2 border-yellow-500/50 shadow-2xl">
+    <div className="w-full h-[200px] overflow-hidden rounded-lg border-2 border-yellow-500/50 shadow-2xl">
       <motion.div
         key={current}
         initial={{ opacity: 0, y: 20 }}
@@ -59,15 +59,15 @@ const PromotionalCarousel = () => {
           {promotions[current].detail}
         </p>
         
-        {/* Dots indicator */}
-        <div className="absolute bottom-4 flex gap-2">
+        {/* Dots indicator - REMOVED */}
+        {/* <div className="absolute bottom-4 flex gap-2">
           {promotions.map((_, idx) => (
             <div 
               key={idx} 
               className={`w-2 h-2 rounded-full transition-all ${idx === current ? 'bg-yellow-400 scale-125' : 'bg-white/50'}`}
             />
           ))}
-        </div>
+        </div> */}
       </motion.div>
     </div>
   );
@@ -235,19 +235,19 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Promotional Carousel - MOVED UP BY 5% */}
+            {/* Promotional Carousel */}
             <div style={{ 
               position: 'absolute', 
-              top: '12%', // Changed from '17%'
+              top: '12%', 
               left: '66.4%', 
               width: '28%', 
-              height: '250px',
+              height: '200px',
               zIndex: 30
             }}>
               <PromotionalCarousel />
             </div>
 
-            {/* Right Box (Drinks) - MOVED UP BY 5% */}
+            {/* Right Box (Drinks) */}
             <div style={{ position: 'absolute', top: '45%', left: '66.4%', width: '28%', height: '46%' }}>
               <DrinkList />
             </div>
