@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // ==========================================
-// 1. PROMOTIONAL CAROUSEL (With Unsplash Background Images)
+// 1. PROMOTIONAL CAROUSEL (With Drink-Themed Unsplash Images)
 // ==========================================
 const PromotionalCarousel = () => {
   const promotions = [
@@ -10,21 +10,24 @@ const PromotionalCarousel = () => {
       title: "HAPPY HOUR", 
       subtitle: "4PM - 7PM", 
       detail: "$2 OFF ALL DRAFTS",
-      imageUrl: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      // Metal bucket full of ice and beer bottles
+      imageUrl: "https://images.unsplash.com/photo-1629203851126-d8c3329f3872?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       accentColor: "text-yellow-300"
     },
     { 
       title: "FEATURED COCKTAIL", 
       subtitle: "TOUCHDOWN MARGARITA", 
       detail: "WITH GRAND MARNIER",
-      imageUrl: "https://images.unsplash.com/photo-1544145945-f90425340c7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      // Metal bucket with cocktail gear and glasses
+      imageUrl: "https://images.unsplash.com/photo-1578985545060-4c5e0e0263f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       accentColor: "text-lime-300"
     },
     { 
       title: "GAME DAY SPECIAL", 
       subtitle: "BEER BUCKET", 
       detail: "5 FOR $20",
-      imageUrl: "https://images.unsplash.com/photo-1518090264245-32a1f9025b4a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      // Frosty beer keg close-up
+      imageUrl: "https://images.unsplash.com/photo-1559526324-4b87b5e5c7c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       accentColor: "text-white"
     }
   ];
@@ -48,16 +51,14 @@ const PromotionalCarousel = () => {
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.5 }}
         className="w-full h-full relative flex flex-col items-center justify-center p-4"
+        // Applied stronger vignette gradient for brighter images
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url(${promotions[current].imageUrl})`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${promotions[current].imageUrl})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
         }}
       >
-        {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/40 z-0"></div>
-        
         {/* Content */}
         <div className="relative z-10 text-center">
           <h3 className={`text-4xl font-black uppercase tracking-widest ${promotions[current].accentColor} mb-2 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
@@ -71,7 +72,7 @@ const PromotionalCarousel = () => {
           </p>
         </div>
         
-        {/* Progress indicator (replaces dots) */}
+        {/* Progress indicator */}
         <div className="absolute bottom-2 left-0 right-0 flex justify-center">
           <div className="h-1 bg-gray-600/50 w-32 rounded-full overflow-hidden">
             <motion.div
@@ -250,7 +251,7 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Promotional Carousel with Unsplash Images */}
+            {/* Promotional Carousel with Drink Images */}
             <div style={{ 
               position: 'absolute', 
               top: '12%', 
