@@ -119,11 +119,12 @@ const VarsityHeader = ({ text, subtext }: any) => {
 };
 
 // ==========================================
-// 3. FOOD MENU (TV Size) - UPDATED TEXT SIZES
+// 3. FOOD MENU (TV Size) - INCREASED TEXT SIZES BY 2 POINTS
 // ==========================================
 const FoodMenuList = ({ items }: any) => {
   return (
     <div className="w-full h-full flex flex-col p-2">
+      {/* Title remains unchanged */}
       <h3 className="text-white font-black text-2xl uppercase mb-3 tracking-wider border-b-4 border-red-600 pb-1 inline-block w-full drop-shadow-md">
         GAME DAY BITES
       </h3>
@@ -131,7 +132,7 @@ const FoodMenuList = ({ items }: any) => {
         {items.map((item: any, index: number) => (
           <div key={index} className="flex items-center w-full relative group">
             
-            {/* ICON (w-16) - Reduced from w-20 */}
+            {/* ICON (w-16) - UNCHANGED */}
             <div className="relative mr-4">
               <img 
                 src={item.IconURL} 
@@ -142,14 +143,16 @@ const FoodMenuList = ({ items }: any) => {
             
             {/* Text Container */}
             <div className="flex items-end gap-2 flex-1 mb-2">
-              <span className="text-white font-bold text-xl uppercase tracking-tight shadow-black drop-shadow-md whitespace-nowrap">
+              {/* Title increased from text-xl to text-2xl (+2 points) */}
+              <span className="text-white font-bold text-2xl uppercase tracking-tight shadow-black drop-shadow-md whitespace-nowrap">
                 {item.Title}
               </span>
               
-              {/* WHITE DASHED LINE */}
+              {/* WHITE DASHED LINE - UNCHANGED */}
               <div className="flex-1 border-b-4 border-dotted border-white/60 mb-2 opacity-80"></div>
               
-              <span className="text-yellow-400 font-black text-2xl shadow-black drop-shadow-md whitespace-nowrap">
+              {/* Price increased from text-2xl to text-3xl (+2 points) */}
+              <span className="text-yellow-400 font-black text-3xl shadow-black drop-shadow-md whitespace-nowrap">
                 {item.Price}
               </span>
             </div>
@@ -161,7 +164,7 @@ const FoodMenuList = ({ items }: any) => {
 };
 
 // ==========================================
-// 4. DRINK LIST (TV Size)
+// 4. DRINK LIST (TV Size) - UNCHANGED
 // ==========================================
 const DrinkList = () => {
   const drinks = [
