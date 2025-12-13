@@ -247,8 +247,8 @@ const FinalMenu = () => {
               <PromotionalCarousel />
             </div>
 
-            {/* Right Box (Drinks) - MOVED RIGHT BY 10% */}
-            <div style={{ position: 'absolute', top: '50%', left: '66.4%', width: '28%', height: '46%' }}>
+            {/* Right Box (Drinks) - MOVED UP BY 10% */}
+            <div style={{ position: 'absolute', top: '40%', left: '66.4%', width: '28%', height: '46%' }}>
               <DrinkList />
             </div>
         </div>
