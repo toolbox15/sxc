@@ -240,11 +240,11 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Promotional Carousel with Drink Images - MOVED LEFT BY 1% */}
+            {/* Promotional Carousel with Drink Images - MOVED RIGHT BY 0.5% */}
             <div style={{ 
               position: 'absolute', 
               top: '12%', 
-              left: '66.4%',  // Changed from '67.4%' to '66.4%'
+              left: '66.9%',  // Changed from '66.4%' to '66.9%' (moved right by 0.5%)
               width: '28%', 
               height: '200px',
               zIndex: 30
