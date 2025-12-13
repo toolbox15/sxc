@@ -235,10 +235,10 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Promotional Carousel - MOVED UP BY 15% */}
+            {/* Promotional Carousel - MOVED DOWN BY 10% */}
             <div style={{ 
               position: 'absolute', 
-              top: '7%', // Changed from '22%'
+              top: '17%', // Changed from '7%'
               left: '66.4%', 
               width: '28%', 
               height: '250px',
@@ -247,8 +247,8 @@ const FinalMenu = () => {
               <PromotionalCarousel />
             </div>
 
-            {/* Right Box (Drinks) - Position unchanged */}
-            <div style={{ position: 'absolute', top: '40%', left: '66.4%', width: '28%', height: '46%' }}>
+            {/* Right Box (Drinks) - MOVED DOWN BY 10% */}
+            <div style={{ position: 'absolute', top: '50%', left: '66.4%', width: '28%', height: '46%' }}>
               <DrinkList />
             </div>
         </div>
