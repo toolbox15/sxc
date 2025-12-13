@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // ==========================================
-// 1. PROMOTIONAL CAROUSEL (Updated with New Specific Images)
+// 1. PROMOTIONAL CAROUSEL (Updated with Zoomed Out Images)
 // ==========================================
 const PromotionalCarousel = () => {
   const promotions = [
@@ -51,12 +51,13 @@ const PromotionalCarousel = () => {
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.5 }}
         className="w-full h-full relative flex flex-col items-center justify-center p-4"
-        // Applied stronger vignette gradient for brighter images
+        // CHANGED: backgroundSize from 'cover' to 'contain' to show more of the image
         style={{
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${promotions[current].imageUrl})`,
-          backgroundSize: 'cover',
+          backgroundSize: 'contain', // Changed from 'cover' to show more of the beer
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
+          backgroundColor: 'black' // Added black background to fill empty space
         }}
       >
         {/* Content */}
@@ -243,7 +244,7 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Promotional Carousel with New Specific Images */}
+            {/* Promotional Carousel with Zoomed Out Images */}
             <div style={{ 
               position: 'absolute', 
               top: '12%', 
