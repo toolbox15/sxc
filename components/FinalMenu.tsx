@@ -162,8 +162,8 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Right Box (Drinks) - Moved left to maintain gap */}
-            <div style={{ position: 'absolute', top: '26%', left: '56.4%', width: '28%', height: '70%' }}>
+            {/* Right Box (Drinks) - MOVED RIGHT BY 10% */}
+            <div style={{ position: 'absolute', top: '26%', left: '66.4%', width: '28%', height: '70%' }}>
               <DrinkList />
             </div>
         </div>
