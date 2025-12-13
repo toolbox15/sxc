@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // ==========================================
-// 1. PROMOTIONAL CAROUSEL (Updated with new, frame-filling images)
+// 1. PROMOTIONAL CAROUSEL
 // ==========================================
 const PromotionalCarousel = () => {
   const promotions = [
@@ -10,7 +10,6 @@ const PromotionalCarousel = () => {
       title: "BOWL SPECIAL", 
       subtitle: "BUFFALO CHICKEN BOWL", 
       detail: "HEARTY & FLAVORFUL",
-      // NEW: Tightly composed chicken bowl that fills the frame
       imageUrl: "https://images.unsplash.com/photo-1562967914-608f82629710?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-yellow-300"
     },
@@ -18,7 +17,6 @@ const PromotionalCarousel = () => {
       title: "6-PACK DEAL",
       subtitle: "TAKE HOME", 
       detail: "SAVE $5",
-      // NEW: Six-pack of beer replacing the ice bucket image
       imageUrl: "https://images.unsplash.com/photo-1600788886242-5c96aabe3757?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-lime-300"
     },
@@ -26,22 +24,20 @@ const PromotionalCarousel = () => {
       title: "DRAFT OF THE DAY", 
       subtitle: "FROSTY PINT", 
       detail: "$5 PINTS",
-      // Extreme close-up beer mug that fills the frame
       imageUrl: "https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-white"
     }
   ];
-  
+   
   const [current, setCurrent] = useState(0);
-  
-  // Auto-rotate every 5 seconds
+   
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent(prev => (prev + 1) % promotions.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
-  
+  }, [promotions.length]);
+   
   return (
     <div className="w-full h-[200px] overflow-hidden rounded-lg border-2 border-yellow-500/50 shadow-2xl">
       <motion.div
@@ -51,7 +47,6 @@ const PromotionalCarousel = () => {
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.5 }}
         className="w-full h-full relative flex flex-col items-center justify-center p-4"
-        // backgroundSize remains 'cover' to fill the carousel frame completely
         style={{
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${promotions[current].imageUrl})`,
           backgroundSize: 'cover',
@@ -59,7 +54,6 @@ const PromotionalCarousel = () => {
           backgroundRepeat: 'no-repeat'
         }}
       >
-        {/* Content */}
         <div className="relative z-10 text-center">
           <h3 className={`text-4xl font-black uppercase tracking-widest ${promotions[current].accentColor} mb-2 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
             {promotions[current].title}
@@ -77,23 +71,19 @@ const PromotionalCarousel = () => {
 };
 
 // ==========================================
-// 2. HEADER (Varsity GAME DAY + White EATS & DRINKS + Moved Left)
+// 2. HEADER
 // ==========================================
-const VarsityHeader = ({ text, subtext }: any) => {
+const VarsityHeader = ({ text, subtext }) => {
   return (
-    // PADDING RIGHT 20% to shift the visual center to the LEFT
     <div className="flex flex-row items-baseline justify-center w-full gap-3 pr-[30%] relative top-[4%]">
-      
-      {/* "GAME DAY" - REDUCED SIZE BY 5% */}
+      {/* Main Title */}
       <h1 className="relative text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter uppercase"
           style={{
             fontFamily: "'Impact', 'Arial Black', sans-serif",
-            // Dot Texture + Gradient
             backgroundImage: "radial-gradient(circle, #ddd 1px, transparent 1px), linear-gradient(to bottom, #ffffff, #f0f0f0)",
             backgroundSize: "4px 4px, 100% 100%",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
-            // Red Outline
             WebkitTextStroke: "2px #d60000", 
             filter: "drop-shadow(0 0 8px rgba(214, 0, 0, 0.6))"
           }}
@@ -101,11 +91,10 @@ const VarsityHeader = ({ text, subtext }: any) => {
         {text}
       </h1>
 
-      {/* "EATS & DRINKS" - REDUCED SIZE BY 5% */}
+      {/* Sub Title */}
       <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white uppercase tracking-widest relative top-[2%]"
           style={{ 
             fontFamily: "'Arial', sans-serif",
-            // White Glow
             textShadow: "0 0 15px rgba(255, 255, 255, 0.8)", 
             mixBlendMode: "screen" 
           }}
@@ -117,20 +106,19 @@ const VarsityHeader = ({ text, subtext }: any) => {
 };
 
 // ==========================================
-// 3. FOOD MENU (TV Size) - INCREASED TEXT SIZES BY 2 PIXELS
+// 3. FOOD MENU
 // ==========================================
-const FoodMenuList = ({ items }: any) => {
+const FoodMenuList = ({ items }) => {
   return (
     <div className="w-full h-full flex flex-col p-2">
-      {/* Title remains unchanged */}
       <h3 className="text-white font-black text-2xl uppercase mb-3 tracking-wider border-b-4 border-red-600 pb-1 inline-block w-full drop-shadow-md">
         GAME DAY BITES
       </h3>
       <div className="flex flex-col gap-5"> 
-        {items.map((item: any, index: number) => (
+        {items.map((item, index) => (
           <div key={index} className="flex items-center w-full relative group">
             
-            {/* ICON (w-16) - UNCHANGED */}
+            {/* ICON */}
             <div className="relative mr-4">
               <img 
                 src={item.IconURL} 
@@ -141,7 +129,6 @@ const FoodMenuList = ({ items }: any) => {
             
             {/* Text Container */}
             <div className="flex items-end gap-2 flex-1 mb-2">
-              {/* Title: Increased from text-2xl (24px) to 26px (+2px) */}
               <span 
                 className="text-white font-bold uppercase tracking-tight shadow-black drop-shadow-md whitespace-nowrap"
                 style={{ fontSize: '26px' }}
@@ -149,10 +136,8 @@ const FoodMenuList = ({ items }: any) => {
                 {item.Title}
               </span>
               
-              {/* WHITE DASHED LINE - UNCHANGED */}
               <div className="flex-1 border-b-4 border-dotted border-white/60 mb-2 opacity-80"></div>
               
-              {/* Price: Increased from text-3xl (30px) to 32px (+2px) */}
               <span 
                 className="text-yellow-400 font-black shadow-black drop-shadow-md whitespace-nowrap"
                 style={{ fontSize: '32px' }}
@@ -168,7 +153,7 @@ const FoodMenuList = ({ items }: any) => {
 };
 
 // ==========================================
-// 4. DRINK LIST (TV Size) - UNCHANGED
+// 4. DRINK LIST
 // ==========================================
 const DrinkList = () => {
   const drinks = [
@@ -189,15 +174,10 @@ const DrinkList = () => {
       <div className="flex flex-col gap-3 w-full">
         {drinks.map((drink, index) => (
           <div key={index} className="flex justify-between items-end w-full gap-2">
-            {/* Name */}
             <span className="text-white font-bold text-lg uppercase shadow-black drop-shadow-md leading-tight whitespace-nowrap">
               {drink.name}
             </span>
-            
-            {/* Dashed Line */}
             <div className="flex-1 border-b-2 border-dotted border-white/40 mb-1 mx-2"></div>
-
-            {/* Price */}
             <span className="text-yellow-400 font-black text-xl whitespace-nowrap shadow-black drop-shadow-md">
               {drink.price}
             </span>
@@ -209,7 +189,7 @@ const DrinkList = () => {
 };
 
 // ==========================================
-// 5. MAIN LAYOUT (TV SAFE ZONE 94%) - UPDATED SIZES
+// 5. MAIN LAYOUT
 // ==========================================
 const FinalMenu = () => {
   const foodItems = [
@@ -219,7 +199,7 @@ const FinalMenu = () => {
     { Title: "LOADED FRIES", Price: "$9.99", IconURL: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=200&h=200&fit=crop" },
     { Title: "PRETZEL BITES", Price: "$11.99", IconURL: "https://images.unsplash.com/photo-1573821663912-569905455b1c?w=200&h=200&fit=crop" },
   ];
-  
+   
   const BG_VIDEO = "https://www.dropbox.com/scl/fi/jzf7pcmzukxfrltktaf3d/bkmenu.mp4?rlkey=esuubnyzl9stppqvwau8cxs0m&st=3ln0rquf&dl=1"; 
 
   return (
@@ -237,17 +217,18 @@ const FinalMenu = () => {
         
         {/* HEADER AREA */}
         <div className="absolute top-0 left-0 w-full h-[22%] flex items-center justify-center z-20 pt-[1.5%]">
+           {/* CHANGE THIS TEXT FOR MIKES OR TONYS */}
            <VarsityHeader text="GAME DAY" subtext="EATS & DRINKS" />
         </div>
 
         {/* CONTENT AREA */}
         <div className="absolute inset-0 z-10">
-            {/* Left Box (Food) - Reduced by 20% from 58% to 46.4% */}
+            {/* Left Box (Food) */}
             <div style={{ position: 'absolute', top: '26%', left: '5%', width: '46.4%', height: '70%' }}>
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Promotional Carousel with new images */}
+            {/* Promotional Carousel */}
             <div style={{ 
               position: 'absolute', 
               top: '12%', 
