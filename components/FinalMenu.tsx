@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // ==========================================
-// 1. PROMOTIONAL CAROUSEL (With Drink-Themed Unsplash Images)
+// 1. PROMOTIONAL CAROUSEL (With Drink-Themed Images - No Progress Bar)
 // ==========================================
 const PromotionalCarousel = () => {
   const promotions = [
@@ -72,18 +72,7 @@ const PromotionalCarousel = () => {
           </p>
         </div>
         
-        {/* Progress indicator */}
-        <div className="absolute bottom-2 left-0 right-0 flex justify-center">
-          <div className="h-1 bg-gray-600/50 w-32 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 5, ease: "linear" }}
-              className="h-full bg-yellow-500"
-              key={current}
-            />
-          </div>
-        </div>
+        {/* Progress indicator REMOVED as requested */}
       </motion.div>
     </div>
   );
