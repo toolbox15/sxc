@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // ==========================================
-// 1. PROMOTIONAL CAROUSEL (Updated with Zoomed Out Images)
+// 1. PROMOTIONAL CAROUSEL (Updated with new, frame-filling images)
 // ==========================================
 const PromotionalCarousel = () => {
   const promotions = [
@@ -10,23 +10,23 @@ const PromotionalCarousel = () => {
       title: "BOWL SPECIAL", 
       subtitle: "BUFFALO CHICKEN BOWL", 
       detail: "HEARTY & FLAVORFUL",
-      // Tasty chicken in a bowl on a tray/board
-      imageUrl: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+      // NEW: Tightly composed chicken bowl that fills the frame
+      imageUrl: "https://images.unsplash.com/photo-1562967914-608f82629710?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-yellow-300"
     },
     { 
-      title: "BUCKET DEAL", 
-      subtitle: "ICE COLD BOTTLES", 
-      detail: "4 FOR $20",
-      // Bottles of beer in an ice bucket
-      imageUrl: "https://images.unsplash.com/photo-1541692641319-981cc79ee10a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+      title: "6-PACK DEAL", // Updated title
+      subtitle: "TAKE HOME", // Updated subtitle
+      detail: "SAVE $5",
+      // NEW: Six-pack of beer replacing the ice bucket image
+      imageUrl: "https://images.unsplash.com/photo-1600788886242-5c96aabe3757?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-lime-300"
     },
     { 
       title: "DRAFT OF THE DAY", 
-      subtitle: "FROSTY MUG", 
+      subtitle: "FROSTY PINT", 
       detail: "$5 PINTS",
-      // Close-up shot of beer mug on a bar
+      // Extreme close-up beer mug that fills the frame
       imageUrl: "https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-white"
     }
@@ -51,13 +51,12 @@ const PromotionalCarousel = () => {
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.5 }}
         className="w-full h-full relative flex flex-col items-center justify-center p-4"
-        // CHANGED: backgroundSize from 'cover' to 'contain' to show more of the image
+        // backgroundSize remains 'cover' to fill the carousel frame completely
         style={{
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${promotions[current].imageUrl})`,
-          backgroundSize: 'contain', // Changed from 'cover' to show more of the beer
+          backgroundSize: 'cover', // Ensures images fill the frame
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundColor: 'black' // Added black background to fill empty space
+          backgroundRepeat: 'no-repeat'
         }}
       >
         {/* Content */}
@@ -72,8 +71,6 @@ const PromotionalCarousel = () => {
             {promotions[current].detail}
           </p>
         </div>
-        
-        {/* Progress indicator REMOVED as requested */}
       </motion.div>
     </div>
   );
@@ -244,7 +241,7 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Promotional Carousel with Zoomed Out Images */}
+            {/* Promotional Carousel with new images */}
             <div style={{ 
               position: 'absolute', 
               top: '12%', 
