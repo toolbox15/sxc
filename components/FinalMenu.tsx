@@ -2,32 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // ==========================================
-// 1. PROMOTIONAL CAROUSEL (Updated with Beer Keg Images)
+// 1. PROMOTIONAL CAROUSEL (Updated with New Specific Images)
 // ==========================================
 const PromotionalCarousel = () => {
   const promotions = [
     { 
-      title: "HAPPY HOUR", 
-      subtitle: "4PM - 7PM", 
-      detail: "$2 OFF ALL DRAFTS",
-      // Classic beer keg with tap in a bar
-      imageUrl: "https://images.unsplash.com/photo-1513258496099-48168024aec0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+      title: "BOWL SPECIAL", 
+      subtitle: "BUFFALO CHICKEN BOWL", 
+      detail: "HEARTY & FLAVORFUL",
+      // Tasty chicken in a bowl on a tray/board
+      imageUrl: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-yellow-300"
     },
     { 
-      title: "DRAFT SPECIAL", 
-      subtitle: "LOCAL BREWS", 
-      detail: "$5 PINTS ALL DAY",
-      // Close-up of frosty beer keg with condensation
-      imageUrl: "https://images.unsplash.com/photo-1585697243097-8f2dd8e012a8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+      title: "BUCKET DEAL", 
+      subtitle: "ICE COLD BOTTLES", 
+      detail: "4 FOR $20",
+      // Bottles of beer in an ice bucket
+      imageUrl: "https://images.unsplash.com/photo-1541692641319-981cc79ee10a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-lime-300"
     },
     { 
-      title: "KEG TAP PARTY", 
-      subtitle: "BEER BUCKET DEAL", 
-      detail: "5 FOR $20",
-      // Professional brewery kegs with taps ready to serve
-      imageUrl: "https://images.unsplash.com/photo-1559526324-4b87b5e5c7c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+      title: "DRAFT OF THE DAY", 
+      subtitle: "FROSTY MUG", 
+      detail: "$5 PINTS",
+      // Close-up shot of beer mug on a bar
+      imageUrl: "https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
       accentColor: "text-white"
     }
   ];
@@ -240,7 +240,7 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Promotional Carousel with Beer Keg Images - Moved right by 0.5% */}
+            {/* Promotional Carousel with New Specific Images */}
             <div style={{ 
               position: 'absolute', 
               top: '12%', 
