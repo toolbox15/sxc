@@ -1,7 +1,80 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 // ==========================================
-// 1. HEADER (Varsity GAME DAY + White EATS & DRINKS + Moved Left)
+// 1. PROMOTIONAL CAROUSEL (Above Drink List)
+// ==========================================
+const PromotionalCarousel = () => {
+  const promotions = [
+    { 
+      title: "HAPPY HOUR", 
+      subtitle: "4PM - 7PM", 
+      detail: "$2 OFF ALL DRAFTS",
+      bgColor: "bg-gradient-to-r from-blue-900/90 to-red-900/90",
+      accentColor: "text-yellow-300"
+    },
+    { 
+      title: "FEATURED COCKTAIL", 
+      subtitle: "TOUCHDOWN MARGARITA", 
+      detail: "WITH GRAND MARNIER",
+      bgColor: "bg-gradient-to-r from-green-900/90 to-black/90",
+      accentColor: "text-lime-300"
+    },
+    { 
+      title: "GAME DAY SPECIAL", 
+      subtitle: "BEER BUCKET", 
+      detail: "5 FOR $20",
+      bgColor: "bg-gradient-to-r from-red-900/90 to-black/90",
+      accentColor: "text-white"
+    }
+  ];
+  
+  const [current, setCurrent] = useState(0);
+  
+  // Auto-rotate every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent(prev => (prev + 1) % promotions.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <div className="w-full h-[250px] overflow-hidden rounded-lg border-2 border-yellow-500/50 shadow-2xl">
+      <motion.div
+        key={current}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.5 }}
+        className={`w-full h-full flex flex-col items-center justify-center p-4 ${promotions[current].bgColor}`}
+      >
+        <h3 className={`text-4xl font-black uppercase tracking-widest ${promotions[current].accentColor} mb-2 text-center drop-shadow-md`}>
+          {promotions[current].title}
+        </h3>
+        <p className="text-2xl font-bold text-white mb-1 text-center drop-shadow-md">
+          {promotions[current].subtitle}
+        </p>
+        <p className="text-xl text-white/90 text-center drop-shadow-md">
+          {promotions[current].detail}
+        </p>
+        
+        {/* Dots indicator */}
+        <div className="absolute bottom-4 flex gap-2">
+          {promotions.map((_, idx) => (
+            <div 
+              key={idx} 
+              className={`w-2 h-2 rounded-full transition-all ${idx === current ? 'bg-yellow-400 scale-125' : 'bg-white/50'}`}
+            />
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// ==========================================
+// 2. HEADER (Varsity GAME DAY + White EATS & DRINKS + Moved Left)
 // ==========================================
 const VarsityHeader = ({ text, subtext }: any) => {
   return (
@@ -41,7 +114,7 @@ const VarsityHeader = ({ text, subtext }: any) => {
 };
 
 // ==========================================
-// 2. FOOD MENU (TV Size) - UPDATED TEXT SIZES
+// 3. FOOD MENU (TV Size) - UPDATED TEXT SIZES
 // ==========================================
 const FoodMenuList = ({ items }: any) => {
   return (
@@ -83,7 +156,7 @@ const FoodMenuList = ({ items }: any) => {
 };
 
 // ==========================================
-// 3. DRINK LIST (TV Size)
+// 4. DRINK LIST (TV Size)
 // ==========================================
 const DrinkList = () => {
   const drinks = [
@@ -124,7 +197,7 @@ const DrinkList = () => {
 };
 
 // ==========================================
-// 4. MAIN LAYOUT (TV SAFE ZONE 94%) - UPDATED SIZES
+// 5. MAIN LAYOUT (TV SAFE ZONE 94%) - UPDATED SIZES
 // ==========================================
 const FinalMenu = () => {
   const foodItems = [
@@ -162,8 +235,20 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
+            {/* Promotional Carousel - Above Drink List */}
+            <div style={{ 
+              position: 'absolute', 
+              top: '22%', 
+              left: '66.4%', 
+              width: '28%', 
+              height: '250px',
+              zIndex: 30
+            }}>
+              <PromotionalCarousel />
+            </div>
+
             {/* Right Box (Drinks) - MOVED RIGHT BY 10% */}
-            <div style={{ position: 'absolute', top: '26%', left: '66.4%', width: '28%', height: '70%' }}>
+            <div style={{ position: 'absolute', top: '50%', left: '66.4%', width: '28%', height: '46%' }}>
               <DrinkList />
             </div>
         </div>
