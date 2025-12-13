@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // ==========================================
-// 1. PROMOTIONAL CAROUSEL (Above Drink List)
+// 1. PROMOTIONAL CAROUSEL (With Unsplash Background Images)
 // ==========================================
 const PromotionalCarousel = () => {
   const promotions = [
@@ -10,21 +10,21 @@ const PromotionalCarousel = () => {
       title: "HAPPY HOUR", 
       subtitle: "4PM - 7PM", 
       detail: "$2 OFF ALL DRAFTS",
-      bgColor: "bg-gradient-to-r from-blue-900/90 to-red-900/90",
+      imageUrl: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       accentColor: "text-yellow-300"
     },
     { 
       title: "FEATURED COCKTAIL", 
       subtitle: "TOUCHDOWN MARGARITA", 
       detail: "WITH GRAND MARNIER",
-      bgColor: "bg-gradient-to-r from-green-900/90 to-black/90",
+      imageUrl: "https://images.unsplash.com/photo-1544145945-f90425340c7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       accentColor: "text-lime-300"
     },
     { 
       title: "GAME DAY SPECIAL", 
       subtitle: "BEER BUCKET", 
       detail: "5 FOR $20",
-      bgColor: "bg-gradient-to-r from-red-900/90 to-black/90",
+      imageUrl: "https://images.unsplash.com/photo-1518090264245-32a1f9025b4a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       accentColor: "text-white"
     }
   ];
@@ -43,31 +43,46 @@ const PromotionalCarousel = () => {
     <div className="w-full h-[200px] overflow-hidden rounded-lg border-2 border-yellow-500/50 shadow-2xl">
       <motion.div
         key={current}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, scale: 1.05 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.5 }}
-        className={`w-full h-full flex flex-col items-center justify-center p-4 ${promotions[current].bgColor}`}
+        className="w-full h-full relative flex flex-col items-center justify-center p-4"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url(${promotions[current].imageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
-        <h3 className={`text-4xl font-black uppercase tracking-widest ${promotions[current].accentColor} mb-2 text-center drop-shadow-md`}>
-          {promotions[current].title}
-        </h3>
-        <p className="text-2xl font-bold text-white mb-1 text-center drop-shadow-md">
-          {promotions[current].subtitle}
-        </p>
-        <p className="text-xl text-white/90 text-center drop-shadow-md">
-          {promotions[current].detail}
-        </p>
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/40 z-0"></div>
         
-        {/* Dots indicator - REMOVED */}
-        {/* <div className="absolute bottom-4 flex gap-2">
-          {promotions.map((_, idx) => (
-            <div 
-              key={idx} 
-              className={`w-2 h-2 rounded-full transition-all ${idx === current ? 'bg-yellow-400 scale-125' : 'bg-white/50'}`}
+        {/* Content */}
+        <div className="relative z-10 text-center">
+          <h3 className={`text-4xl font-black uppercase tracking-widest ${promotions[current].accentColor} mb-2 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
+            {promotions[current].title}
+          </h3>
+          <p className="text-2xl font-bold text-white mb-1 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            {promotions[current].subtitle}
+          </p>
+          <p className="text-xl text-white/90 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            {promotions[current].detail}
+          </p>
+        </div>
+        
+        {/* Progress indicator (replaces dots) */}
+        <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+          <div className="h-1 bg-gray-600/50 w-32 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 5, ease: "linear" }}
+              className="h-full bg-yellow-500"
+              key={current}
             />
-          ))}
-        </div> */}
+          </div>
+        </div>
       </motion.div>
     </div>
   );
@@ -235,7 +250,7 @@ const FinalMenu = () => {
               <FoodMenuList items={foodItems} />
             </div>
 
-            {/* Promotional Carousel */}
+            {/* Promotional Carousel with Unsplash Images */}
             <div style={{ 
               position: 'absolute', 
               top: '12%', 
