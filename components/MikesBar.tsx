@@ -105,7 +105,8 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
       <ConfettiEffect />
-      <motion.div className="absolute inset-0 bg-orange-600/30" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
+      {/* 💥 SOFTENED FLASH EFFECT: Added blur-3xl to make the light flash look softer/more diffused */}
+      <motion.div className="absolute inset-0 bg-orange-600/30 blur-3xl" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
       <motion.div className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white shadow-[0_0_100px_rgba(234,88,12,0.6)] flex flex-col items-center p-12 mt-10" initial={{ scale: 0, rotate: -5 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", bounce: 0.5 }}>
         <div className="absolute inset-0 overflow-hidden rounded-2xl opacity-20"><div className="w-full h-full bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,#ea580c_20px,#ea580c_40px)]"></div></div>
         <div className="absolute -top-16 -left-12 z-50"><SirenImage /></div>
