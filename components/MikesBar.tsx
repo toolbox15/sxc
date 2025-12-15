@@ -18,7 +18,6 @@ interface AdItem {
 }
 
 // --- 1. MIKE'S BAR PLACEHOLDER DATA (EXPANDED) ---
-// Retaining the expanded data we worked on for MikesBar
 const defaultKickoffItems: AdItem[] = [
     { Title: "CLASSIC SLIDERS", Price: "$9.00", Description: "Three juicy mini burgers with cheese.", Category: "Kickoff" },
     { Title: "PREMIUM NACHOS", Price: "$12.00", Description: "Loaded with cheese, jalapenos, and sour cream.", Category: "Kickoff" },
@@ -100,7 +99,7 @@ const RunningPlayer = () => {
   return (<motion.img src="/player-run.gif" alt="Running Player" className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-2xl opacity-100" initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }} animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }} transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }} />);
 };
 
-// --- 🚨 FLASH SALE OVERLAY (UPDATED WITH PULSATING GLOW AND TEXT) ---
+// --- 🚨 FLASH SALE OVERLAY (UPDATED WITH NFL STYLE PULSATING TEXT) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
@@ -137,14 +136,15 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
         <div className="absolute -top-16 -right-12 z-50"><SirenImage /></div>
         <div className="absolute -top-10 bg-orange-600 text-white px-10 py-4 rounded-xl border-4 border-white shadow-lg transform -rotate-1 z-20"><h2 className="text-4xl font-black italic uppercase tracking-widest drop-shadow-md">FIELD ALERT</h2></div>
         
-        {/* PULSATING TITLE TEXT */}
+        {/* PULSATING NFL STYLE TITLE TEXT */}
         <motion.h1 
-          className="relative z-10 text-8xl md:text-[10rem] font-black text-white uppercase italic leading-none mt-8 text-center"
+          className="relative z-10 text-9xl md:text-[12rem] font-extrabold text-white uppercase leading-none mt-8 text-center tracking-tighter" // Font adjustments for blocky look
           animate={{ 
-            dropShadow: [
-              '6px 6px 0px #ea580c', // Base orange shadow
-              '6px 6px 50px rgba(255, 255, 255, 1)', // Max white/bright glow
-              '6px 6px 0px #ea580c', // Back to base orange shadow
+            // Using text-shadow to create a deep blue stroke and a pulsing white/orange glow
+            textShadow: [
+              '8px 8px 0px #0057B8, 12px 12px 0px #ea580c', // Base NFL-style Blue/Orange Stroke
+              '8px 8px 0px #0057B8, 12px 12px 20px #FFFFFF', // Max White Glow
+              '8px 8px 0px #0057B8, 12px 12px 0px #ea580c', // Back to Base Stroke
             ] 
           }}
           transition={{ 
