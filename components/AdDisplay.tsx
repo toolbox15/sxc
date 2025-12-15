@@ -1,7 +1,7 @@
-// AdDisplay.tsx - FINAL CORRECTED VERSION WITH TIRESHOP THEME INTEGRATION
+// AdDisplay.tsx - FINAL with TireShop, SlotMachine, and FinalMenu
 
 import React from 'react';
-// 1. Theme Imports (Make sure these paths match your file structure!)
+// Theme Imports
 import BearsTheme from './BearsTheme.tsx'; 
 import MikesBar from './MikesBar.tsx';
 import TonysBar from './TonysBar.tsx';
@@ -10,30 +10,16 @@ import NeonGameDayTheme from './NeonGameDayTheme.tsx';
 import BistroTheme from './BistroTheme.tsx';
 import CinematicTheme from './CinematicTheme.tsx';
 import SpaceMenu from './SpaceMenu.tsx';
-import FinalMenu from './FinalMenu.tsx';
+import FinalMenu from './FinalMenu.tsx'; 
 import LiveStreamTheme from './LiveStreamTheme.tsx'; 
-import TireShopTheme from './TireShopTheme.tsx'; // <--- NEW TIRE SHOP IMPORT
+import TireShopTheme from './TireShopTheme.tsx'; 
+import SlotMachineTheme from './SlotMachineTheme.tsx'; 
 
-// --- DATA STRUCTURE ---
-interface AdItem {
-  Title: string;
-  Price: string;
-  Description?: string;
-  Category: string;
-  Status?: string;
-  Color?: string;
-}
-
-// --- PROPS DEFINITION ---
-interface AdDisplayProps {
-    themeName?: string; 
-    ads?: AdItem[];     
-}
+// --- DATA STRUCTURE & PROPS (omitted for brevity) ---
 
 // Helper function to safely read the deviceId from the URL query string
 const getDeviceIdFromUrl = () => {
     if (typeof window === 'undefined') return '';
-    
     const params = new URLSearchParams(window.location.search);
     return params.get('id') || ''; 
 };
@@ -44,7 +30,7 @@ function AdDisplay({ ads = [] }: AdDisplayProps) {
     const deviceId = getDeviceIdFromUrl().toLowerCase();
     let theme = 'Corporate'; 
 
-    // 2. Keyword Routing (The Traffic Cop Logic)
+    // Keyword Routing (The Traffic Cop Logic)
     if (deviceId.includes('bears')) {
       theme = 'Bears';
     } else if (deviceId.includes('mikesbar')) {
@@ -63,12 +49,16 @@ function AdDisplay({ ads = [] }: AdDisplayProps) {
       theme = 'Space';
     } else if (deviceId.includes('livestream')) {
       theme = 'LiveStream';
-    } else if (deviceId.includes('tire')) { // <--- TIRE SHOP KEYWORD
+    } else if (deviceId.includes('tire')) {
       theme = 'TireShop';
+    } else if (deviceId.includes('slot')) {
+      theme = 'SlotMachine';
+    } else if (deviceId.includes('final')) { // <-- FINAL MENU KEYWORD ADDED
+      theme = 'FinalMenu';
     }
     // If no match is found, theme remains 'Corporate'.
 
-    // 3. Theme Rendering Switch
+    // Theme Rendering Switch
     switch (theme) {
       case 'Bears':
         return <BearsTheme ads={ads} />;
@@ -88,13 +78,17 @@ function AdDisplay({ ads = [] }: AdDisplayProps) {
         return <SpaceMenu ads={ads} />;
       case 'LiveStream': 
         return <LiveStreamTheme ads={ads} />;
-      
-      case 'TireShop': // <--- TIRE SHOP RENDER CASE
+      case 'TireShop': 
         return <TireShopTheme ads={ads} />;
+      case 'SlotMachine': 
+        return <SlotMachineTheme ads={ads} />;
+      
+      case 'FinalMenu': // <-- FINAL MENU RENDER
+        return <FinalMenu ads={ads} />;
         
       case 'Corporate':
       default:
-        // Default fallback
+        // Default Fallback
         return <BearsTheme ads={ads} />; 
     }
 }
