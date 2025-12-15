@@ -35,7 +35,7 @@ const DUMMY_MENU = {
   ]
 };
 
-// --- 🚨 SIREN IMAGE COMPONENT (Unchanged) ---
+// --- 🚨 SIREN IMAGE COMPONENT ---
 const SirenImage = () => {
   return (
     <div className="relative z-50">
@@ -46,7 +46,7 @@ const SirenImage = () => {
   );
 };
 
-// --- 🎉 CONFETTI ENGINE (Unchanged) ---
+// --- 🎉 CONFETTI ENGINE ---
 const ConfettiEffect = () => {
   const particles = Array.from({ length: 150 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -59,11 +59,11 @@ const ConfettiEffect = () => {
   );
 };
 
-// --- ANIMATION SETTINGS (Unchanged) ---
+// --- ANIMATION SETTINGS ---
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
 const itemVariants = { hidden: { opacity: 0, x: -50 }, visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } } };
 
-// --- 🍺 BUBBLES EFFECT (SCALED DOWN, Unchanged) ---
+// --- 🍺 BUBBLES EFFECT (SCALED DOWN) ---
 const BubblesEffect = () => {
   const bubbles = Array.from({ length: 30 }); 
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -77,7 +77,7 @@ const BubblesEffect = () => {
   );
 };
 
-// --- STADIUM FLASH EFFECT (Unchanged) ---
+// --- STADIUM FLASH EFFECT ---
 const StadiumFlashEffect = () => {
   const flashes = Array.from({ length: 15 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -90,18 +90,17 @@ const StadiumFlashEffect = () => {
   );
 };
 
-// --- 🏃‍♂️ RUNNING PLAYER (Unchanged) ---
+// --- 🏃‍♂️ RUNNING PLAYER ---
 const RunningPlayer = () => {
   return (<motion.img src="/player-run.gif" alt="Running Player" className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-2xl opacity-100" initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }} animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }} transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }} />);
 };
 
-// --- 🚨 FLASH SALE OVERLAY (Re-checked for Bears colors) ---
+// --- 🚨 FLASH SALE OVERLAY ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
       <ConfettiEffect />
       <motion.div className="absolute inset-0 bg-orange-600/30" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
-      {/* The main alert box uses blue-950 and orange-600/orange-500 (ea580c) */}
       <motion.div className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white shadow-[0_0_100px_rgba(234,88,12,0.6)] flex flex-col items-center p-12 mt-10" initial={{ scale: 0, rotate: -5 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", bounce: 0.5 }}>
         <div className="absolute inset-0 overflow-hidden rounded-2xl opacity-20"><div className="w-full h-full bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,#ea580c_20px,#ea580c_40px)]"></div></div>
         <div className="absolute -top-16 -left-12 z-50"><SirenImage /></div>
@@ -115,7 +114,6 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
 };
 
 // --- MAIN COMPONENT ---
-// 🔑 THE CRITICAL FIX: Ensure the component name is BearsTheme
 const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
   
   const kickoff = ads.filter(ad => ad.Category === 'Kickoff').length > 0 ? ads.filter(ad => ad.Category === 'Kickoff') : DUMMY_MENU.kickoff;
@@ -173,6 +171,7 @@ const BearsTheme: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
             <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5 pb-32">{drinks.map((item, i) => (<motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600/50 pb-2"><div className="flex justify-between items-end w-full"><div className="flex items-center gap-2"><Beer className="text-orange-600 w-5 h-5" /><h3 className="text-xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3></div><span className="text-2xl font-black text-orange-500 drop-shadow-md">{item.Price}</span></div>{item.Description && <p className="text-slate-100 text-xs font-bold text-right drop-shadow-sm">{item.Description}</p>}</motion.div>))}</motion.div>
         </div>
       </div>
+      
     </div>
   );
 };
