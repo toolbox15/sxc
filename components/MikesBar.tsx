@@ -100,12 +100,12 @@ const RunningPlayer = () => {
   return (<motion.img src="/player-run.gif" alt="Running Player" className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-2xl opacity-100" initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }} animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }} transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }} />);
 };
 
-// --- 🚨 FLASH SALE OVERLAY (FROM BEARS THEME, RENAMED) ---
+// --- 🚨 FLASH SALE OVERLAY (UPDATED WITH SOFT FLASH) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
       <ConfettiEffect />
-      {/* 💥 SOFTENED FLASH EFFECT: Added blur-3xl to make the light flash look softer/more diffused */}
+      {/* 💥 SOFTENED FLASH EFFECT: Added blur-3xl */}
       <motion.div className="absolute inset-0 bg-orange-600/30 blur-3xl" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
       <motion.div className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white shadow-[0_0_100px_rgba(234,88,12,0.6)] flex flex-col items-center p-12 mt-10" initial={{ scale: 0, rotate: -5 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", bounce: 0.5 }}>
         <div className="absolute inset-0 overflow-hidden rounded-2xl opacity-20"><div className="w-full h-full bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,#ea580c_20px,#ea580c_40px)]"></div></div>
@@ -136,17 +136,20 @@ const MikesBar: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         (ad.Target_Screen === 'MikesBar' || !ad.Target_Screen)
     );
 
+    // --- NEW: Filter out non-menu items (ALERT, GAME) before processing categories ---
+    const menuAds = ads.filter(ad => ad.Category !== 'ALERT' && ad.Category !== 'GAME');
+
     // 3. MENU DATA FILTERING WITH FALLBACKS
     // Kickoff
-    const sheetKickoff = ads.filter(ad => ad.Category === 'Kickoff');
+    const sheetKickoff = menuAds.filter(ad => ad.Category === 'Kickoff');
     const kickoffItems = sheetKickoff.length > 0 ? sheetKickoff : defaultKickoffItems;
 
     // The Main Event
-    const sheetMains = ads.filter(ad => ad.Category === 'The Main Event');
+    const sheetMains = menuAds.filter(ad => ad.Category === 'The Main Event');
     const mainItems = sheetMains.length > 0 ? sheetMains : defaultMainItems;
     
     // Draft Picks
-    const sheetDrinks = ads.filter(ad => ad.Category === 'Draft Picks');
+    const sheetDrinks = menuAds.filter(ad => ad.Category === 'Draft Picks');
     const drinkItems = sheetDrinks.length > 0 ? sheetDrinks : defaultDrinkItems;
 
     // 4. AUDIO LOGIC (from Bears Theme)
