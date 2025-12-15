@@ -1,248 +1,181 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
+import { SlotMachine } from './SlotMachine';
 
-// ==========================================
-// 1. PROMOTIONAL CAROUSEL
-// ==========================================
-const PromotionalCarousel = () => {
-  const promotions = [
-    { 
-      title: "HAPPY HOUR", 
-      subtitle: "HALF PRICE APPS", 
-      detail: "MON-FRI 4-6PM",
-      // Changed image to a bar setting for Mike's
-      imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
-      accentColor: "text-yellow-300"
-    },
-    { 
-      title: "BURGER NIGHT",
-      subtitle: "EVERY TUESDAY", 
-      detail: "$10 BURGER & BREW",
-      imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
-      accentColor: "text-lime-300"
-    },
-    { 
-      title: "MIKE'S PICK", 
-      subtitle: "CRAFT IPA", 
-      detail: "TRY SOMETHING NEW",
-      imageUrl: "https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
-      accentColor: "text-white"
-    }
-  ];
-   
-  const [current, setCurrent] = useState(0);
-   
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent(prev => (prev + 1) % promotions.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-   
-  return (
-    <div className="w-full h-[200px] overflow-hidden rounded-lg border-2 border-yellow-500/50 shadow-2xl">
-      <motion.div
-        key={current}
-        initial={{ opacity: 0, scale: 1.05 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.5 }}
-        className="w-full h-full relative flex flex-col items-center justify-center p-4"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${promotions[current].imageUrl})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
-        <div className="relative z-10 text-center">
-          <h3 className={`text-4xl font-black uppercase tracking-widest ${promotions[current].accentColor} mb-2 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
-            {promotions[current].title}
-          </h3>
-          <p className="text-2xl font-bold text-white mb-1 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-            {promotions[current].subtitle}
-          </p>
-          <p className="text-xl text-white/90 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-            {promotions[current].detail}
-          </p>
-        </div>
-      </motion.div>
-    </div>
-  );
+// --- DATA STRUCTURE ---
+interface AdItem {
+  Title: string;
+  Price: string;
+  Description?: string;
+  Category: string;
+  Status?: string;
+  Color?: string;
+}
+
+// --- PLACEHOLDER DATA ---
+// NOTE: Using Bears Theme placeholder data as requested
+const DUMMY_MENU = {
+  kickoff: [
+    { Title: "Ditka Dogs", Price: "$8", Description: "Chicago style, poppy seed bun, neon green relish, sport peppers", Category: "Kickoff" },
+    { Title: "Soldier Field Nachos", Price: "$14", Description: "Tortilla chips, chili, beer cheese, jalapeños, sour cream", Category: "Kickoff" },
+    { Title: "Midway Wings", Price: "$16", Description: "1lb jumbo wings, buffalo or bbq, ranch dip", Category: "Kickoff" },
+    { Title: "Beer Battered Curds", Price: "$10", Description: "Wisconsin cheddar, marinara sauce", Category: "Kickoff" }
+  ],
+  main_event: [
+    { Title: "The Quarterback Burger", Price: "$18", Description: "Double patty, bacon, cheddar, onion strings, bbq sauce", Category: "Main Event" },
+    { Title: "Italian Beef", Price: "$15", Description: "Thinly sliced roast beef, giardiniera, dipped or dry", Category: "Main Event" },
+    { Title: "Deep Dish Pizza", Price: "$24", Description: "Sausage & Pepperoni, allowance of 25 mins", Category: "Main Event" },
+    { Title: "Gridiron Steak Sandwich", Price: "$20", Description: "Ribeye, provolone, grilled onions, garlic bread", Category: "Main Event" }
+  ],
+  draft_picks: [
+    { Title: "Bear Down Lager", Price: "$7", Description: "Local Pilsner, 16oz", Category: "Draft Picks" },
+    { Title: "Miller Lite Pitcher", Price: "$18", Description: "For the table", Category: "Draft Picks" },
+    { Title: "Orange & Blue Shot", Price: "$8", Description: "Vodka, Blue Curacao, Orange Juice", Category: "Draft Picks" },
+    { Title: "Hail Mary Bloody", Price: "$12", Description: "Spicy mix, celery, salami, cheese cube", Category: "Draft Picks" }
+  ]
 };
 
-// ==========================================
-// 2. HEADER
-// ==========================================
-const VarsityHeader = ({ text, subtext }) => {
-  return (
-    <div className="flex flex-row items-baseline justify-center w-full gap-3 pr-[30%] relative top-[4%]">
-      
-      {/* "MIKE'S BAR" */}
-      <h1 className="relative text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter uppercase"
-          style={{
-            fontFamily: "'Impact', 'Arial Black', sans-serif",
-            backgroundImage: "radial-gradient(circle, #ddd 1px, transparent 1px), linear-gradient(to bottom, #ffffff, #f0f0f0)",
-            backgroundSize: "4px 4px, 100% 100%",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            WebkitTextStroke: "2px #004aad", // Changed outline to Blue for Mike's
-            filter: "drop-shadow(0 0 8px rgba(0, 74, 173, 0.6))"
-          }}
-      >
-        {text}
-      </h1>
-
-      {/* "NEIGHBORHOOD PUB" */}
-      <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white uppercase tracking-widest relative top-[2%]"
-          style={{ 
-            fontFamily: "'Arial', sans-serif",
-            textShadow: "0 0 15px rgba(255, 255, 255, 0.8)", 
-            mixBlendMode: "screen" 
-          }}
-      >
-        {subtext}
-      </h2>
-    </div>
-  );
+// --- 🚨 SIREN IMAGE COMPONENT ---
+const SirenImage = () => {
+  return (
+    <div className="relative z-50">
+      <img src="/siren.png" alt="Siren" className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl" />
+      <motion.div className="absolute inset-0 bg-red-500 mix-blend-hard-light rounded-t-full opacity-0" style={{ clipPath: "inset(10% 20% 40% 20%)" }} animate={{ opacity: [0, 1, 0] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }} />
+      <motion.div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-red-600 blur-3xl rounded-full" animate={{ opacity: [0, 0.8, 0], scale: [0.8, 1.5, 0.8] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }} />
+    </div>
+  );
 };
 
-// ==========================================
-// 3. FOOD MENU
-// ==========================================
-const FoodMenuList = ({ items }) => {
-  return (
-    <div className="w-full h-full flex flex-col p-2">
-      {/* Title Changed for Mike's */}
-      <h3 className="text-white font-black text-2xl uppercase mb-3 tracking-wider border-b-4 border-blue-600 pb-1 inline-block w-full drop-shadow-md">
-        MIKE'S KITCHEN
-      </h3>
-      <div className="flex flex-col gap-5"> 
-        {items.map((item, index) => (
-          <div key={index} className="flex items-center w-full relative group">
-            
-            <div className="relative mr-4">
-              <img 
-                src={item.IconURL} 
-                alt={item.Title} 
-                className="w-16 h-16 object-cover rounded-full border-2 border-white shadow-[0_0_10px_rgba(0,0,0,0.8)] z-10 relative" 
-              />
-            </div>
-            
-            <div className="flex items-end gap-2 flex-1 mb-2">
-              <span 
-                className="text-white font-bold uppercase tracking-tight shadow-black drop-shadow-md whitespace-nowrap"
-                style={{ fontSize: '26px' }}
-              >
-                {item.Title}
-              </span>
-              
-              <div className="flex-1 border-b-4 border-dotted border-white/60 mb-2 opacity-80"></div>
-              
-              <span 
-                className="text-yellow-400 font-black shadow-black drop-shadow-md whitespace-nowrap"
-                style={{ fontSize: '32px' }}
-              >
-                {item.Price}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+// --- 🎉 CONFETTI ENGINE ---
+const ConfettiEffect = () => {
+  const particles = Array.from({ length: 150 });
+  const random = (min: number, max: number) => Math.random() * (max - min) + min;
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-[50]">
+      {particles.map((_, i) => (
+        <motion.div key={i} className="absolute w-3 h-3 bg-white" initial={{ y: -100, x: `${random(0, 100)}vw`, opacity: 1, scale: random(0.5, 1.2), rotate: random(0, 360) }} animate={{ y: '120vh', x: `calc(${random(0, 100)}vw + ${random(-200, 200)}px)`, opacity: 0, rotate: random(180, 720) }} transition={{ duration: random(2, 5), ease: "easeOut", repeat: Infinity, delay: random(0, 2) }} style={{ backgroundColor: ['#FFD700', '#FFFFFF', '#FF8C00', '#0057B8'][Math.floor(random(0, 4))] }} />
+      ))}
+    </div>
+  );
 };
 
-// ==========================================
-// 4. DRINK LIST
-// ==========================================
-const DrinkList = () => {
-  const drinks = [
-    { name: "MIKE'S LAGER", price: "$4.00" }, // Custom beer
-    { name: "GUINNESS", price: "$7.00" },
-    { name: "STELLA ARTOIS", price: "$6.50" },
-    { name: "OLD FASHIONED", price: "$12.00" },
-    { name: "HOUSE WINE", price: "$8.00" },
-    { name: "IRISH CAR BOMB", price: "$9.00" },
-    { name: "PITCHER SPECIAL", price: "$18.00" }
-  ];
+// --- ANIMATION SETTINGS ---
+const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+const itemVariants = { hidden: { opacity: 0, x: -50 }, visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 120 } } };
 
-  return (
-    <div className="w-full h-full flex flex-col p-4">
-       {/* Title Changed for Mike's */}
-       <h3 className="text-white font-black text-2xl uppercase mb-4 tracking-wider border-b-4 border-blue-600 pb-1 inline-block w-full drop-shadow-md">
-         COLD ON TAP
-       </h3>
-      <div className="flex flex-col gap-3 w-full">
-        {drinks.map((drink, index) => (
-          <div key={index} className="flex justify-between items-end w-full gap-2">
-            <span className="text-white font-bold text-lg uppercase shadow-black drop-shadow-md leading-tight whitespace-nowrap">
-              {drink.name}
-            </span>
-            <div className="flex-1 border-b-2 border-dotted border-white/40 mb-1 mx-2"></div>
-            <span className="text-yellow-400 font-black text-xl whitespace-nowrap shadow-black drop-shadow-md">
-              {drink.price}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+// --- 🍺 BUBBLES EFFECT (SCALED DOWN) ---
+const BubblesEffect = () => {
+  const bubbles = Array.from({ length: 30 }); 
+  const random = (min: number, max: number) => Math.random() * (max - min) + min;
+  // Adjusted container size to match smaller beer mug
+  return (
+    <div className="absolute bottom-[80px] left-[30px] w-[100px] h-[220px] pointer-events-none overflow-hidden z-20 opacity-50">
+      {bubbles.map((_, i) => (
+        <motion.div key={i} className="absolute bg-white rounded-full" style={{ width: random(2, 5), height: random(2, 5), left: `${random(5, 95)}%` }} initial={{ y: 220, opacity: 0 }} animate={{ y: -20, opacity: [0, 1, 0], x: random(-3, 3) }} transition={{ duration: random(2, 4), repeat: Infinity, delay: random(0, 5), ease: "linear" }} />
+      ))}
+    </div>
+  );
 };
 
-// ==========================================
-// 5. MAIN LAYOUT
-// ==========================================
-const FinalMenu = () => {
-  const foodItems = [
-    { Title: "BBQ RIB BASKET", Price: "$18.99", IconURL: "https://images.unsplash.com/photo-1544025162-d76694265947?w=200&h=200&fit=crop" },
-    { Title: "FISH & CHIPS", Price: "$15.99", IconURL: "https://images.unsplash.com/photo-1579208575657-c595a05383b7?w=200&h=200&fit=crop" },
-    { Title: "CLASSIC SMASH", Price: "$14.99", IconURL: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&h=200&fit=crop" },
-    { Title: "ONION RINGS", Price: "$8.99", IconURL: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=200&h=200&fit=crop" },
-    { Title: "CHICKEN STRIPS", Price: "$12.99", IconURL: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=200&h=200&fit=crop" },
-  ];
-   
-  // Keeping the video consistent for now, but you can change this URL later
-  const BG_VIDEO = "https://www.dropbox.com/scl/fi/jzf7pcmzukxfrltktaf3d/bkmenu.mp4?rlkey=esuubnyzl9stppqvwau8cxs0m&st=3ln0rquf&dl=1"; 
-
-  return (
-    <div className="w-full h-screen bg-black flex items-center justify-center overflow-hidden">
-      <div className="relative w-[94%] h-[94%] aspect-video shadow-2xl overflow-hidden bg-black border border-gray-900">
-        
-        <video 
-          src={BG_VIDEO} 
-          className="absolute inset-0 w-full h-full object-fill z-0" 
-          autoPlay loop muted playsInline 
-        />
-        
-        <div className="absolute top-0 left-0 w-full h-[22%] flex items-center justify-center z-20 pt-[1.5%]">
-           {/* HEADER TEXT CHANGED HERE */}
-           <VarsityHeader text="MIKE'S BAR" subtext="NEIGHBORHOOD PUB" />
-        </div>
-
-        <div className="absolute inset-0 z-10">
-            <div style={{ position: 'absolute', top: '26%', left: '5%', width: '46.4%', height: '70%' }}>
-              <FoodMenuList items={foodItems} />
-            </div>
-
-            <div style={{ 
-              position: 'absolute', 
-              top: '12%', 
-              left: '66.9%',
-              width: '28%', 
-              height: '200px',
-              zIndex: 30
-            }}>
-              <PromotionalCarousel />
-            </div>
-
-            <div style={{ position: 'absolute', top: '45%', left: '66.4%', width: '28%', height: '46%' }}>
-              <DrinkList />
-            </div>
-        </div>
-      </div>
-    </div>
-  );
+// --- STADIUM FLASH EFFECT ---
+const StadiumFlashEffect = () => {
+  const flashes = Array.from({ length: 15 });
+  const random = (min: number, max: number) => Math.random() * (max - min) + min;
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {flashes.map((_, i) => (
+        <motion.div key={i} className="absolute bg-white rounded-full blur-xl" style={{ width: random(10, 40), height: random(10, 40), top: random(0, window.innerHeight/2), left: random(0, window.innerWidth) }} animate={{ opacity: [0, 0.8, 0], scale: [0.5, 1.5, 0.5] }} transition={{ duration: 0.2, repeat: Infinity, repeatDelay: random(1, 8), delay: random(0, 5) }} />
+      ))}
+    </div>
+  );
 };
 
-export default FinalMenu;
+// --- 🏃‍♂️ RUNNING PLAYER ---
+const RunningPlayer = () => {
+  return (<motion.img src="/player-run.gif" alt="Running Player" className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-2xl opacity-100" initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }} animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }} transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }} />);
+};
+
+// --- 🚨 FLASH SALE OVERLAY ---
+const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
+  return (
+    <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
+      <ConfettiEffect />
+      <motion.div className="absolute inset-0 bg-orange-600/30" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
+      <motion.div className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white shadow-[0_0_100px_rgba(234,88,12,0.6)] flex flex-col items-center p-12 mt-10" initial={{ scale: 0, rotate: -5 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", bounce: 0.5 }}>
+        <div className="absolute inset-0 overflow-hidden rounded-2xl opacity-20"><div className="w-full h-full bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,#ea580c_20px,#ea580c_40px)]"></div></div>
+        <div className="absolute -top-16 -left-12 z-50"><SirenImage /></div>
+        <div className="absolute -top-16 -right-12 z-50"><SirenImage /></div>
+        <div className="absolute -top-10 bg-orange-600 text-white px-10 py-4 rounded-xl border-4 border-white shadow-lg transform -rotate-1 z-20"><h2 className="text-4xl font-black italic uppercase tracking-widest drop-shadow-md">FIELD ALERT</h2></div>
+        <h1 className="relative z-10 text-8xl md:text-[10rem] font-black text-white uppercase italic leading-none mt-8 drop-shadow-[6px_6px_0px_#ea580c] text-center">{item.Title}</h1>
+        <div className="relative z-10 mt-8 bg-white px-16 py-4 rounded-full shadow-2xl transform rotate-1"><p className="text-blue-950 text-4xl md:text-5xl font-black uppercase tracking-wide text-center">{item.Description || "LIMITED TIME ONLY!"}</p></div>
+      </motion.div>
+    </div>
+  );
+};
+
+// --- MAIN COMPONENT ---
+// 🔑 CRITICAL FIX: The component MUST be named MikesBar inside MikesBar.tsx
+const MikesBar: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
+  
+  const kickoff = ads.filter(ad => ad.Category === 'Kickoff').length > 0 ? ads.filter(ad => ad.Category === 'Kickoff') : DUMMY_MENU.kickoff;
+  const mains = ads.filter(ad => ad.Category === 'Main Event').length > 0 ? ads.filter(ad => ad.Category === 'Main Event') : DUMMY_MENU.main_event;
+  const drinks = ads.filter(ad => ad.Category === 'Draft Picks').length > 0 ? ads.filter(ad => ad.Category === 'Draft Picks') : DUMMY_MENU.draft_picks;
+
+  const alertAd = ads.find(ad => ad.Category === 'ALERT' && ad.Status === 'Active');
+  const gameActive = ads.some(ad => ad.Category === 'GAME' && ad.Status === 'Active');
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (alertAd && !gameActive) {
+      if (!audioRef.current) { audioRef.current = new Audio('/airhorn.mp3'); audioRef.current.loop = true; audioRef.current.volume = 0.7; }
+      if (audioRef.current.paused) { audioRef.current.play().catch(e => console.log("Audio blocked:", e)); }
+    } else {
+      if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
+    }
+    return () => { if (audioRef.current) { audioRef.current.pause(); } };
+  }, [alertAd, gameActive]);
+
+  return (
+    <div className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans" style={{ backgroundImage: "url('/field-bg.png')" }}>
+      {gameActive && <div className="absolute inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md"><SlotMachine triggerSpin={true} /></div>}
+      {alertAd && !gameActive && <FlashSaleOverlay item={alertAd} />}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-blue-950/10 to-blue-950/20 z-0"></div>
+      <StadiumFlashEffect />
+      <RunningPlayer />
+
+      {/* --- DECORATIVE ASSETS (SCALED DOWN FOR TV) --- */}
+      
+      {/* 🍺 THE BEER MUG (Left) - Reduced from h-500 to h-350 */}
+      <div className="absolute bottom-[-30px] left-[-40px] z-10">
+          <div className="absolute bottom-[40px] left-[50px] w-[150px] h-[30px] bg-black/60 blur-xl rounded-full pointer-events-none"></div>
+          <BubblesEffect />
+          <img src="/beer-glass.png" alt="Beer Glass" className="h-[350px] w-auto drop-shadow-2xl" />
+      </div>
+
+      {/* 🏈 THE FOOTBALL (Right) - Reduced from h-350 to h-250 */}
+      <div className="absolute bottom-[10px] right-[20px] z-10">
+        <div className="absolute bottom-[15px] left-[20px] w-[120px] h-[25px] bg-black/60 blur-xl rounded-full pointer-events-none"></div>
+        <motion.img src="/football.png" className="h-[250px] w-auto drop-shadow-2xl" animate={{ scale: [1, 1.02, 1] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} />
+      </div>
+
+      {/* --- CONTENT GRID --- */}
+      <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
+        <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4"><h1 className="text-6xl font-black uppercase tracking-tighter text-white italic drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">Game Day <span className="text-orange-500">Specials</span></h1></div>
+        <div className="col-span-4 pl-40 pt-4"> {/* Reduced padding to match smaller assets */}
+            <div className="bg-orange-600/30 border-l-4 border-orange-500 p-3 mb-4 rounded-r-lg flex items-center gap-3 backdrop-blur-sm"><Flame className="text-orange-500 w-8 h-8" /><h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">Kickoff</h2></div>
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5">{kickoff.map((item, i) => (<motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600/50 pb-2"><div className="flex justify-between items-end w-full"><div className="flex items-center gap-2"><Flame className="text-orange-600 w-5 h-5" /><h3 className="text-xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3></div><span className="text-2xl font-black text-orange-500 drop-shadow-md">{item.Price}</span></div>{item.Description && <p className="text-slate-100 text-xs font-bold ml-7 drop-shadow-sm">{item.Description}</p>}</motion.div>))}</motion.div>
+        </div>
+        <div className="col-span-4 pt-4 px-6"><div className="bg-blue-950/40 border-l-4 border-white p-3 mb-4 rounded-r-lg flex items-center gap-3 backdrop-blur-sm"><UtensilsCrossed className="text-white w-8 h-8" /><h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">The Main Event</h2></div><motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-6">{mains.map((item, i) => (<motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600/50 pb-2"><div className="flex justify-between items-end w-full"><div className="flex items-center gap-2"><UtensilsCrossed className="text-orange-600 w-6 h-6" /><h3 className="text-2xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3></div><span className="text-3xl font-black text-orange-500 drop-shadow-md">{item.Price}</span></div>{item.Description && <p className="text-slate-100 text-sm font-bold ml-8 drop-shadow-sm">{item.Description}</p>}</motion.div>))}</motion.div></div>
+        <div className="col-span-4 pr-32 pt-4"> {/* Reduced padding */}
+            <div className="bg-orange-600/30 border-r-4 border-orange-500 p-3 mb-4 rounded-l-lg text-right flex items-center justify-end gap-3 backdrop-blur-sm"><h2 className="text-3xl font-black text-white uppercase italic drop-shadow-md">Draft Picks</h2><Beer className="text-orange-500 w-8 h-8" /></div>
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-5 pb-32">{drinks.map((item, i) => (<motion.div key={i} variants={itemVariants} className="flex flex-col border-b border-slate-600/50 pb-2"><div className="flex justify-between items-end w-full"><div className="flex items-center gap-2"><Beer className="text-orange-600 w-5 h-5" /><h3 className="text-xl font-bold text-white uppercase drop-shadow-md">{item.Title}</h3></div><span className="text-2xl font-black text-orange-500 drop-shadow-md">{item.Price}</span></div>{item.Description && <p className="text-slate-100 text-xs font-bold text-right drop-shadow-sm">{item.Description}</p>}</motion.div>))}</motion.div>
+        </div>
+      </div>
+      
+    </div>
+  );
+};
+
+export default MikesBar; // 🔑 CRITICAL FIX: Export MikesBar
