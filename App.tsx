@@ -3,7 +3,7 @@ import React from 'react';
 
 // 1. IMPORT THE CENTRAL ROUTING COMPONENT
 // This component (AdDisplay) handles the logic for switching between FinalMenu, MikesBar, TonysBar, etc.
-import AdDisplay from './AdDisplay'; 
+import AdDisplay from './components/AdDisplay';
 
 function App() {
   // 2. RENDER ONLY THE ROUTING COMPONENT
