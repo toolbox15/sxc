@@ -15,7 +15,7 @@ interface AdItem {
 }
 
 // ⚠️ IMPORTANT: Replace this URL with your actual Google Apps Script (GAS) Web App URL
-const GAS_API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL"; 
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec"; 
 
 function App() {
   const [ads, setAds] = useState<AdItem[]>([]);
