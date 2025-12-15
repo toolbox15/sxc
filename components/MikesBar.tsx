@@ -100,14 +100,38 @@ const RunningPlayer = () => {
   return (<motion.img src="/player-run.gif" alt="Running Player" className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-2xl opacity-100" initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }} animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }} transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }} />);
 };
 
-// --- 🚨 FLASH SALE OVERLAY (UPDATED WITH SOFT FLASH) ---
+// --- 🚨 FLASH SALE OVERLAY (UPDATED WITH PULSATING GLOW) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
       <ConfettiEffect />
-      {/* 💥 SOFTENED FLASH EFFECT: Added blur-3xl */}
+      {/* 💥 SOFTENED FLASH EFFECT: Added blur-3xl for a smooth background pulse */}
       <motion.div className="absolute inset-0 bg-orange-600/30 blur-3xl" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
-      <motion.div className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white shadow-[0_0_100px_rgba(234,88,12,0.6)] flex flex-col items-center p-12 mt-10" initial={{ scale: 0, rotate: -5 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", bounce: 0.5 }}>
+      
+      {/* THE CENTRAL ALERT BOX - NOW WITH PULSATING GLOW */}
+      <motion.div 
+        className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white flex flex-col items-center p-12 mt-10" 
+        initial={{ scale: 0, rotate: -5, boxShadow: '0 0 20px rgba(234, 88, 12, 0.8)' }} 
+        animate={{ 
+            scale: 1, 
+            rotate: 0,
+            // PULSATING GLOW EFFECT
+            boxShadow: [
+                '0 0 100px rgba(234, 88, 12, 0.8)', // Orange max glow
+                '0 0 80px rgba(0, 87, 184, 0.7)', // Blue minimum glow
+                '0 0 100px rgba(234, 88, 12, 0.8)', // Orange max glow back again
+            ] 
+        }} 
+        transition={{ 
+            type: "spring", 
+            bounce: 0.5,
+            boxShadow: { 
+                duration: 1.5, 
+                repeat: Infinity, 
+                ease: "easeInOut" 
+            } 
+        }}
+      >
         <div className="absolute inset-0 overflow-hidden rounded-2xl opacity-20"><div className="w-full h-full bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,#ea580c_20px,#ea580c_40px)]"></div></div>
         <div className="absolute -top-16 -left-12 z-50"><SirenImage /></div>
         <div className="absolute -top-16 -right-12 z-50"><SirenImage /></div>
@@ -136,8 +160,8 @@ const MikesBar: React.FC<{ ads?: AdItem[] }> = ({ ads = [] }) => {
         (ad.Target_Screen === 'MikesBar' || !ad.Target_Screen)
     );
 
-    // --- NEW: Filter out non-menu items (ALERT, GAME) before processing categories ---
-    const menuAds = ads.filter(ad => ad.Category !== 'ALERT' && ad.Category !== 'GAME');
+    // --- NEW: Filter out non-menu items (ALERT, GAME) before processing categories ---
+    const menuAds = ads.filter(ad => ad.Category !== 'ALERT' && ad.Category !== 'GAME');
 
     // 3. MENU DATA FILTERING WITH FALLBACKS
     // Kickoff
