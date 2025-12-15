@@ -1,8 +1,11 @@
-// ✅ CORRECT - This gives you ALL features
-import AdDisplay from './AdDisplay';
+# Check where AdDisplay.tsx is
+find . -name "AdDisplay.tsx"
+
+# If it's in components, run:
+echo "import AdDisplay from './components/AdDisplay';
 
 function App() {
-  return <AdDisplay />;  // Routes to ALL 16+ themes with CMS
+  return <AdDisplay />;
 }
 
-export default App;
+export default App;" > App.tsx
