@@ -1,18 +1,19 @@
 import React from 'react';
-import BearsTheme from './BearsTheme';
-import MikesBar from './MikesBar';
-import TonysBar from './TonysBar'; // <--- NEW THEME ADDED
-import ChristmasTheme from './ChristmasTheme';
-import NeonGameDayTheme from './NeonGameDayTheme';
-import BistroTheme from './BistroTheme';
-import CinematicTheme from './CinematicTheme';
-import SpaceMenu from './SpaceMenu';
-import FinalMenu from './FinalMenu';
+// Adding the .tsx extension to all imports inside the components folder to resolve build errors
+import BearsTheme from './BearsTheme.tsx';
+import MikesBar from './MikesBar.tsx';
+import TonysBar from './TonysBar.tsx'; // Fixed import for the new theme
+import ChristmasTheme from './ChristmasTheme.tsx';
+import NeonGameDayTheme from './NeonGameDayTheme.tsx';
+import BistroTheme from './BistroTheme.tsx';
+import CinematicTheme from './CinematicTheme.tsx';
+import SpaceMenu from './SpaceMenu.tsx';
+import FinalMenu from './FinalMenu.tsx';
 
 function AdDisplay() {
   // For now, use hardcoded values to test
   const ads = []; // Empty array for testing
-  const theme = 'TonysBar'; // <--- ⭐️ SWITCH TO THIS NAME TO DISPLAY THE THEME
+  const theme = 'TonysBar'; // This is set to display the new theme for testing
   
   // Simple theme router
   switch (theme) {
@@ -20,7 +21,7 @@ function AdDisplay() {
       return <BearsTheme ads={ads} />;
     case 'MikesBar':
       return <MikesBar ads={ads} />;
-    case 'TonysBar': // <--- NEW CASE ADDED
+    case 'TonysBar': 
       return <TonysBar ads={ads} />;
     case 'Christmas':
       return <ChristmasTheme ads={ads} />;
