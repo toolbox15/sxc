@@ -100,12 +100,12 @@ const RunningPlayer = () => {
   return (<motion.img src="/player-run.gif" alt="Running Player" className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-2xl opacity-100" initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }} animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }} transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }} />);
 };
 
-// --- 🚨 FLASH SALE OVERLAY (UPDATED WITH PULSATING GLOW) ---
+// --- 🚨 FLASH SALE OVERLAY (UPDATED WITH PULSATING GLOW AND TEXT) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
       <ConfettiEffect />
-      {/* 💥 SOFTENED FLASH EFFECT: Added blur-3xl for a smooth background pulse */}
+      {/* SOFTENED FLASH EFFECT: This provides the background pulse */}
       <motion.div className="absolute inset-0 bg-orange-600/30 blur-3xl" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
       
       {/* THE CENTRAL ALERT BOX - NOW WITH PULSATING GLOW */}
@@ -115,7 +115,7 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
         animate={{ 
             scale: 1, 
             rotate: 0,
-            // PULSATING GLOW EFFECT
+            // PULSATING BOX GLOW EFFECT (Orange/Blue)
             boxShadow: [
                 '0 0 100px rgba(234, 88, 12, 0.8)', // Orange max glow
                 '0 0 80px rgba(0, 87, 184, 0.7)', // Blue minimum glow
@@ -136,7 +136,26 @@ const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
         <div className="absolute -top-16 -left-12 z-50"><SirenImage /></div>
         <div className="absolute -top-16 -right-12 z-50"><SirenImage /></div>
         <div className="absolute -top-10 bg-orange-600 text-white px-10 py-4 rounded-xl border-4 border-white shadow-lg transform -rotate-1 z-20"><h2 className="text-4xl font-black italic uppercase tracking-widest drop-shadow-md">FIELD ALERT</h2></div>
-        <h1 className="relative z-10 text-8xl md:text-[10rem] font-black text-white uppercase italic leading-none mt-8 drop-shadow-[6px_6px_0px_#ea580c] text-center">{item.Title}</h1>
+        
+        {/* PULSATING TITLE TEXT */}
+        <motion.h1 
+          className="relative z-10 text-8xl md:text-[10rem] font-black text-white uppercase italic leading-none mt-8 text-center"
+          animate={{ 
+            dropShadow: [
+              '6px 6px 0px #ea580c', // Base orange shadow
+              '6px 6px 50px rgba(255, 255, 255, 1)', // Max white/bright glow
+              '6px 6px 0px #ea580c', // Back to base orange shadow
+            ] 
+          }}
+          transition={{ 
+            duration: 1, 
+            repeat: Infinity, 
+            ease: "easeInOut" 
+          }}
+        >
+          {item.Title}
+        </motion.h1>
+        
         <div className="relative z-10 mt-8 bg-white px-16 py-4 rounded-full shadow-2xl transform rotate-1"><p className="text-blue-950 text-4xl md:text-5xl font-black uppercase tracking-wide text-center">{item.Description || "LIMITED TIME ONLY!"}</p></div>
       </motion.div>
     </div>
