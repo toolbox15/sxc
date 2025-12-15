@@ -1,41 +1,20 @@
-// AdDisplay.tsx - FINAL CORRECTED VERSION WITH TRAFFIC COP LOGIC
+// AdDisplay.tsx - UPDATED with LiveStreamTheme
 
 import React from 'react';
-// 1. ALL IMPORTS MUST BE PRESENT AND CORRECT
+// ... (Your existing imports) ...
 import BearsTheme from './BearsTheme.tsx'; 
-import MikesBar from './MikesBar.tsx';
-import TonysBar from './TonysBar.tsx';
-import ChristmasTheme from './ChristmasTheme.tsx';
-import NeonGameDayTheme from './NeonGameDayTheme.tsx';
-import BistroTheme from './BistroTheme.tsx';
-import CinematicTheme from './CinematicTheme.tsx';
-import SpaceMenu from './SpaceMenu.tsx';
+// ...
 import FinalMenu from './FinalMenu.tsx';
+// 1. ✅ IMPORT THE NEW THEME
+import LiveStreamTheme from './LiveStreamTheme.tsx'; 
 
-// --- DATA STRUCTURE ---
-interface AdItem {
-  Title: string;
-  Price: string;
-  Description?: string;
-  Category: string;
-  Status?: string;
-  Color?: string;
-}
-
-// --- PROPS DEFINITION ---
-interface AdDisplayProps {
-    // We no longer rely on themeName prop, but keep it defined for compatibility
-    themeName?: string; 
-    ads?: AdItem[];     
-}
+// ... (Data Structure and Props definitions remain the same) ...
 
 // Helper function to safely read the deviceId from the URL query string
 const getDeviceIdFromUrl = () => {
-    // Safely access window.location only if running in a browser environment
+    // ... (This function remains unchanged) ...
     if (typeof window === 'undefined') return '';
-    
     const params = new URLSearchParams(window.location.search);
-    // Retrieves the deviceId from the URL query string (e.g., ?id=ClientName_Location).
     return params.get('id') || ''; 
 };
 
@@ -43,11 +22,9 @@ const getDeviceIdFromUrl = () => {
 function AdDisplay({ ads = [] }: AdDisplayProps) { 
   
     const deviceId = getDeviceIdFromUrl().toLowerCase();
-    
-    // 1. Initialization: Default theme is 'Corporate'
     let theme = 'Corporate'; 
 
-    // 2. Keyword Routing (Your Traffic Cop Logic)
+    // 2. ✅ ADD THE NEW ROUTING LOGIC
     if (deviceId.includes('bears')) {
       theme = 'Bears';
     } else if (deviceId.includes('mikesbar')) {
@@ -64,32 +41,27 @@ function AdDisplay({ ads = [] }: AdDisplayProps) {
       theme = 'Cinematic';
     } else if (deviceId.includes('space')) {
       theme = 'Space';
+    } else if (deviceId.includes('livestream')) { // <-- NEW KEYWORD CHECK
+      theme = 'LiveStream';
     }
     // If no match is found, theme remains 'Corporate'.
 
-    // 3. Theme Rendering Switch
+    // 3. ✅ ADD THE NEW CASE IN THE SWITCH STATEMENT
     switch (theme) {
       case 'Bears':
         return <BearsTheme ads={ads} />;
       case 'MikesBar':
         return <MikesBar ads={ads} />;
-      case 'TonysBar': 
-        return <TonysBar ads={ads} />;
-      case 'Christmas':
-        return <ChristmasTheme ads={ads} />;
-      case 'Neon':
-        return <NeonGameDayTheme ads={ads} />;
-      case 'Bistro':
-        return <BistroTheme ads={ads} />;
-      case 'Cinematic':
-        return <CinematicTheme ads={ads} />;
+      // ... (All other existing cases) ...
       case 'Space':
         return <SpaceMenu ads={ads} />;
+      
+      case 'LiveStream': // <-- NEW RENDER CASE
+        return <LiveStreamTheme ads={ads} />;
         
       case 'Corporate':
       default:
-        // The default fallback for your Corporate view when no ID is present
-        // or no keyword matches. Using BearsTheme as a solid default.
+        // Default fallback
         return <BearsTheme ads={ads} />; 
     }
 }
