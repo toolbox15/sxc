@@ -1,11 +1,14 @@
-# Check where AdDisplay.tsx is
-find . -name "AdDisplay.tsx"
+import React from 'react';
+// ✅ CORRECT - This gives you ALL features
 
-# If it's in components, run:
-echo "import AdDisplay from './components/AdDisplay';
+// 1. IMPORT THE CENTRAL ROUTING COMPONENT
+// This component (AdDisplay) handles the logic for switching between FinalMenu, MikesBar, TonysBar, etc.
+import AdDisplay from './AdDisplay'; 
 
 function App() {
+  // 2. RENDER ONLY THE ROUTING COMPONENT
+  // This tells React: "Just show the AdDisplay, and let it figure out which theme to display."
   return <AdDisplay />;
 }
 
-export default App;" > App.tsx
+export default App;
