@@ -10,7 +10,7 @@ import CinematicTheme from './CinematicTheme.tsx';
 import SpaceMenu from './SpaceMenu.tsx';
 import FinalMenu from './FinalMenu.tsx';
 
-// --- DATA STRUCTURE (Moved from theme files for clarity, assuming it's shared) ---
+// --- DATA STRUCTURE ---
 interface AdItem {
   Title: string;
   Price: string;
@@ -20,21 +20,16 @@ interface AdItem {
   Color?: string;
 }
 
-// 🔑 CRITICAL FIX: Add props to accept the theme name and ads data
-// The component should accept props like 'themeName' and 'ads'
+// --- PROPS DEFINITION ---
 interface AdDisplayProps {
-    themeName?: string; // Optional prop to specify the theme
-    ads?: AdItem[];     // Optional prop for the advertisements
+    themeName?: string; // Optional prop to specify the theme
+    ads?: AdItem[];     // Optional prop for the advertisements
 }
 
-// Change the function signature to accept props
 function AdDisplay({ themeName, ads = [] }: AdDisplayProps) {
-  
-  // --- THE FIX ---
-  // 1. Remove the hardcoded 'TonysBar' line.
-  // 2. Use the 'themeName' prop if provided.
-  // 3. Fall back to a default theme (e.g., 'Bears' or 'FinalMenu') if no prop is provided.
-  const theme = themeName || 'Bears'; // Default to 'Bears' for safety, but better to be passed in.
+  
+  // 🔑 CHANGE: Setting the default theme to 'FinalMenu' (your Game Day theme)
+  const theme = themeName || 'FinalMenu'; 
   
   // Simple theme router
   switch (theme) {
@@ -54,8 +49,11 @@ function AdDisplay({ themeName, ads = [] }: AdDisplayProps) {
       return <CinematicTheme ads={ads} />;
     case 'Space':
       return <SpaceMenu ads={ads} />;
-    default:
+    case 'FinalMenu': // Also check the name explicitly, just in case.
       return <FinalMenu ads={ads} />;
+    default:
+      // Setting FinalMenu as the ultimate fallback
+      return <FinalMenu ads={ads} />; 
   }
 }
 
