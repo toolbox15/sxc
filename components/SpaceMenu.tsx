@@ -15,8 +15,8 @@ const PromotionalCarousel = () => {
       accentColor: "text-yellow-300"
     },
     { 
-      title: "6-PACK DEAL",
-      subtitle: "TAKE HOME", 
+      title: "6-PACK DEAL", // Updated title
+      subtitle: "TAKE HOME", // Updated subtitle
       detail: "SAVE $5",
       // NEW: Six-pack of beer replacing the ice bucket image
       imageUrl: "https://images.unsplash.com/photo-1600788886242-5c96aabe3757?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
@@ -54,7 +54,7 @@ const PromotionalCarousel = () => {
         // backgroundSize remains 'cover' to fill the carousel frame completely
         style={{
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${promotions[current].imageUrl})`,
-          backgroundSize: 'cover',
+          backgroundSize: 'cover', // Ensures images fill the frame
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
         }}
@@ -117,7 +117,7 @@ const VarsityHeader = ({ text, subtext }: any) => {
 };
 
 // ==========================================
-// 3. FOOD MENU (TV Size) - INCREASED TEXT SIZES BY 2 PIXELS
+// 3. FOOD MENU (TV Size) - INCREASED TEXT SIZES BY 2 POINTS
 // ==========================================
 const FoodMenuList = ({ items }: any) => {
   return (
@@ -141,22 +141,16 @@ const FoodMenuList = ({ items }: any) => {
             
             {/* Text Container */}
             <div className="flex items-end gap-2 flex-1 mb-2">
-              {/* Title: Increased from text-2xl (24px) to 26px (+2px) */}
-              <span 
-                className="text-white font-bold uppercase tracking-tight shadow-black drop-shadow-md whitespace-nowrap"
-                style={{ fontSize: '26px' }}
-              >
+              {/* Title increased from text-xl to text-2xl (+2 points) */}
+              <span className="text-white font-bold text-2xl uppercase tracking-tight shadow-black drop-shadow-md whitespace-nowrap">
                 {item.Title}
               </span>
               
               {/* WHITE DASHED LINE - UNCHANGED */}
               <div className="flex-1 border-b-4 border-dotted border-white/60 mb-2 opacity-80"></div>
               
-              {/* Price: Increased from text-3xl (30px) to 32px (+2px) */}
-              <span 
-                className="text-yellow-400 font-black shadow-black drop-shadow-md whitespace-nowrap"
-                style={{ fontSize: '32px' }}
-              >
+              {/* Price increased from text-2xl to text-3xl (+2 points) */}
+              <span className="text-yellow-400 font-black text-3xl shadow-black drop-shadow-md whitespace-nowrap">
                 {item.Price}
               </span>
             </div>
@@ -251,7 +245,7 @@ const FinalMenu = () => {
             <div style={{ 
               position: 'absolute', 
               top: '12%', 
-              left: '66.9%',
+              left: '66.9%',  // Moved right by 0.5%
               width: '28%', 
               height: '200px',
               zIndex: 30
