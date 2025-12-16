@@ -6,64 +6,60 @@ const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // 1. Backup storage to prevent red screens during Google Sheet updates
   const lastValidData = useRef<any[]>([]); 
 
   // --- CONFIGURATION ---
-  // Using your provided Apps Script URL for both Data and Heartbeat
   const BASE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
-  const REFRESH_RATE = 30000; // 30 seconds
+  const REFRESH_RATE = 30000; 
 
-  // Get Client ID from URL (?id=mikes_bar)
   const queryParams = new URLSearchParams(window.location.search);
   const clientId = queryParams.get('id') || 'unknown_device';
 
   useEffect(() => {
-    // --- 2. THE HEARTBEAT FUNCTION ---
-    // Sends a 'pong' to your Devices tab every minute
     const sendHeartbeat = async () => {
       try {
+        // Updated to use the 'id' parameter your script expects
         await fetch(`${BASE_SCRIPT_URL}?action=heartbeat&id=${clientId}`, { mode: 'no-cors' });
+        console.log("💓 Heartbeat sent for:", clientId);
       } catch (e) {
-        console.warn("Heartbeat failed - checking connection...");
+        console.warn("Heartbeat failed - signal weak");
       }
     };
 
-    // --- 3. THE IMPROVED FETCH LOGIC ---
     const fetchData = async () => {
       try {
-        // Fetches your menu data from the 'Ads' tab
-        const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads`);
+        // Added a timestamp to the URL to prevent the browser from showing "old" data (Cache Busting)
+        const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&t=${new Date().getTime()}`);
         if (!response.ok) throw new Error("Network response was not ok");
         
         const data = await response.json();
+        console.log("📡 Data Received from Sheets:", data);
 
         if (data && data.length > 0) {
           setItems(data);
-          lastValidData.current = data; // Update backup
+          lastValidData.current = data; 
           setError(null);
           setLoading(false);
+        } else {
+          // If the sheet is empty or the tab name is wrong
+          throw new Error("Sheet returned empty. Check tab name 'Ads'");
         }
-      } catch (err) {
-        console.error("Fetch failed, using backup data", err);
+      } catch (err: any) {
+        console.error("❌ Mission Control Error:", err.message);
         
-        // Anti-Red-Screen Logic: Use backup if fetch fails
         if (lastValidData.current.length > 0) {
           setItems(lastValidData.current);
           setLoading(false);
         } else {
-          setError("Failed to connect to Mission Control. Retrying...");
+          setError(`Signal Lost: ${err.message}`);
           setLoading(false);
         }
       }
     };
 
-    // Initial triggers
     fetchData();
     sendHeartbeat();
 
-    // Set up intervals
     const dataInterval = setInterval(fetchData, REFRESH_RATE);
     const heartbeatInterval = setInterval(sendHeartbeat, 60000); 
 
@@ -71,17 +67,15 @@ const App = () => {
       clearInterval(dataInterval);
       clearInterval(heartbeatInterval);
     };
-  }, [clientId]); // Effect runs once on mount
+  }, [clientId]); 
 
-  // --- 4. THE SMART RENDER LAYER ---
-
-  // Show professional Standby Screen instead of raw text/errors
   if (loading && items.length === 0) {
-    return <StandbyScreen message="Initializing Mission Control..." subtext={`Connecting to: ${clientId}`} />;
+    return <StandbyScreen message="Initializing Mission Control..." subtext={`Client: ${clientId}`} />;
   }
 
+  // This replaces the "Failed to load menu data" red screen with your professional standby screen
   if (error && items.length === 0) {
-    return <StandbyScreen message="Signal Interrupted" subtext={error} />;
+    return <StandbyScreen message="Searching for Signal" subtext={error} />;
   }
 
   return (
