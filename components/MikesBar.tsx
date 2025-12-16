@@ -18,6 +18,7 @@ interface AdItem {
 }
 
 // --- 1. MIKE'S BAR PLACEHOLDER DATA (EXPANDED) ---
+// Retaining the expanded data we worked on for MikesBar
 const defaultKickoffItems: AdItem[] = [
     { Title: "CLASSIC SLIDERS", Price: "$9.00", Description: "Three juicy mini burgers with cheese.", Category: "Kickoff" },
     { Title: "PREMIUM NACHOS", Price: "$12.00", Description: "Loaded with cheese, jalapenos, and sour cream.", Category: "Kickoff" },
@@ -51,37 +52,14 @@ const SirenImage = () => {
   );
 };
 
-// --- 🎉 CONFETTI ENGINE (UPDATED FOR LARGER SIZE) ---
+// --- 🎉 CONFETTI ENGINE (FROM BEARS THEME) ---
 const ConfettiEffect = () => {
   const particles = Array.from({ length: 150 });
   const random = (min: number, max: number) => Math.random() * (max - min) + min;
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-[50]">
       {particles.map((_, i) => (
-        <motion.div 
-          key={i} 
-          className="absolute w-6 h-6 bg-white" // **INCREASED SIZE HERE: w-6 h-6**
-          initial={{ 
-            y: -100, 
-            x: `${random(0, 100)}vw`, 
-            opacity: 1, 
-            scale: random(0.8, 1.8), // Increased max scale for bigger pieces
-            rotate: random(0, 360) 
-          }} 
-          animate={{ 
-            y: '120vh', 
-            x: `calc(${random(0, 100)}vw + ${random(-200, 200)}px)`, 
-            opacity: 0, 
-            rotate: random(180, 720) 
-          }} 
-          transition={{ 
-            duration: random(2, 5), 
-            ease: "easeOut", 
-            repeat: Infinity, 
-            delay: random(0, 2) 
-          }} 
-          style={{ backgroundColor: ['#FFD700', '#FFFFFF', '#FF8C00', '#0057B8'][Math.floor(random(0, 4))] }} 
-        />
+        <motion.div key={i} className="absolute w-3 h-3 bg-white" initial={{ y: -100, x: `${random(0, 100)}vw`, opacity: 1, scale: random(0.5, 1.2), rotate: random(0, 360) }} animate={{ y: '120vh', x: `calc(${random(0, 100)}vw + ${random(-200, 200)}px)`, opacity: 0, rotate: random(180, 720) }} transition={{ duration: random(2, 5), ease: "easeOut", repeat: Infinity, delay: random(0, 2) }} style={{ backgroundColor: ['#FFD700', '#FFFFFF', '#FF8C00', '#0057B8'][Math.floor(random(0, 4))] }} />
       ))}
     </div>
   );
@@ -122,63 +100,62 @@ const RunningPlayer = () => {
   return (<motion.img src="/player-run.gif" alt="Running Player" className="absolute z-30 w-40 h-auto pointer-events-none brightness-90 contrast-125 drop-shadow-2xl opacity-100" initial={{ left: '10%', bottom: '50px', opacity: 0, scaleX: 1 }} animate={{ left: ['10%', '85%'], opacity: [0, 1, 1, 0], scale: [0.8, 1.2] }} transition={{ duration: 5, repeat: Infinity, ease: "linear", repeatDelay: 10 }} />);
 };
 
-// --- 🚨 FLASH SALE OVERLAY (UPDATED WITH NFL STYLE PULSATING TEXT) ---
+// --- 🚨 FLASH SALE OVERLAY (UPDATED WITH PULSATING GLOW AND TEXT) ---
 const FlashSaleOverlay = ({ item }: { item: AdItem }) => {
   return (
     <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black/80 backdrop-blur-md">
       <ConfettiEffect />
       {/* SOFTENED FLASH EFFECT: This provides the background pulse */}
       <motion.div className="absolute inset-0 bg-orange-600/30 blur-3xl" animate={{ opacity: [0.2, 0.7, 0.2] }} transition={{ duration: 0.5, repeat: Infinity }} />
-      
+      
       {/* THE CENTRAL ALERT BOX - NOW WITH PULSATING GLOW */}
-      <motion.div 
-        className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white flex flex-col items-center p-12 mt-10" 
-        initial={{ scale: 0, rotate: -5, boxShadow: '0 0 20px rgba(234, 88, 12, 0.8)' }} 
-        animate={{ 
-            scale: 1, 
+      <motion.div 
+        className="relative z-10 w-[90%] max-w-5xl bg-blue-950 rounded-3xl border-[6px] border-white flex flex-col items-center p-12 mt-10" 
+        initial={{ scale: 0, rotate: -5, boxShadow: '0 0 20px rgba(234, 88, 12, 0.8)' }} 
+        animate={{ 
+            scale: 1, 
             rotate: 0,
             // PULSATING BOX GLOW EFFECT (Orange/Blue)
             boxShadow: [
                 '0 0 100px rgba(234, 88, 12, 0.8)', // Orange max glow
                 '0 0 80px rgba(0, 87, 184, 0.7)', // Blue minimum glow
                 '0 0 100px rgba(234, 88, 12, 0.8)', // Orange max glow back again
-            ] 
-        }} 
-        transition={{ 
-            type: "spring", 
+            ] 
+        }} 
+        transition={{ 
+            type: "spring", 
             bounce: 0.5,
-            boxShadow: { 
-                duration: 1.5, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-            } 
+            boxShadow: { 
+                duration: 1.5, 
+                repeat: Infinity, 
+                ease: "easeInOut" 
+            } 
         }}
       >
         <div className="absolute inset-0 overflow-hidden rounded-2xl opacity-20"><div className="w-full h-full bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,#ea580c_20px,#ea580c_40px)]"></div></div>
         <div className="absolute -top-16 -left-12 z-50"><SirenImage /></div>
         <div className="absolute -top-16 -right-12 z-50"><SirenImage /></div>
         <div className="absolute -top-10 bg-orange-600 text-white px-10 py-4 rounded-xl border-4 border-white shadow-lg transform -rotate-1 z-20"><h2 className="text-4xl font-black italic uppercase tracking-widest drop-shadow-md">FIELD ALERT</h2></div>
-        
-        {/* PULSATING NFL STYLE TITLE TEXT */}
-        <motion.h1 
-          className="relative z-10 text-9xl md:text-[12rem] font-extrabold text-white uppercase leading-none mt-8 text-center tracking-tighter" // Font adjustments for blocky look
-          animate={{ 
-            // Using text-shadow to create a deep blue stroke and a pulsing white/orange glow
-            textShadow: [
-              '8px 8px 0px #0057B8, 12px 12px 0px #ea580c', // Base NFL-style Blue/Orange Stroke
-              '8px 8px 0px #0057B8, 12px 12px 20px #FFFFFF', // Max White Glow
-              '8px 8px 0px #0057B8, 12px 12px 0px #ea580c', // Back to Base Stroke
-            ] 
+        
+        {/* PULSATING TITLE TEXT */}
+        <motion.h1 
+          className="relative z-10 text-8xl md:text-[10rem] font-black text-white uppercase italic leading-none mt-8 text-center"
+          animate={{ 
+            dropShadow: [
+              '6px 6px 0px #ea580c', // Base orange shadow
+              '6px 6px 50px rgba(255, 255, 255, 1)', // Max white/bright glow
+              '6px 6px 0px #ea580c', // Back to base orange shadow
+            ] 
           }}
-          transition={{ 
-            duration: 1, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
+          transition={{ 
+            duration: 1, 
+            repeat: Infinity, 
+            ease: "easeInOut" 
           }}
         >
           {item.Title}
         </motion.h1>
-        
+        
         <div className="relative z-10 mt-8 bg-white px-16 py-4 rounded-full shadow-2xl transform rotate-1"><p className="text-blue-950 text-4xl md:text-5xl font-black uppercase tracking-wide text-center">{item.Description || "LIMITED TIME ONLY!"}</p></div>
       </motion.div>
     </div>
