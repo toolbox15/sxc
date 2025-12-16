@@ -1,76 +1,53 @@
-// Add this new state inside your App component
-const [showAdmin, setShowAdmin] = useState(false);
+import React, { useState, useEffect, useRef } from 'react';
+// IMPORTANT: Ensure these filenames match your files in the /components folder exactly!
+import MikesBar from './components/MikesBar';
+import PizzaTheme from './components/PizzaTheme'; 
+import { StandbyScreen } from './components/StandbyScreen'; 
 
-return (
-  <div className="App" style={{ cursor: 'none' }}> {/* Hides cursor for viewers */}
-    
-    {/* 1. THE SECRET TRIGGER AREA (Bottom Right) */}
-    <div 
-      onClick={() => setShowAdmin(true)}
-      onMouseEnter={(e) => (e.currentTarget.style.cursor = 'default')}
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        right: 0,
-        width: '40px', // Small enough to be hidden, big enough to click
-        height: '40px',
-        zIndex: 9999,
-        background: 'transparent', // Change to 'rgba(255,0,0,0.1)' to see it while testing
-      }}
-    />
+const App = () => {
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Force a specific theme here for a "Hard Test"
+  // Change 'beer' to 'pizza' manually to see if the theme file itself is working
+  const [theme, setTheme] = useState(localStorage.getItem('saved_theme') || 'beer');
 
-    {/* 2. THE ADMIN MODAL */}
-    {showAdmin && (
-      <div style={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 10000,
-        background: '#1a1a1a',
-        padding: '30px',
-        borderRadius: '15px',
-        border: '2px solid #333',
-        boxShadow: '0 0 50px rgba(0,0,0,0.8)',
-        textAlign: 'center',
-        color: 'white'
-      }}>
-        <h3 style={{ margin: '0 0 20px 0' }}>Agency Admin Mode</h3>
+  const BASE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&t=${new Date().getTime()}`);
+        const data = await response.json();
         
-        <select 
-          value={theme} 
-          onChange={handleThemeChange} 
-          style={{ 
-            padding: '12px', 
-            fontSize: '18px', 
-            borderRadius: '5px',
-            width: '100%',
-            marginBottom: '20px'
-          }}
-        >
-          <option value="beer">🍺 Beer Theme</option>
-          <option value="pizza">🍕 Pizza Theme</option>
-          <option value="luxury">🍷 Luxury Theme</option>
-        </select>
+        console.log("Data successfully fetched:", data); // Check your browser console for this!
 
-        <button 
-          onClick={() => setShowAdmin(false)}
-          style={{
-            background: '#ff4444',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          Close & Save
-        </button>
-      </div>
-    )}
+        if (data && data.length > 0) {
+          setItems(data);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("Connection to Google Sheet failed:", err);
+        setLoading(false);
+      }
+    };
 
-    {/* Render the actual menu */}
-    {loading && items.length === 0 ? <StandbyScreen message="Loading..." /> : renderTheme()}
-  </div>
-);
+    fetchData();
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // --- THE CONNECTION CHECK ---
+  if (loading) {
+    return <StandbyScreen message="Connecting to Database..." />;
+  }
+
+  // This logic chooses which file to show
+  if (theme === 'pizza') {
+    return <PizzaTheme ads={items} />;
+  } else {
+    return <MikesBar ads={items} />;
+  }
+};
+
+export default App;
