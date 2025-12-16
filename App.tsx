@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MikesBar from './components/MikesBar';
-import { StandbyScreen } from './components/StandbyScreen'; // The new component we discussed
+import { StandbyScreen } from './components/StandbyScreen'; 
 
 const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // 1. YOUR UPDATE: Backup storage to prevent red screens
+  // 1. Backup storage to prevent red screens during Google Sheet updates
   const lastValidData = useRef<any[]>([]); 
 
   // --- CONFIGURATION ---
-  const API_URL = 'YOUR_GOOGLE_SHEET_API_URL';
-  const HEARTBEAT_URL = 'YOUR_DEPLOYED_GAS_URL';
+  // Using your provided Apps Script URL for both Data and Heartbeat
+  const BASE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
   const REFRESH_RATE = 30000; // 30 seconds
 
   // Get Client ID from URL (?id=mikes_bar)
@@ -21,19 +21,20 @@ const App = () => {
 
   useEffect(() => {
     // --- 2. THE HEARTBEAT FUNCTION ---
+    // Sends a 'pong' to your Devices tab every minute
     const sendHeartbeat = async () => {
       try {
-        // mode: 'no-cors' is used because we don't need a response from the script
-        await fetch(`${HEARTBEAT_URL}?id=${clientId}`, { mode: 'no-cors' });
+        await fetch(`${BASE_SCRIPT_URL}?action=heartbeat&id=${clientId}`, { mode: 'no-cors' });
       } catch (e) {
-        console.warn("Heartbeat failed - internet may be flickering");
+        console.warn("Heartbeat failed - checking connection...");
       }
     };
 
     // --- 3. THE IMPROVED FETCH LOGIC ---
     const fetchData = async () => {
       try {
-        const response = await fetch(API_URL);
+        // Fetches your menu data from the 'Ads' tab
+        const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads`);
         if (!response.ok) throw new Error("Network response was not ok");
         
         const data = await response.json();
@@ -47,12 +48,11 @@ const App = () => {
       } catch (err) {
         console.error("Fetch failed, using backup data", err);
         
-        // If we have backup data, use it and don't show error
+        // Anti-Red-Screen Logic: Use backup if fetch fails
         if (lastValidData.current.length > 0) {
           setItems(lastValidData.current);
           setLoading(false);
         } else {
-          // Only show error if it's the VERY FIRST load and it failed
           setError("Failed to connect to Mission Control. Retrying...");
           setLoading(false);
         }
@@ -65,27 +65,25 @@ const App = () => {
 
     // Set up intervals
     const dataInterval = setInterval(fetchData, REFRESH_RATE);
-    const heartbeatInterval = setInterval(sendHeartbeat, 60000); // Pulse once a minute
+    const heartbeatInterval = setInterval(sendHeartbeat, 60000); 
 
     return () => {
       clearInterval(dataInterval);
       clearInterval(heartbeatInterval);
     };
-  }, [API_URL, clientId, HEARTBEAT_URL]);
+  }, [clientId]); // Effect runs once on mount
 
   // --- 4. THE SMART RENDER LAYER ---
 
-  // Show Standby Screen if still loading for the first time
+  // Show professional Standby Screen instead of raw text/errors
   if (loading && items.length === 0) {
     return <StandbyScreen message="Initializing Mission Control..." subtext={`Connecting to: ${clientId}`} />;
   }
 
-  // Show Standby Screen if there is a hard error (no data and fetch failed)
   if (error && items.length === 0) {
     return <StandbyScreen message="Signal Interrupted" subtext={error} />;
   }
 
-  // If we have items (live or backup), show the bar
   return (
     <div className="App">
       <MikesBar ads={items} />
