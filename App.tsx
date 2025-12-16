@@ -1,88 +1,76 @@
-import React, { useState, useEffect, useRef } from 'react';
-import MikesBar from './components/MikesBar';
-import { StandbyScreen } from './components/StandbyScreen'; 
+// Add this new state inside your App component
+const [showAdmin, setShowAdmin] = useState(false);
 
-const App = () => {
-  const [items, setItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const lastValidData = useRef<any[]>([]); 
+return (
+  <div className="App" style={{ cursor: 'none' }}> {/* Hides cursor for viewers */}
+    
+    {/* 1. THE SECRET TRIGGER AREA (Bottom Right) */}
+    <div 
+      onClick={() => setShowAdmin(true)}
+      onMouseEnter={(e) => (e.currentTarget.style.cursor = 'default')}
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        right: 0,
+        width: '40px', // Small enough to be hidden, big enough to click
+        height: '40px',
+        zIndex: 9999,
+        background: 'transparent', // Change to 'rgba(255,0,0,0.1)' to see it while testing
+      }}
+    />
 
-  // --- CONFIGURATION ---
-  const BASE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
-  const REFRESH_RATE = 30000; 
-
-  const queryParams = new URLSearchParams(window.location.search);
-  const clientId = queryParams.get('id') || 'unknown_device';
-
-  useEffect(() => {
-    const sendHeartbeat = async () => {
-      try {
-        // Updated to use the 'id' parameter your script expects
-        await fetch(`${BASE_SCRIPT_URL}?action=heartbeat&id=${clientId}`, { mode: 'no-cors' });
-        console.log("💓 Heartbeat sent for:", clientId);
-      } catch (e) {
-        console.warn("Heartbeat failed - signal weak");
-      }
-    };
-
-    const fetchData = async () => {
-      try {
-        // Added a timestamp to the URL to prevent the browser from showing "old" data (Cache Busting)
-        const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&t=${new Date().getTime()}`);
-        if (!response.ok) throw new Error("Network response was not ok");
+    {/* 2. THE ADMIN MODAL */}
+    {showAdmin && (
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 10000,
+        background: '#1a1a1a',
+        padding: '30px',
+        borderRadius: '15px',
+        border: '2px solid #333',
+        boxShadow: '0 0 50px rgba(0,0,0,0.8)',
+        textAlign: 'center',
+        color: 'white'
+      }}>
+        <h3 style={{ margin: '0 0 20px 0' }}>Agency Admin Mode</h3>
         
-        const data = await response.json();
-        console.log("📡 Data Received from Sheets:", data);
+        <select 
+          value={theme} 
+          onChange={handleThemeChange} 
+          style={{ 
+            padding: '12px', 
+            fontSize: '18px', 
+            borderRadius: '5px',
+            width: '100%',
+            marginBottom: '20px'
+          }}
+        >
+          <option value="beer">🍺 Beer Theme</option>
+          <option value="pizza">🍕 Pizza Theme</option>
+          <option value="luxury">🍷 Luxury Theme</option>
+        </select>
 
-        if (data && data.length > 0) {
-          setItems(data);
-          lastValidData.current = data; 
-          setError(null);
-          setLoading(false);
-        } else {
-          // If the sheet is empty or the tab name is wrong
-          throw new Error("Sheet returned empty. Check tab name 'Ads'");
-        }
-      } catch (err: any) {
-        console.error("❌ Mission Control Error:", err.message);
-        
-        if (lastValidData.current.length > 0) {
-          setItems(lastValidData.current);
-          setLoading(false);
-        } else {
-          setError(`Signal Lost: ${err.message}`);
-          setLoading(false);
-        }
-      }
-    };
+        <button 
+          onClick={() => setShowAdmin(false)}
+          style={{
+            background: '#ff4444',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
+          Close & Save
+        </button>
+      </div>
+    )}
 
-    fetchData();
-    sendHeartbeat();
-
-    const dataInterval = setInterval(fetchData, REFRESH_RATE);
-    const heartbeatInterval = setInterval(sendHeartbeat, 60000); 
-
-    return () => {
-      clearInterval(dataInterval);
-      clearInterval(heartbeatInterval);
-    };
-  }, [clientId]); 
-
-  if (loading && items.length === 0) {
-    return <StandbyScreen message="Initializing Mission Control..." subtext={`Client: ${clientId}`} />;
-  }
-
-  // This replaces the "Failed to load menu data" red screen with your professional standby screen
-  if (error && items.length === 0) {
-    return <StandbyScreen message="Searching for Signal" subtext={error} />;
-  }
-
-  return (
-    <div className="App">
-      <MikesBar ads={items} />
-    </div>
-  );
-};
-
-export default App;
+    {/* Render the actual menu */}
+    {loading && items.length === 0 ? <StandbyScreen message="Loading..." /> : renderTheme()}
+  </div>
+);
