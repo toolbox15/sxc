@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import MikesBar from './components/MikesBar';
 import BearsTheme from './components/BearsTheme'; 
+import FinalMenu from './components/FinalMenu'; // <--- 1. Added this import
 import { StandbyScreen } from './components/StandbyScreen'; 
 
 const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // This detects if the URL has ?id=Demo_Bears or ?id=MikesBar
+  // This detects if the URL has ?id=Demo_Bears, ?id=MikesBar, or ?id=FinalMenu
   const queryParams = new URLSearchParams(window.location.search);
   const currentTheme = queryParams.get('id') || 'MikesBar'; 
 
@@ -19,7 +20,7 @@ const App = () => {
         const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // Only show ads for the current location
+        // Filters data to match the ID in your URL (e.g., "FinalMenu")
         const filtered = data.filter((ad: any) => ad.Target_Screen === currentTheme);
         setItems(filtered);
         setLoading(false);
@@ -35,8 +36,18 @@ const App = () => {
   if (loading) return <StandbyScreen message="Connecting..." />;
   if (items.length === 0) return <StandbyScreen message={`No Active Ads for ${currentTheme}`} />;
 
-  // Switcher: Launch the correct theme based on the URL
-  if (currentTheme === 'Demo_Bears') return <BearsTheme ads={items} />;
+  // ==========================================
+  // THE SWITCHER
+  // ==========================================
+  if (currentTheme === 'Demo_Bears') {
+    return <BearsTheme ads={items} />;
+  }
+
+  if (currentTheme === 'FinalMenu') {
+    return <FinalMenu items={items} />; // <--- 2. Added this logic
+  }
+
+  // Default fallback
   return <MikesBar ads={items} />;
 };
 
