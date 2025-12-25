@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import MikesBar from './components/MikesBar';
 import BearsTheme from './components/BearsTheme'; 
-import FinalMenu from './components/FinalMenu'; // <--- 1. Added this import
+import FinalMenu from './components/FinalMenu';
+import TireShopTheme from './components/TireShopTheme'; // <--- 1. Import your new component
 import { StandbyScreen } from './components/StandbyScreen'; 
 
 const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // This detects if the URL has ?id=Demo_Bears, ?id=MikesBar, or ?id=FinalMenu
   const queryParams = new URLSearchParams(window.location.search);
   const currentTheme = queryParams.get('id') || 'MikesBar'; 
 
@@ -20,7 +20,7 @@ const App = () => {
         const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // Filters data to match the ID in your URL (e.g., "FinalMenu")
+        // This filters for "TireShop" when you are on the TireShop URL
         const filtered = data.filter((ad: any) => ad.Target_Screen === currentTheme);
         setItems(filtered);
         setLoading(false);
@@ -44,7 +44,12 @@ const App = () => {
   }
 
   if (currentTheme === 'FinalMenu') {
-    return <FinalMenu items={items} />; // <--- 2. Added this logic
+    return <FinalMenu items={items} />;
+  }
+
+  // 2. This activates your Tire Shop Component
+  if (currentTheme === 'TireShop') {
+    return <TireShopTheme ads={items} />; 
   }
 
   // Default fallback
