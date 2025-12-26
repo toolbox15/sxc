@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MikesBar from './components/MikesBar';
-import TonysBar from './components/TonysBar'; // <--- Updated from BearsTheme
+import TonysBar from './components/TonysBar'; 
 import FinalMenu from './components/FinalMenu';
 import TireShopTheme from './components/TireShopTheme'; 
 import { StandbyScreen } from './components/StandbyScreen'; 
@@ -17,13 +17,16 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Updated fetch to include deviceName for the Health Monitor heartbeat
         const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&deviceName=${currentTheme}&t=${new Date().getTime()}`);
         const data = await response.json();
         
+        // Traffic Cop Logic: Filter items for this specific screen
         const filtered = data.filter((ad: any) => ad.Target_Screen === currentTheme);
         setItems(filtered);
         setLoading(false);
       } catch (err) {
+        console.error("Fetch error:", err);
         setLoading(false);
       }
     };
@@ -33,15 +36,17 @@ const App = () => {
   }, [currentTheme]);
 
   if (loading) return <StandbyScreen message="Connecting..." />;
+  
+  // If no items are found, the background won't load because there's no data to pull from
   if (items.length === 0) return <StandbyScreen message={`No Active Ads for ${currentTheme}`} />;
 
   // ==========================================
-  // THE TRAFFIC COP (SWITCHER)
+  // THE SWITCHER (TRAFFIC COP)
   // ==========================================
   
-  // 1. Updated Logic for Tony's Bar
   if (currentTheme === 'Demo_Bears') {
-    return <TonysBar ads={items} />; // <--- Now uses TonysBar component
+    // PASSING THE THEME NAME: This allows the component to know which CSS or background to load
+    return <TonysBar ads={items} theme={currentTheme} />; 
   }
 
   if (currentTheme === 'FinalMenu') {
