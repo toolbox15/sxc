@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import MikesBar from './components/MikesBar';
+import TonysBar from './components/TonysBar'; 
 import FinalMenu from './components/FinalMenu';
+import TireShopTheme from './components/TireShopTheme'; 
 import { StandbyScreen } from './components/StandbyScreen'; 
 
 const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
+  // 1. URL IDENTIFIER
   const queryParams = new URLSearchParams(window.location.search);
   const currentTheme = queryParams.get('id') || 'MikesBar'; 
 
@@ -15,19 +18,23 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&t=${new Date().getTime()}`);
+        // 2. THE HEARTBEAT 
+        // We pass deviceName to the script. This updates "Last_Seen" in your Devices tab.
+        const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&deviceName=${currentTheme}&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // This filters for the theme based on the URL ID
+        // 3. THE TRAFFIC COP FILTER
         const filtered = data.filter((ad: any) => ad.Target_Screen === currentTheme);
         setItems(filtered);
         setLoading(false);
       } catch (err) {
+        console.error("Fetch error:", err);
         setLoading(false);
       }
     };
+
     fetchData();
-    const interval = setInterval(fetchData, 30000);
+    const interval = setInterval(fetchData, 30000); // 30-second refresh
     return () => clearInterval(interval);
   }, [currentTheme]);
 
@@ -35,15 +42,26 @@ const App = () => {
   if (items.length === 0) return <StandbyScreen message={`No Active Ads for ${currentTheme}`} />;
 
   // ==========================================
-  // THE ORIGINAL SWITCHER
+  // THE SWITCHER (TRAFFIC COP)
   // ==========================================
-  
-  if (currentTheme === 'FinalMenu') {
-    return <FinalMenu items={items} />;
+
+  // TONY'S BAR (Demo_Bears)
+  if (currentTheme === 'Demo_Bears') {
+    return <TonysBar items={items} ads={items} />; 
   }
 
-  // Default fallback
-  return <MikesBar ads={items} />;
+  // BURGER JOINT (FinalMenu)
+  if (currentTheme === 'FinalMenu') {
+    return <FinalMenu items={items} ads={items} />;
+  }
+
+  // TIRE SHOP
+  if (currentTheme === 'TireShop') {
+    return <TireShopTheme items={items} ads={items} />; 
+  }
+
+  // DEFAULT (MIKE'S BAR)
+  return <MikesBar items={items} ads={items} />;
 };
 
 export default App;
