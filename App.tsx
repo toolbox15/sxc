@@ -17,11 +17,11 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // HEARTBEAT: Updates the health monitor in your spreadsheet
+        // HEALTH MONITOR: Pings the sheet to update 'Last Seen'
         const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&deviceName=${currentTheme}&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // TRAFFIC COP: Filters for the specific screen
+        // TRAFFIC COP: Filters for the correct screen
         const filtered = data.filter((ad: any) => ad.Target_Screen === currentTheme);
         setItems(filtered);
         setLoading(false);
@@ -37,7 +37,7 @@ const App = () => {
   if (loading) return <StandbyScreen message="Connecting..." />;
   if (items.length === 0) return <StandbyScreen message={`No Active Ads for ${currentTheme}`} />;
 
-  // These props ensure data is passed as both 'items' and 'ads' to prevent breaking backgrounds
+  // Prop-Safe: Sends data as both 'items' and 'ads' to support all component styles
   const commonProps = { items: items, ads: items };
 
   // ==========================================
@@ -45,16 +45,17 @@ const App = () => {
   // ==========================================
 
   if (currentTheme === 'Demo_Bears') {
-    // If Column G is empty, this tells the component to look in the /public folder
-    return <TonysBar {...commonProps} publicBackground="/bears-bg.jpg" />; 
+    // Hardcoding the public folder background for Tony's
+    return <TonysBar {...commonProps} backgroundImage="/bears-bg.jpg" />; 
+  }
+
+  if (currentTheme === 'TireShop') {
+    // Hardcoding the public folder background for TireShop
+    return <TireShopTheme {...commonProps} backgroundImage="/tireshop-bg.jpg" />; 
   }
 
   if (currentTheme === 'FinalMenu') {
     return <FinalMenu {...commonProps} />;
-  }
-
-  if (currentTheme === 'TireShop') {
-    return <TireShopTheme {...commonProps} />; 
   }
 
   return <MikesBar {...commonProps} />;
