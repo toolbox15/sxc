@@ -1,42 +1,29 @@
 import React from 'react';
 
-interface AdItem {
-  Title: string;
-  Price: string;
-  Description: string;
-  ImageURL?: string;
-}
+// This component handles the "Demo_Bears" theme
+const TonysBar = ({ items, ads, publicBackground }) => {
+  // Combine items and ads props to ensure we don't miss data
+  const menuData = items || ads || [];
 
-interface TonysBarProps {
-  items?: AdItem[];
-  ads?: AdItem[];
-  publicBackground?: string;
-}
-
-const TonysBar: React.FC<TonysBarProps> = ({ items, ads, publicBackground }) => {
-  // Use whichever data prop contains the info
-  const menuItems = items || ads || [];
-
-  // This style object applies your public folder image as a full-screen background
   const containerStyle: React.CSSProperties = {
+    // This pulls 'field-bg.png' from your public folder
     backgroundImage: publicBackground ? `url(${publicBackground})` : 'none',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     height: '100vh',
     width: '100vw',
+    margin: 0,
+    padding: 0,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    color: 'white',
-    fontFamily: 'Arial, sans-serif',
     overflow: 'hidden'
   };
 
   const overlayStyle: React.CSSProperties = {
-    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Darkens the background so text is easy to read
-    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adds contrast so menu text is readable over the field image
     height: '100%',
+    width: '100%',
     padding: '40px',
     boxSizing: 'border-box'
   };
@@ -44,33 +31,41 @@ const TonysBar: React.FC<TonysBarProps> = ({ items, ads, publicBackground }) => 
   return (
     <div style={containerStyle}>
       <div style={overlayStyle}>
-        <header style={{ textAlign: 'center', marginBottom: '50px' }}>
-          <h1 style={{ fontSize: '4rem', textShadow: '4px 4px 8px rgba(0,0,0,0.8)', margin: 0 }}>
+        <header style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h1 style={{ 
+            color: '#fff', 
+            fontSize: '5rem', 
+            margin: 0, 
+            textShadow: '3px 3px 10px rgba(0,0,0,1)',
+            letterSpacing: '2px'
+          }}>
             TONY'S BEARS DEN
           </h1>
+          <p style={{ color: '#ffa500', fontSize: '1.5rem', fontWeight: 'bold' }}>
+            DAILY SPECIALS
+          </p>
         </header>
 
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-          gap: '30px' 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+          gap: '25px',
+          maxWidth: '1200px',
+          margin: '0 auto'
         }}>
-          {menuItems.map((item, index) => (
+          {menuData.map((item: any, index: number) => (
             <div key={index} style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(10px)',
+              background: 'rgba(0, 0, 0, 0.7)',
+              border: '2px solid #ffa500',
+              borderRadius: '12px',
               padding: '20px',
-              borderRadius: '15px',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+              boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
             }}>
-              <h2 style={{ fontSize: '2rem', margin: '0 0 10px 0', borderBottom: '2px solid #ffa500' }}>
-                {item.Title}
-              </h2>
-              <div style={{ fontSize: '1.8rem', color: '#ffa500', fontWeight: 'bold' }}>
-                {item.Price}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <h2 style={{ color: '#fff', margin: 0, fontSize: '1.8rem' }}>{item.Title}</h2>
+                <span style={{ color: '#ffa500', fontSize: '1.6rem', fontWeight: 'bold' }}>{item.Price}</span>
               </div>
-              <p style={{ fontSize: '1.2rem', marginTop: '10px' }}>
+              <p style={{ color: '#ddd', fontSize: '1.1rem', marginTop: '10px', lineHeight: '1.4' }}>
                 {item.Description}
               </p>
             </div>
