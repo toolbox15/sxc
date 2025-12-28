@@ -9,7 +9,6 @@ const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // 1. URL IDENTIFIER
   const queryParams = new URLSearchParams(window.location.search);
   const currentTheme = queryParams.get('id') || 'MikesBar'; 
 
@@ -18,50 +17,47 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 2. THE HEARTBEAT 
-        // We pass deviceName to the script. This updates "Last_Seen" in your Devices tab.
+        // HEARTBEAT: Updates the health monitor in your spreadsheet
         const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&deviceName=${currentTheme}&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // 3. THE TRAFFIC COP FILTER
+        // TRAFFIC COP: Filters for the specific screen
         const filtered = data.filter((ad: any) => ad.Target_Screen === currentTheme);
         setItems(filtered);
         setLoading(false);
       } catch (err) {
-        console.error("Fetch error:", err);
         setLoading(false);
       }
     };
-
     fetchData();
-    const interval = setInterval(fetchData, 30000); // 30-second refresh
+    const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, [currentTheme]);
 
   if (loading) return <StandbyScreen message="Connecting..." />;
   if (items.length === 0) return <StandbyScreen message={`No Active Ads for ${currentTheme}`} />;
 
+  // These props ensure data is passed as both 'items' and 'ads' to prevent breaking backgrounds
+  const commonProps = { items: items, ads: items };
+
   // ==========================================
-  // THE SWITCHER (TRAFFIC COP)
+  // THE SWITCHER
   // ==========================================
 
-  // TONY'S BAR (Demo_Bears)
   if (currentTheme === 'Demo_Bears') {
-    return <TonysBar items={items} ads={items} />; 
+    // If Column G is empty, this tells the component to look in the /public folder
+    return <TonysBar {...commonProps} publicBackground="/bears-bg.jpg" />; 
   }
 
-  // BURGER JOINT (FinalMenu)
   if (currentTheme === 'FinalMenu') {
-    return <FinalMenu items={items} ads={items} />;
+    return <FinalMenu {...commonProps} />;
   }
 
-  // TIRE SHOP
   if (currentTheme === 'TireShop') {
-    return <TireShopTheme items={items} ads={items} />; 
+    return <TireShopTheme {...commonProps} />; 
   }
 
-  // DEFAULT (MIKE'S BAR)
-  return <MikesBar items={items} ads={items} />;
+  return <MikesBar {...commonProps} />;
 };
 
 export default App;
