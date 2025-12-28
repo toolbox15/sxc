@@ -1,44 +1,81 @@
 import React from 'react';
-// import './TonysBar.css'; // Keep this if you have a separate CSS file
 
-// 1. We accept 'backgroundImage' as a prop from App.tsx
-const TonysBar = ({ items, ads, backgroundImage }) => {
-  
-  // 2. Safety Check: Use 'items' or 'ads', whichever isn't empty
-  const reliableData = items || ads || [];
+interface AdItem {
+  Title: string;
+  Price: string;
+  Description: string;
+  ImageURL?: string;
+}
 
-  // 3. Logic: If App.tsx sent an image, use it. Otherwise default to white.
+interface TonysBarProps {
+  items?: AdItem[];
+  ads?: AdItem[];
+  publicBackground?: string;
+}
+
+const TonysBar: React.FC<TonysBarProps> = ({ items, ads, publicBackground }) => {
+  // Use whichever data prop contains the info
+  const menuItems = items || ads || [];
+
+  // This style object applies your public folder image as a full-screen background
   const containerStyle: React.CSSProperties = {
-    backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
-    backgroundColor: backgroundImage ? 'transparent' : 'white',
+    backgroundImage: publicBackground ? `url(${publicBackground})` : 'none',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    minHeight: '100vh',
+    height: '100vh',
     width: '100vw',
-    padding: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    color: 'white',
+    fontFamily: 'Arial, sans-serif',
+    overflow: 'hidden'
+  };
+
+  const overlayStyle: React.CSSProperties = {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Darkens the background so text is easy to read
+    width: '100%',
+    height: '100%',
+    padding: '40px',
     boxSizing: 'border-box'
   };
 
   return (
     <div style={containerStyle}>
-      <div className="header" style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <h1 style={{ color: 'white', textShadow: '2px 2px 4px #000' }}>TONY'S BEARS DEN</h1>
-      </div>
-      
-      <div className="menu-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
-        {reliableData.map((item: any, index: number) => (
-          <div key={index} className="menu-card" style={{ 
-            background: 'rgba(255, 255, 255, 0.9)', 
-            padding: '15px', 
-            borderRadius: '8px', 
-            width: '300px' 
-          }}>
-            <h2 style={{ margin: '0 0 10px 0', borderBottom: '2px solid orange' }}>{item.Title}</h2>
-            <div style={{ fontWeight: 'bold', fontSize: '1.2em', color: '#333' }}>{item.Price}</div>
-            <p style={{ fontStyle: 'italic' }}>{item.Description}</p>
-          </div>
-        ))}
+      <div style={overlayStyle}>
+        <header style={{ textAlign: 'center', marginBottom: '50px' }}>
+          <h1 style={{ fontSize: '4rem', textShadow: '4px 4px 8px rgba(0,0,0,0.8)', margin: 0 }}>
+            TONY'S BEARS DEN
+          </h1>
+        </header>
+
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+          gap: '30px' 
+        }}>
+          {menuItems.map((item, index) => (
+            <div key={index} style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)',
+              padding: '20px',
+              borderRadius: '15px',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+            }}>
+              <h2 style={{ fontSize: '2rem', margin: '0 0 10px 0', borderBottom: '2px solid #ffa500' }}>
+                {item.Title}
+              </h2>
+              <div style={{ fontSize: '1.8rem', color: '#ffa500', fontWeight: 'bold' }}>
+                {item.Price}
+              </div>
+              <p style={{ fontSize: '1.2rem', marginTop: '10px' }}>
+                {item.Description}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
