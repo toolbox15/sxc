@@ -17,11 +17,11 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // HEALTH MONITOR: Pings the sheet with the device name
+        // HEALTH MONITOR: Updates 'Last Seen' in your Devices tab
         const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&deviceName=${currentTheme}&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // TRAFFIC COP: Filters for the specific screen ID
+        // TRAFFIC COP: Filters data to show only this TV's ads
         const filtered = data.filter((ad: any) => ad.Target_Screen === currentTheme);
         setItems(filtered);
         setLoading(false);
@@ -30,14 +30,14 @@ const App = () => {
       }
     };
     fetchData();
-    const interval = setInterval(fetchData, 30000);
+    const interval = setInterval(fetchData, 30000); // 30-second heartbeat
     return () => clearInterval(interval);
   }, [currentTheme]);
 
   if (loading) return <StandbyScreen message="Connecting..." />;
   if (items.length === 0) return <StandbyScreen message={`No Active Ads for ${currentTheme}`} />;
 
-  // Prop-Safe: Pass both names so components can find the data
+  // Prop-Safe: Sends data as 'items' and 'ads' so no component breaks
   const commonProps = { items: items, ads: items };
 
   // ==========================================
@@ -45,7 +45,7 @@ const App = () => {
   // ==========================================
 
   if (currentTheme === 'Demo_Bears') {
-    // Explicitly passing the background filename from your public folder
+    // FIX: Using the exact filename found in your public folder
     return <TonysBar {...commonProps} backgroundImage="/field-bg.png" />; 
   }
 
