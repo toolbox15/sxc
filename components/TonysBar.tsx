@@ -1,11 +1,10 @@
 import React from 'react';
 
-// This component handles the "Demo_Bears" layout
 const TonysBar = ({ items, ads, publicBackground }) => {
-  // Merges both prop names to ensure data is caught
+  // Catch data from either prop name to ensure the menu isn't empty
   const menuData = items || ads || [];
 
-  // 1. The main container style using your public folder image
+  // Main container using the public folder image (/field-bg.png)
   const containerStyle: React.CSSProperties = {
     backgroundImage: `url(${publicBackground || '/field-bg.png'})`,
     backgroundSize: 'cover',
@@ -21,7 +20,7 @@ const TonysBar = ({ items, ads, publicBackground }) => {
     position: 'relative'
   };
 
-  // 2. An overlay to make the menu readable against the image
+  // Dark overlay for text legibility
   const overlayStyle: React.CSSProperties = {
     backgroundColor: 'rgba(0, 0, 0, 0.4)', 
     height: '100%',
@@ -35,43 +34,67 @@ const TonysBar = ({ items, ads, publicBackground }) => {
   return (
     <div style={containerStyle}>
       <div style={overlayStyle}>
-        <header style={{ textAlign: 'center', marginBottom: '60px' }}>
+        {/* Header Section */}
+        <header style={{ textAlign: 'center', marginBottom: '50px' }}>
           <h1 style={{ 
             color: '#fff', 
             fontSize: '5.5rem', 
             margin: 0, 
-            textShadow: '4px 4px 10px rgba(0,0,0,0.9)',
+            textShadow: '4px 4px 12px rgba(0,0,0,0.9)',
             fontWeight: '900',
-            textTransform: 'uppercase'
+            textTransform: 'uppercase',
+            letterSpacing: '2px'
           }}>
             Tony's Bears Den
           </h1>
-          <div style={{ height: '5px', width: '200px', backgroundColor: '#ffa500', margin: '10px auto' }}></div>
+          {/* Orange accent line */}
+          <div style={{ height: '6px', width: '240px', backgroundColor: '#ffa500', margin: '15px auto' }}></div>
         </header>
 
+        {/* Menu Grid Section */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
           gap: '30px',
-          padding: '0 20px'
+          padding: '0 20px',
+          maxWidth: '1600px',
+          margin: '0 auto'
         }}>
           {menuData.map((item: any, index: number) => (
             <div key={index} style={{
               background: 'rgba(0, 0, 0, 0.75)',
-              borderLeft: '8px solid #ffa500',
-              borderRadius: '4px',
+              borderLeft: '10px solid #ffa500',
+              borderRadius: '6px',
               padding: '25px',
-              boxShadow: '0 10px 20px rgba(0,0,0,0.5)'
+              boxShadow: '0 12px 24px rgba(0,0,0,0.6)',
+              transition: 'transform 0.3s ease'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <h2 style={{ color: '#fff', margin: 0, fontSize: '2.2rem', textTransform: 'uppercase' }}>
+                <h2 style={{ 
+                  color: '#fff', 
+                  margin: 0, 
+                  fontSize: '2.4rem', 
+                  textTransform: 'uppercase',
+                  fontWeight: '700' 
+                }}>
                   {item.Title}
                 </h2>
-                <span style={{ color: '#ffa500', fontSize: '2rem', fontWeight: 'bold' }}>
+                <span style={{ 
+                  color: '#ffa500', 
+                  fontSize: '2.2rem', 
+                  fontWeight: '900',
+                  marginLeft: '15px' 
+                }}>
                   {item.Price}
                 </span>
               </div>
-              <p style={{ color: '#ccc', fontSize: '1.3rem', marginTop: '15px', lineHeight: '1.5' }}>
+              <p style={{ 
+                color: '#ddd', 
+                fontSize: '1.4rem', 
+                marginTop: '15px', 
+                lineHeight: '1.6',
+                fontWeight: '400' 
+              }}>
                 {item.Description}
               </p>
             </div>
