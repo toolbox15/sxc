@@ -17,11 +17,11 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // HEALTH MONITOR: Updates 'Last Seen' in your Devices tab
+        // HEALTH MONITOR: Tells the sheet this device is online
         const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&deviceName=${currentTheme}&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // TRAFFIC COP: Filters data to show only this TV's ads
+        // TRAFFIC COP: Filters for this specific screen
         const filtered = data.filter((ad: any) => ad.Target_Screen === currentTheme);
         setItems(filtered);
         setLoading(false);
@@ -30,14 +30,15 @@ const App = () => {
       }
     };
     fetchData();
-    const interval = setInterval(fetchData, 30000); // 30-second heartbeat
+    const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, [currentTheme]);
 
   if (loading) return <StandbyScreen message="Connecting..." />;
+  // SAFETY: If data is missing (like TireShop), we show standby instead of crashing
   if (items.length === 0) return <StandbyScreen message={`No Active Ads for ${currentTheme}`} />;
 
-  // Prop-Safe: Sends data as 'items' and 'ads' so no component breaks
+  // Prop-Safe Bundle: Sends data as 'items' and 'ads' to be safe
   const commonProps = { items: items, ads: items };
 
   // ==========================================
@@ -45,11 +46,12 @@ const App = () => {
   // ==========================================
 
   if (currentTheme === 'Demo_Bears') {
-    // FIX: Using the exact filename found in your public folder
+    // FIX: We are passing the specific image from your public folder
     return <TonysBar {...commonProps} backgroundImage="/field-bg.png" />; 
   }
 
   if (currentTheme === 'TireShop') {
+    // Assuming TireShop also needs a background, you can add it here too
     return <TireShopTheme {...commonProps} />; 
   }
 
