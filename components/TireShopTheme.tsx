@@ -17,7 +17,7 @@ const ServiceRow = ({ title, price, description, delay }: any) => (
 );
 
 const TireShopTheme = ({ ads }: any) => {
-  // 1. FILTER FOR ACTIVE TIRE SHOP ADS
+  // 1. CLEANING THE DATA: Ignore spaces and caps to match "Tire Shop" vs "TireShop"
   const activeAds = ads.filter((ad: any) => {
     const target = String(ad.Target_Screen || "").toLowerCase().replace(/\s/g, "");
     const isActive = ad.Status === true || String(ad.Status).toUpperCase() === "TRUE" || String(ad.Status).toLowerCase() === "active";
@@ -34,25 +34,30 @@ const TireShopTheme = ({ ads }: any) => {
     return cat === 'promo' || cat === 'offer';
   });
 
+  // 2. FALLBACK IMAGE LOGIC: If Column F is empty, use the professional tire photo
+  const defaultTireImage = "https://images.unsplash.com/photo-1549175296-48384cead208?q=80&w=1000&auto=format&fit=crop";
+  
   const item1 = promos[0] || { 
     Title: "TIRE SHOP SPECIAL", 
     Description: "Check back soon for offers", 
-    ImageURL: "https://images.unsplash.com/photo-1578844251758-2f71da645217?auto=format&fit=crop&w=800&q=80" 
+    ImageURL: defaultTireImage 
   };
 
-  const serviceList = services.length > 0 ? services : [
-      { Title: "Synthetic Oil Change", Description: "Up to 5 Quarts + Filter", Price: "$69.99" },
-      { Title: "Tire Rotation", Description: "Free with Brake Inspection", Price: "$29.99" },
-      { Title: "Brake Pad Special", Description: "Front or Rear Axle", Price: "$149.99" },
-      { Title: "Alignment", Description: "4-Wheel Computerized", Price: "$89.99" }
-  ];
+  const promoImage = item1.ImageURL && item1.ImageURL.trim() !== "" ? item1.ImageURL : defaultTireImage;
 
   return (
     <div className="w-full h-screen bg-zinc-900 text-white font-sans flex overflow-hidden">
+      
       {/* LEFT SIDE: PROMOS */}
       <div className="w-1/2 h-full relative">
         <div className="absolute inset-0 bg-black/40 z-10" />
-        <img src={item1.ImageURL} className="w-full h-full object-cover" alt="Promo" />
+        <img 
+            src={promoImage} 
+            className="w-full h-full object-cover" 
+            alt="Promo" 
+            onError={(e: any) => e.target.src = defaultTireImage} // Final safety net
+        />
+        
         <div className="absolute bottom-10 left-10 z-20 bg-orange-600/90 p-6 rounded-r-xl border-l-8 border-white">
             <h2 className="text-5xl font-black italic uppercase">{item1.Title}</h2>
             <p className="text-2xl font-bold mt-2">{item1.Description}</p>
@@ -62,12 +67,17 @@ const TireShopTheme = ({ ads }: any) => {
       {/* RIGHT SIDE: SERVICE MENU */}
       <div className="w-1/2 h-full bg-zinc-900 p-10 flex flex-col relative">
          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none" />
+         
          <div className="relative z-10 border-b-4 border-orange-500 pb-4 mb-8 flex justify-between items-end">
             <h1 className="text-6xl font-black italic tracking-tighter">SERVICE <span className="text-gray-500">MENU</span></h1>
+            <div className="text-right">
+                <div className="text-xs text-gray-400 font-bold">EST. WAIT TIME</div>
+                <div className="text-2xl font-mono text-green-400">45 MIN</div>
+            </div>
          </div>
 
-         <div className="flex-1 flex flex-col gap-2 relative z-10">
-            {serviceList.map((service: any, i: number) => (
+         <div className="flex-1 flex flex-col gap-2 relative z-10 overflow-y-auto">
+            {services.map((service: any, i: number) => (
                 <ServiceRow 
                     key={i} 
                     title={service.Title} 
@@ -77,7 +87,12 @@ const TireShopTheme = ({ ads }: any) => {
                 />
             ))}
          </div>
+
+         <div className="relative z-10 mt-auto bg-gray-800 p-4 rounded text-center border border-gray-700">
+             <span className="text-orange-500 font-bold">SHOP UPDATE:</span> Master Mechanics on duty.
+         </div>
       </div>
+
     </div>
   );
 };
