@@ -17,14 +17,26 @@ const ServiceRow = ({ title, price, description, delay }: any) => (
 );
 
 const TireShopTheme = ({ ads }: any) => {
-  // Filter Data
-  const services = ads.filter((ad:any) => ad.Category === 'Service' || ad.Category === 'Main');
-  const promos = ads.filter((ad:any) => ad.Category === 'Promo' || ad.Category === 'Offer');
+  // 1. Filter for ACTIVE ads only (Handles Checkbox TRUE/false)
+  // 2. Filter for THIS specific screen (Target_Screen === 'Tire Shop')
+  const activeAds = ads.filter((ad: any) => 
+    (ad.Status === true || ad.Status === 'TRUE') && 
+    ad.Target_Screen === 'Tire Shop'
+  );
 
-  // Dummy Data if Sheet is Empty
-  const item1 = promos[0] || { Title: "BUY 3 TIRES", Description: "GET 1 FREE", ImageURL: "https://images.unsplash.com/photo-1578844251758-2f71da645217?auto=format&fit=crop&w=800&q=80" };
+  // Filter Categories from the active pool
+  const services = activeAds.filter((ad: any) => ad.Category === 'Service' || ad.Category === 'Tires');
+  const promos = activeAds.filter((ad: any) => ad.Category === 'Promo' || ad.Category === 'Offer');
+
+  // Dummy Data if Sheet is Empty or nothing is checked
+  const item1 = promos[0] || { 
+    Title: "BUY 3 TIRES", 
+    Description: "GET 1 FREE", 
+    ImageURL: "https://images.unsplash.com/photo-1578844251758-2f71da645217?auto=format&fit=crop&w=800&q=80" 
+  };
+
   const serviceList = services.length > 0 ? services : [
-      { Title: "Synthentic Oil Change", Description: "Up to 5 Quarts + Filter", Price: "$69.99" },
+      { Title: "Synthetic Oil Change", Description: "Up to 5 Quarts + Filter", Price: "$69.99" },
       { Title: "Tire Rotation", Description: "Free with Brake Inspection", Price: "$29.99" },
       { Title: "Brake Pad Special", Description: "Front or Rear Axle", Price: "$149.99" },
       { Title: "Alignment", Description: "4-Wheel Computerized", Price: "$89.99" }
