@@ -1,52 +1,65 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-
-// ... ServiceRow stays the same ...
+import { QRCodeSVG } from 'qrcode.react'; // Standard library for React QR codes
 
 const TireShopTheme = ({ ads }: any) => {
   const activeAds = ads.filter((ad: any) => {
     const target = String(ad.Target_Screen || "").toLowerCase().replace(/\s/g, "");
-    const isActive = ad.Status === true || String(ad.Status).toUpperCase() === "TRUE" || String(ad.Status).toLowerCase() === "active";
+    const isActive = ad.Status === true || String(ad.Status).toUpperCase() === "TRUE";
     return isActive && target === "tireshop";
   });
 
   const services = activeAds.filter((ad: any) => ['service', 'main', 'tires'].includes(String(ad.Category || "").toLowerCase()));
   const promoAd = activeAds.find((ad: any) => String(ad.Category || "").toLowerCase() === 'promo');
 
-  // Using your zoomed Unsplash URL as the default
+  // Logic for the QR Code link - Use a 'Link' column if it exists, otherwise use a placeholder
+  const qrLink = promoAd?.Link || "https://youradnetwork.com/contact";
+
   const defaultTireImage = "https://images.unsplash.com/photo-1642075191572-9992f5f290c2?auto=format&fit=crop&q=80&w=800&h=2000&crop=focalpoint&fp-z=1.5&fp-x=0.5&fp-y=0.5";
-  const promoImage = (promoAd && promoAd.ImageURL && String(promoAd.ImageURL).includes("http")) ? promoAd.ImageURL : defaultTireImage;
+  const promoImage = (promoAd?.ImageURL?.includes('http')) ? promoAd.ImageURL : defaultTireImage;
 
   return (
-    <div className="w-full h-screen bg-zinc-900 text-white font-sans flex overflow-hidden uppercase">
+    <div className="w-full h-screen bg-zinc-950 text-white font-sans flex overflow-hidden uppercase">
       
       {/* LEFT SIDE: THE AD REVENUE SPACE */}
       <div className="w-1/2 h-full relative border-r-4 border-orange-600">
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40 z-10" />
         <img src={promoImage} className="w-full h-full object-cover" alt="Ad Space" />
         
         {/* Sponsorship Badge */}
-        <div className="absolute top-8 left-8 z-20 bg-white text-black px-4 py-1 font-black text-sm tracking-tighter rounded-sm shadow-xl">
-            PARTNER SPOTLIGHT
+        <div className="absolute top-8 left-8 z-20 flex items-center gap-4">
+            <div className="bg-white text-black px-4 py-1 font-black text-sm tracking-tighter">
+                PARTNER SPOTLIGHT
+            </div>
         </div>
 
         {promoAd && (
-          <div className="absolute bottom-12 left-10 z-20 max-w-[85%]">
+          <div className="absolute bottom-12 left-10 z-20 flex items-end gap-6 w-full pr-20">
               <motion.div 
-                initial={{ y: 20, opacity: 0 }} 
-                animate={{ y: 0, opacity: 1 }}
-                className="bg-orange-600 p-8 rounded-tr-3xl border-l-8 border-white shadow-2xl"
+                initial={{ x: -20, opacity: 0 }} 
+                animate={{ x: 0, opacity: 1 }}
+                className="bg-orange-600 p-8 rounded-tr-3xl border-l-8 border-white shadow-2xl flex-1"
               >
                   <h2 className="text-6xl font-black italic leading-none">{promoAd.Title}</h2>
                   <p className="text-2xl font-bold mt-4 text-orange-100">{promoAd.Description}</p>
+              </motion.div>
+
+              {/* DYNAMIC QR CODE */}
+              <motion.div 
+                initial={{ scale: 0 }} 
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.5 }}
+                className="bg-white p-3 rounded-xl shadow-2xl mb-2"
+              >
+                  <QRCodeSVG value={qrLink} size={100} level="H" />
+                  <div className="text-[8px] text-black font-black text-center mt-1 tracking-tighter">SCAN TO CLAIM</div>
               </motion.div>
           </div>
         )}
       </div>
 
       {/* RIGHT SIDE: THE OWNER'S FREE MENU */}
-      <div className="w-1/2 h-full bg-zinc-950 p-12 flex flex-col relative">
-         {/* Carbon Texture */}
+      <div className="w-1/2 h-full p-12 flex flex-col relative">
          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
          
          <div className="relative z-10 border-b-2 border-zinc-800 pb-8 mb-8 flex justify-between items-start">
@@ -54,8 +67,8 @@ const TireShopTheme = ({ ads }: any) => {
                 <h1 className="text-8xl font-black italic tracking-tighter leading-none">TIRE</h1>
                 <h1 className="text-5xl font-bold text-orange-500 tracking-tighter leading-none mt-1">SERVICES</h1>
             </div>
-            <div className="text-right bg-zinc-900 border border-zinc-800 p-4 rounded">
-                <div className="text-xs text-zinc-500 font-bold tracking-widest">CURRENT WAIT</div>
+            <div className="text-right">
+                <div className="text-xs text-zinc-500 font-bold tracking-widest uppercase">Est. Wait</div>
                 <div className="text-4xl font-mono text-green-500 font-bold">~25 MIN</div>
             </div>
          </div>
@@ -65,19 +78,18 @@ const TireShopTheme = ({ ads }: any) => {
                 <div key={i} className="flex justify-between items-center py-4 border-b border-zinc-800/50">
                     <div className="text-left">
                         <div className="text-2xl font-black tracking-tight">{service.Title}</div>
-                        <div className="text-sm text-zinc-500 lowercase first-letter:uppercase">{service.Description}</div>
+                        <div className="text-sm text-zinc-500 lowercase first-letter:uppercase">{service.Description || "Professional Grade Service"}</div>
                     </div>
                     <div className="text-3xl font-black text-white px-3 py-1 bg-zinc-900 rounded">{service.Price}</div>
                 </div>
             ))}
          </div>
 
-         <div className="relative z-10 mt-auto pt-6 text-zinc-600 text-[10px] tracking-[0.2em] font-bold flex justify-between border-t border-zinc-900">
+         <div className="relative z-10 mt-auto pt-6 text-zinc-600 text-[10px] tracking-[0.2em] font-bold flex justify-between">
              <span>ALL WORK ASE CERTIFIED</span>
-             <span>POWERED BY AD-NETWORK-V1</span>
+             <span className="text-orange-600">POWERED BY YOUR-NETWORK-NAME</span>
          </div>
       </div>
-
     </div>
   );
 };
