@@ -6,23 +6,16 @@ const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // 1. URL CHECK: Look for ?shop=tireshop in the address bar
-  const queryParams = new URLSearchParams(window.location.search);
-  const shopId = queryParams.get('shop');
-  const isTireShop = shopId === 'tireshop';
-
-  const BASE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
+  // FIXED URL: Using the exact script that gave us data in your browser test
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec?shop=tireshop';
 
   useEffect(() => {
-    // Only fetch if we are actually on the tire shop extension
-    if (!isTireShop) return;
-
     const fetchData = async () => {
       try {
-        const response = await fetch(`${BASE_SCRIPT_URL}?shop=tireshop&t=${new Date().getTime()}`);
+        const response = await fetch(`${SCRIPT_URL}&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // 2. DATA FILTER: Match "Active" and "Tire Shop" from your script
+        // Match "Active" and "Tire Shop" exactly from your sheet
         const filtered = data.filter((ad: any) => 
           String(ad.target).toLowerCase() === "tire shop" && 
           String(ad.status).toLowerCase() === "active"
@@ -36,17 +29,11 @@ const App = () => {
       }
     };
     fetchData();
-  }, [isTireShop]);
+  }, []);
 
-  // 3. THEME ROUTING: If no extension is used, show the standby screen
-  if (!isTireShop) {
-    return <StandbyScreen message="WAITING FOR COMMAND..." />;
-  }
-
-  if (loading) {
-    return <StandbyScreen message="SYNCING WITH HUB..." />;
-  }
+  if (loading) return <StandbyScreen message="FORCING CONNECTION..." />;
   
+  // This removes the "Waiting for Command" logic entirely to get you back online
   return <TireShopTheme ads={items} />;
 };
 
