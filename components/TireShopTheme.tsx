@@ -1,94 +1,136 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { QRCodeSVG } from 'qrcode.react'; // Standard library for React QR codes
+import { motion, AnimatePresence } from 'framer-motion';
+import { QRCodeSVG } from 'qrcode.react';
 
 const TireShopTheme = ({ ads }: any) => {
-  const activeAds = ads.filter((ad: any) => {
-    const target = String(ad.Target_Screen || "").toLowerCase().replace(/\s/g, "");
-    const isActive = ad.Status === true || String(ad.Status).toUpperCase() === "TRUE";
-    return isActive && target === "tireshop";
-  });
+  // 1. Data Processing
+  const services = ads.filter((ad: any) => 
+    ['service', 'main', 'tires'].includes(String(ad.category || "").toLowerCase())
+  );
+  
+  const promoAd = ads.find((ad: any) => 
+    String(ad.category || "").toLowerCase() === 'promo'
+  );
 
-  const services = activeAds.filter((ad: any) => ['service', 'main', 'tires'].includes(String(ad.Category || "").toLowerCase()));
-  const promoAd = activeAds.find((ad: any) => String(ad.Category || "").toLowerCase() === 'promo');
+  const qrLink = promoAd?.link || "https://yourshop.com/deals";
+  const promoImage = promoAd?.imageUrl || "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=1200";
 
-  // Logic for the QR Code link - Use a 'Link' column if it exists, otherwise use a placeholder
-  const qrLink = promoAd?.Link || "https://youradnetwork.com/contact";
-
-  const defaultTireImage = "https://images.unsplash.com/photo-1642075191572-9992f5f290c2?auto=format&fit=crop&q=80&w=800&h=2000&crop=focalpoint&fp-z=1.5&fp-x=0.5&fp-y=0.5";
-  const promoImage = (promoAd?.ImageURL?.includes('http')) ? promoAd.ImageURL : defaultTireImage;
+  // Dynamic Wait Time Logic
+  const waitTimeAd = ads.find((ad: any) => String(ad.title).toUpperCase().includes("WAIT"));
+  const displayWaitTime = waitTimeAd ? waitTimeAd.price : "25 MIN";
 
   return (
-    <div className="w-full h-screen bg-zinc-950 text-white font-sans flex overflow-hidden uppercase">
+    <div className="w-full h-screen bg-[#050505] text-white font-sans flex overflow-hidden selection:bg-orange-500">
       
-      {/* LEFT SIDE: THE AD REVENUE SPACE */}
-      <div className="w-1/2 h-full relative border-r-4 border-orange-600">
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40 z-10" />
-        <img src={promoImage} className="w-full h-full object-cover" alt="Ad Space" />
+      {/* LEFT SIDE: HERO AD AREA (60% Width for impact) */}
+      <div className="w-[60%] h-full relative overflow-hidden">
+        {/* Background Image with Ken Burns Effect */}
+        <motion.img 
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }}
+          src={promoImage} 
+          className="absolute inset-0 w-full h-full object-cover" 
+          alt="Featured Promotion" 
+        />
         
-        {/* Sponsorship Badge */}
-        <div className="absolute top-8 left-8 z-20 flex items-center gap-4">
-            <div className="bg-white text-black px-4 py-1 font-black text-sm tracking-tighter">
-                PARTNER SPOTLIGHT
-            </div>
-        </div>
+        {/* Dark Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10" />
 
-        {promoAd && (
-          <div className="absolute bottom-12 left-10 z-20 flex items-end gap-6 w-full pr-20">
-              <motion.div 
-                initial={{ x: -20, opacity: 0 }} 
-                animate={{ x: 0, opacity: 1 }}
-                className="bg-orange-600 p-8 rounded-tr-3xl border-l-8 border-white shadow-2xl flex-1"
-              >
-                  <h2 className="text-6xl font-black italic leading-none">{promoAd.Title}</h2>
-                  <p className="text-2xl font-bold mt-4 text-orange-100">{promoAd.Description}</p>
-              </motion.div>
-
-              {/* DYNAMIC QR CODE */}
-              <motion.div 
-                initial={{ scale: 0 }} 
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.5 }}
-                className="bg-white p-3 rounded-xl shadow-2xl mb-2"
-              >
-                  <QRCodeSVG value={qrLink} size={100} level="H" />
-                  <div className="text-[8px] text-black font-black text-center mt-1 tracking-tighter">SCAN TO CLAIM</div>
-              </motion.div>
+        {/* Content Over Image */}
+        <div className="absolute inset-0 z-20 p-16 flex flex-col justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-1 w-12 bg-orange-600" />
+            <span className="text-sm font-black tracking-[0.3em] text-orange-500">EXCLUSIVE OFFER</span>
           </div>
-        )}
+
+          {promoAd && (
+            <div className="max-w-xl">
+              <motion.h2 
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="text-8xl font-black italic leading-[0.9] tracking-tighter mb-6"
+              >
+                {promoAd.title}
+              </motion.h2>
+              <p className="text-2xl text-zinc-300 font-medium leading-relaxed mb-8 border-l-4 border-orange-600 pl-6">
+                {promoAd.description}
+              </p>
+              
+              <div className="flex items-center gap-8">
+                <div className="bg-white p-3 rounded-2xl shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                  <QRCodeSVG value={qrLink} size={120} level="H" />
+                </div>
+                <div className="text-left">
+                  <p className="text-orange-500 font-black text-xl italic">SCAN TO CLAIM</p>
+                  <p className="text-zinc-500 text-sm font-bold tracking-widest mt-1">LIMITED TIME REMAINING</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* RIGHT SIDE: THE OWNER'S FREE MENU */}
-      <div className="w-1/2 h-full p-12 flex flex-col relative">
-         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
-         
-         <div className="relative z-10 border-b-2 border-zinc-800 pb-8 mb-8 flex justify-between items-start">
-            <div>
-                <h1 className="text-8xl font-black italic tracking-tighter leading-none">TIRE</h1>
-                <h1 className="text-5xl font-bold text-orange-500 tracking-tighter leading-none mt-1">SERVICES</h1>
-            </div>
-            <div className="text-right">
-                <div className="text-xs text-zinc-500 font-bold tracking-widest uppercase">Est. Wait</div>
-                <div className="text-4xl font-mono text-green-500 font-bold">~25 MIN</div>
-            </div>
-         </div>
+      {/* RIGHT SIDE: PREMIUM SERVICE MENU (40% Width) */}
+      <div className="w-[40%] h-full bg-[#0a0a0a] border-l border-zinc-800 p-12 flex flex-col relative">
+        {/* Subtle Carbon Fiber Pattern Overlay */}
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none" />
 
-         <div className="flex-1 flex flex-col gap-2 relative z-10">
-            {services.map((service: any, i: number) => (
-                <div key={i} className="flex justify-between items-center py-4 border-b border-zinc-800/50">
-                    <div className="text-left">
-                        <div className="text-2xl font-black tracking-tight">{service.Title}</div>
-                        <div className="text-sm text-zinc-500 lowercase first-letter:uppercase">{service.Description || "Professional Grade Service"}</div>
-                    </div>
-                    <div className="text-3xl font-black text-white px-3 py-1 bg-zinc-900 rounded">{service.Price}</div>
-                </div>
-            ))}
-         </div>
+        {/* Header with Live Wait Time */}
+        <div className="relative z-10 flex justify-between items-end mb-12">
+          <div>
+            <h1 className="text-6xl font-black italic tracking-tighter text-white">SERVICE</h1>
+            <h2 className="text-3xl font-bold text-orange-600 -mt-2 tracking-tighter">PRICING</h2>
+          </div>
+          
+          <div className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl backdrop-blur-md text-right min-w-[140px]">
+            <div className="flex items-center justify-end gap-2 mb-1">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-[10px] font-black text-zinc-500 tracking-widest uppercase">Live Wait</span>
+            </div>
+            <div className="text-3xl font-mono font-bold text-green-500 tabular-nums leading-none">
+              {displayWaitTime}
+            </div>
+          </div>
+        </div>
 
-         <div className="relative z-10 mt-auto pt-6 text-zinc-600 text-[10px] tracking-[0.2em] font-bold flex justify-between">
-             <span>ALL WORK ASE CERTIFIED</span>
-             <span className="text-orange-600">POWERED BY YOUR-NETWORK-NAME</span>
-         </div>
+        {/* Service Rows */}
+        <div className="flex-1 space-y-4 relative z-10">
+          {services.map((service: any, i: number) => (
+            <motion.div 
+              key={i}
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: i * 0.1 }}
+              className="group bg-zinc-900/30 hover:bg-zinc-900/60 border border-white/5 p-5 rounded-2xl transition-all duration-300 flex justify-between items-center"
+            >
+              <div className="flex-1">
+                <h3 className="text-xl font-black tracking-tight group-hover:text-orange-500 transition-colors uppercase">
+                  {service.title}
+                </h3>
+                <p className="text-sm text-zinc-500 font-medium italic mt-0.5">
+                  {service.description || "In-shop professional grade service"}
+                </p>
+              </div>
+              <div className="text-3xl font-black text-white ml-6 tabular-nums">
+                {service.price}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Footer info */}
+        <div className="relative z-10 mt-12 pt-8 border-t border-zinc-800 flex justify-between items-center text-[10px] font-black tracking-[0.2em] text-zinc-600">
+          <div className="flex flex-col gap-1">
+            <span>MASTER TECHNICIANS ON SITE</span>
+            <span>ASE CERTIFIED REPAIR CENTER</span>
+          </div>
+          <div className="text-right flex flex-col items-end gap-1">
+            <span className="text-orange-600">SYSTEM V4.0 // LIVE SYNC</span>
+            <span className="opacity-50">REFRESHING IN 60S</span>
+          </div>
+        </div>
       </div>
     </div>
   );
