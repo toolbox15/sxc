@@ -6,40 +6,47 @@ const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. HARDCODED SETTINGS FOR TESTING
-  // We force the name to match your Google Sheet exactly (with the space)
+  // This matches Column K in your sheet exactly
   const forcedId = "Tire Shop"; 
   
+  // Your verified Script URL
   const BASE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("Fetching data for:", forcedId);
-        const response = await fetch(`${BASE_SCRIPT_URL}?tab=Ads&deviceName=${forcedId}&t=${new Date().getTime()}`);
+        // FIXED: We now point specifically to the 'tireshop' tab
+        const response = await fetch(`${BASE_SCRIPT_URL}?shop=tireshop&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // Filter specifically for "Tire Shop"
-        const filtered = data.filter((ad: any) => ad.Target_Screen === forcedId);
-        console.log("Found items:", filtered.length);
+        console.log("Raw Data Received:", data);
+
+        // FIXED: Filter matches the 'target' key from our JSON test
+        const filtered = data.filter((ad: any) => 
+          String(ad.target).toLowerCase() === "tire shop" && 
+          String(ad.status).toLowerCase() === "active"
+        );
         
         setItems(filtered);
         setLoading(false);
       } catch (err) {
-        console.error("Error:", err);
+        console.error("Fetch Error:", err);
         setLoading(false);
       }
     };
     fetchData();
+    
+    // Auto-refresh every 60 seconds
+    const interval = setInterval(fetchData, 60000);
+    return () => clearInterval(interval);
   }, []);
 
-  if (loading) return <StandbyScreen message="Loading Test..." />;
+  if (loading) return <StandbyScreen message="CONNECTING TO HUB..." />;
   
-  // 2. FORCE THE TIRE SHOP COMPONENT
-  // We skip the "if" statements and just return the Tire Shop directly.
   return (
-    <div style={{ border: "5px solid red" }}> {/* Red border proves this is the new code */}
-        <TireShopTheme items={items} ads={items} />
+    <div style={{ border: "2px solid #ea580c" }}> 
+        {/* We pass 'items' to 'ads' so TireShopTheme can read it */}
+        <TireShopTheme ads={items} />
     </div>
   );
 };
