@@ -6,50 +6,47 @@ const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // 1. Get the 'shop' from the URL and force it to be lowercase
-  const queryParams = new URLSearchParams(window.location.search);
-  const rawShopName = queryParams.get('shop') || "";
-  const shopName = rawShopName.toLowerCase().trim(); 
+  // 1. IMPROVED DETECTION: Search the entire URL string for "tire"
+  const currentURL = window.location.href.toLowerCase();
+  const isTireShop = currentURL.includes("tireshop") || currentURL.includes("tire%20shop");
 
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
 
   useEffect(() => {
-    // 2. Only fetch if 'tireshop' is found in the URL
-    if (shopName === 'tireshop') {
+    if (isTireShop) {
       const fetchData = async () => {
         try {
           const response = await fetch(`${SCRIPT_URL}?shop=tireshop&t=${new Date().getTime()}`);
           const data = await response.json();
           
-          // Match "Active" and "Tire Shop"
+          // Filter data from your Google Script
           const filtered = data.filter((ad: any) => 
-            String(ad.target).toLowerCase() === "tire shop" && 
+            String(ad.target).toLowerCase().includes("tire") && 
             String(ad.status).toLowerCase() === "active"
           );
           
           setItems(filtered);
           setLoading(false);
         } catch (err) {
+          console.error("Fetch Error:", err);
           setLoading(false);
         }
       };
       fetchData();
-    } else {
-      setLoading(false);
     }
-  }, [shopName]);
+  }, [isTireShop]);
 
-  // 3. FINAL ROUTING:
-  // If the URL has 'tireshop', show the theme.
-  if (shopName === 'tireshop') {
-    if (loading) return <StandbyScreen message="SYNCING WITH HUB..." />;
+  // 2. ROUTING LOGIC
+  // If "tire" is anywhere in the URL, show the theme
+  if (isTireShop) {
+    if (loading) return <StandbyScreen message="CONNECTING TO TIRE HUB..." />;
     return <TireShopTheme ads={items} />;
   }
 
-  // Otherwise, show the blue screen
+  // 3. DEBUG MODE: If it stays blue, this will tell us exactly what is wrong
   return (
     <StandbyScreen 
-      message={`WAITING FOR COMMAND... (Detected: "${shopName}")`} 
+      message={`URL NOT RECOGNIZED. Looking for "tireshop" in: ${window.location.search || "Empty URL"}`} 
     />
   );
 };
