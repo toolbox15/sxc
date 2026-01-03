@@ -8,16 +8,12 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [activeAlert, setActiveAlert] = useState<any>(null);
   
-  // 1. BRUTE FORCE DETECTION: convert entire URL to lowercase
+  // 1. DETECTION: Look for the word in the URL regardless of format
   const fullUrl = window.location.href.toLowerCase();
+  const isTony = fullUrl.includes("tonysbar");
+  const isTire = fullUrl.includes("tireshop");
   
-  // 2. Simple "Yes/No" Checks
-  const isTony = fullUrl.indexOf('tonysbar') > -1;
-  const isTire = fullUrl.indexOf('tireshop') > -1;
-
-  // 3. Determine active shop ID
-  const shopId = isTony ? 'tonysbar' : (isTire ? 'tireshop' : '');
-
+  const shopId = isTony ? "tonysbar" : (isTire ? "tireshop" : "");
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
 
   useEffect(() => {
@@ -47,7 +43,6 @@ const App = () => {
         setItems(filtered);
         setLoading(false);
       } catch (err) {
-        console.error(err);
         setLoading(false);
       }
     };
@@ -57,7 +52,6 @@ const App = () => {
     return () => clearInterval(interval);
   }, [shopId]);
 
-  // --- ROUTING ---
   if (isTony) {
     if (loading) return <StandbyScreen message="PREPPING THE STATION..." />;
     return <TonysBarTheme ads={items} alert={activeAlert} />;
@@ -65,11 +59,10 @@ const App = () => {
 
   if (isTire) return <TireShopTheme ads={items} />;
 
-  // --- DEBUG SCREEN (UPDATED) ---
-  // If you don't see "v3.0" on your screen, the code hasn't updated!
+  // This message confirms if your update worked
   return (
     <StandbyScreen 
-      message={`v3.0 ERROR: URL NOT RECOGNIZED. I see: ${window.location.href}`} 
+      message={`FIX INSTALLED. I see URL: ${window.location.href} but no shop name found.`} 
     />
   );
 };
