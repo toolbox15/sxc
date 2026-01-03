@@ -2,20 +2,23 @@ import React, { useState, useEffect } from 'react';
 
 // --- THEME 1: TONY'S BAR (The Bear Style) ---
 const TonysBarTheme = ({ ads, alert }: { ads: any[], alert: any }) => (
-  <div style={{ backgroundColor: '#002a5c', color: 'white', minHeight: '100vh', padding: '50px', fontFamily: 'Arial, sans-serif' }}>
+  <div style={{ backgroundColor: '#002a5c', color: 'white', minHeight: '100vh', padding: '60px', fontFamily: '"Arial Black", sans-serif' }}>
     {alert ? (
-      <div style={{ height: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', color: '#002a5c', borderRadius: '20px' }}>
-        <h1 style={{ fontSize: '8rem', margin: 0 }}>{alert.title}</h1>
-        <p style={{ fontSize: '3rem' }}>{alert.description}</p>
+      <div style={{ height: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', color: '#002a5c', borderRadius: '15px', border: '10px solid #002a5c' }}>
+        <h1 style={{ fontSize: '10rem', margin: 0, fontWeight: '900' }}>{alert.title}</h1>
+        <p style={{ fontSize: '4rem', fontWeight: 'bold' }}>{alert.description}</p>
       </div>
     ) : (
       <>
-        <h1 style={{ fontSize: '3.5rem', borderBottom: '5px solid white', paddingBottom: '20px', marginBottom: '40px' }}>TONY'S BAR MENU</h1>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '30px' }}>
+        <h1 style={{ fontSize: '5rem', borderBottom: '8px solid white', paddingBottom: '20px', marginBottom: '60px', fontWeight: '900', textTransform: 'uppercase' }}>TONY'S BAR MENU</h1>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px' }}>
           {ads.map((item, i) => (
-            <div key={i} style={{ border: '2px solid rgba(255,255,255,0.3)', padding: '30px', borderRadius: '10px' }}>
-              <h2>{item.title} — ${item.price}</h2>
-              <p style={{ color: '#ccc' }}>{item.description}</p>
+            <div key={i} style={{ border: '4px solid white', padding: '40px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.1)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h2 style={{ fontSize: '2.5rem', margin: 0 }}>{item.title}</h2>
+                <span style={{ fontSize: '2.5rem', fontWeight: 'bold', backgroundColor: 'white', color: '#002a5c', padding: '5px 15px' }}>${item.price}</span>
+              </div>
+              <p style={{ fontSize: '1.6rem', color: '#ddd', margin: 0, lineHeight: '1.4' }}>{item.description}</p>
             </div>
           ))}
         </div>
@@ -24,15 +27,21 @@ const TonysBarTheme = ({ ads, alert }: { ads: any[], alert: any }) => (
   </div>
 );
 
-// --- THEME 2: TIRE SHOP (Original Style) ---
+// --- THEME 2: TIRE SHOP (Original Industrial Style) ---
 const TireShopTheme = ({ ads }: { ads: any[] }) => (
-  <div style={{ backgroundColor: '#050505', color: '#f1f1f1', minHeight: '100vh', padding: '40px', fontFamily: 'Impact, sans-serif' }}>
-    <h1 style={{ color: '#ff4d4d', fontSize: '4rem', textTransform: 'uppercase' }}>Current Tire Specials</h1>
-    <div style={{ marginTop: '40px' }}>
+  <div style={{ backgroundColor: '#0a0a0a', color: '#fff', minHeight: '100vh', padding: '50px', fontFamily: 'Impact, sans-serif' }}>
+    <div style={{ borderLeft: '15px solid #ff4d4d', paddingLeft: '30px' }}>
+      <h1 style={{ fontSize: '6rem', textTransform: 'uppercase', margin: 0, color: '#ff4d4d', letterSpacing: '4px' }}>Current Tire Specials</h1>
+      <p style={{ fontSize: '2rem', color: '#888', marginBottom: '50px' }}>OFFER VALID UNTIL END OF MONTH</p>
+    </div>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '25px' }}>
       {ads.map((item, i) => (
-        <div key={i} style={{ borderLeft: '10px solid #ff4d4d', padding: '20px', marginBottom: '20px', backgroundColor: '#1a1a1a' }}>
-          <h2 style={{ fontSize: '2.5rem', margin: 0 }}>{item.title}</h2>
-          <p style={{ fontSize: '1.5rem', color: '#aaa' }}>{item.description} — <span style={{ color: '#fff' }}>{item.price}</span></p>
+        <div key={i} style={{ backgroundColor: '#1a1a1a', padding: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #333' }}>
+          <div>
+            <h2 style={{ fontSize: '3.5rem', margin: 0, textTransform: 'uppercase' }}>{item.title}</h2>
+            <p style={{ fontSize: '1.8rem', color: '#aaa', margin: '10px 0 0 0' }}>{item.description}</p>
+          </div>
+          <div style={{ fontSize: '4rem', fontWeight: 'bold', color: '#ff4d4d' }}>{item.price}</div>
         </div>
       ))}
     </div>
@@ -85,8 +94,8 @@ const App = () => {
   if (shopId === 'tireshop') return <TireShopTheme ads={items} />;
 
   return (
-    <div style={{ backgroundColor: '#001a33', color: 'white', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <h1>WAITING FOR SHOP ID (tireshop or tonysbar)</h1>
+    <div style={{ backgroundColor: '#000', color: '#333', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <h1>{shopId ? `SYNCING ${shopId.toUpperCase()}...` : "NO SHOP ID PROVIDED"}</h1>
     </div>
   );
 };
