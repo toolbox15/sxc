@@ -8,13 +8,15 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [activeAlert, setActiveAlert] = useState<any>(null);
   
-  // 1. UNIVERSAL FIX: Search the whole URL for "tonysbar" or "tireshop"
-  const fullUrl = window.location.href.toLowerCase();
-  const shopId = fullUrl.includes("tonysbar") ? "tonysbar" : (fullUrl.includes("tireshop") ? "tireshop" : "");
+  // 1. PROFESSIONAL URL PARSING
+  // This looks for 'id' or 'ID' or 'shop' and converts to lowercase
+  const params = new URLSearchParams(window.location.search);
+  const shopId = (params.get('id') || params.get('ID') || params.get('shop') || "").toLowerCase().trim();
 
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
 
   useEffect(() => {
+    // If no ID is provided, don't attempt to fetch
     if (!shopId) {
       setLoading(false);
       return;
@@ -22,24 +24,24 @@ const App = () => {
 
     const fetchData = async () => {
       try {
-        // Fetch data based on whatever name was found in the URL
+        // Fetch from the tab named in the URL (e.g., tonysbar)
         const response = await fetch(`${SCRIPT_URL}?shop=${shopId}&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // Check for 'ALERT' + 'Active' (Touchdown Trigger)
-        const touchdown = data.find((row: any) => 
+        // DYNAMIC ALERT: Works for "Touchdown" or "Tire Sales"
+        const alertTrigger = data.find((row: any) => 
           String(row.category).toUpperCase() === 'ALERT' && 
           String(row.status).toLowerCase() === 'active'
         );
-        setActiveAlert(touchdown || null);
+        setActiveAlert(alertTrigger || null);
 
-        // Filter for active menu items
-        const menu = data.filter((row: any) => 
+        // DYNAMIC MENU: Only shows Active items for this shop
+        const filtered = data.filter((row: any) => 
           String(row.status).toLowerCase() === "active" &&
           String(row.category).toUpperCase() !== 'ALERT'
         );
         
-        setItems(menu);
+        setItems(filtered);
         setLoading(false);
       } catch (err) {
         setLoading(false);
@@ -47,24 +49,24 @@ const App = () => {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 5000); 
+    const interval = setInterval(fetchData, 5000); // 5-second polling for live alerts
     return () => clearInterval(interval);
   }, [shopId]);
 
-  // 2. THEME SELECTOR
+  // 2. THEME ROUTER
+  // Loads the correct UI based on the shopId
+  if (shopId === 'tireshop') return <TireShopTheme ads={items} />;
+  
   if (shopId === 'tonysbar') {
     if (loading) return <StandbyScreen message="THE BEAR: PREPPING STATION..." />;
     return <TonysBarTheme ads={items} alert={activeAlert} />;
   }
 
-  if (shopId === 'tireshop') {
-    return <TireShopTheme ads={items} />;
-  }
-
-  // 3. DEBUG: If you see this, the word "tonysbar" is missing from your URL
+  // 3. FAIL-SAFE DEBUG SCREEN
+  // This tells you EXACTLY what the app is reading from your URL
   return (
     <StandbyScreen 
-      message={`VER 5.0 LIVE. URL DETECTED: ${window.location.search}`} 
+      message={shopId ? `SYSTEM LIVE. CONNECTED TO: ${shopId.toUpperCase()}` : "WAITING FOR SHOP ID..."} 
     />
   );
 };
