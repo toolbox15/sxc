@@ -1,42 +1,48 @@
-/* ... existing imports ... */
+function pushToHub() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const currentSheet = ss.getActiveSheet();
+  const sheetName = currentSheet.getName().toLowerCase();
+  const targetSheet = ss.getSheetByName("Ads");
+  
+  // 1. Validation: Ensure the user is on a client tab
+  if (sheetName !== "tonysbar" && sheetName !== "tireshop") {
+    SpreadsheetApp.getUi().alert("Please run this from the Tony's Bar or Tire Shop tab.");
+    return;
+  }
 
-const BearsTheme = ({ ads, alert }: { ads: any[], alert: any }) => {
-  const kickoff = ads.filter(ad => String(ad.category).toLowerCase() === 'kickoff');
-  const mains = ads.filter(ad => String(ad.category).toLowerCase() === 'main event');
-  const drinks = ads.filter(ad => String(ad.category).toLowerCase() === 'draft picks');
+  // 2. Identify the Client name for the Ads Hub
+  const clientLabel = (sheetName === "tonysbar") ? "Tony's Bar" : "Tire Shop";
 
-  return (
-    <div className="w-full h-screen relative overflow-hidden bg-cover bg-center" 
-         style={{ backgroundImage: "url('/field-bg.png')" }}>
-      
-      <div className="absolute inset-0 bg-blue-950/30 z-0"></div>
+  // 3. Clear old entries for THIS client only from the Ads tab
+  const targetData = targetSheet.getDataRange().getValues();
+  for (let i = targetData.length - 1; i >= 1; i--) {
+    if (targetData[i][0] === clientLabel) {
+      targetSheet.deleteRow(i + 1);
+    }
+  }
 
-      {/* 🚨 FLASH SALE OVERLAY */}
-      {alert && ( /* ... alert code ... */ )}
+  // 4. Get data from the current active sheet
+  const sourceData = currentSheet.getDataRange().getValues();
+  const rowsToPush = [];
 
-      {/* 🍺 BEER GLASS: Flipped (scale-x-[-1]) and Smaller (h-64) */}
-      <div className="absolute bottom-4 left-4 z-10">
-          <img 
-            src="/beer-glass.png" 
-            className="h-64 w-auto drop-shadow-2xl" 
-            style={{ transform: 'scaleX(-1)' }} 
-          />
-      </div>
+  // Start at row 2 to skip headers
+  for (let i = 1; i < sourceData.length; i++) {
+    const title = sourceData[i][0];
+    const price = sourceData[i][1];
+    const desc = sourceData[i][2];
+    const category = sourceData[i][3];
+    const status = sourceData[i][8]; // Column I
 
-      {/* 🏈 FOOTBALL: Smaller (h-32) in the far bottom-right */}
-      <div className="absolute bottom-4 right-4 z-10">
-        <motion.img 
-          src="/football.png" 
-          className="h-32 w-auto drop-shadow-2xl" 
-          animate={{ rotate: [0, 5, 0] }} 
-          transition={{ duration: 4, repeat: Infinity }} 
-        />
-      </div>
+    if (status === "Active") {
+      rowsToPush.push([clientLabel, title, price, desc, category]);
+    }
+  }
 
-      {/* --- CONTENT GRID --- */}
-      <div className="relative z-20 w-full h-full grid grid-cols-12 gap-6 p-12">
-        {/* ... headers and menu mapping ... */}
-      </div>
-    </div>
-  );
-};
+  // 5. Append new active items to the Ads tab
+  if (rowsToPush.length > 0) {
+    targetSheet.getRange(targetSheet.getLastRow() + 1, 1, rowsToPush.length, 5).setValues(rowsToPush);
+    SpreadsheetApp.getUi().alert('Successfully pushed ' + rowsToPush.length + ' items for ' + clientLabel);
+  } else {
+    SpreadsheetApp.getUi().alert('No "Active" items found on this sheet.');
+  }
+}
