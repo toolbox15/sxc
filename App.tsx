@@ -3,12 +3,13 @@ import { motion } from 'framer-motion';
 
 // --- THEME 1: TONY'S BAR (FOOTBALL) ---
 const BearsTheme = ({ ads }: { ads: any[] }) => {
+  // Enhanced filter to catch 'Category' or 'category'
   const getByCat = (c: string) => ads.filter(a => 
     String(a.Category || a.category || "").toLowerCase().includes(c.toLowerCase())
   );
 
   const renderItem = (item: any, i: number) => {
-    // YOUR SMART LOGIC HERE
+    // Robust mapping for Title and Price
     const title = item.Title || item.title || item.TITLE || "Unnamed Item";
     const price = item.Price || item.price || item.PRICE || "";
     return (
@@ -29,10 +30,10 @@ const BearsTheme = ({ ads }: { ads: any[] }) => {
       <div className="relative z-10 grid grid-cols-3 gap-10 p-20 mt-10">
         <div>
           <div className="bg-orange-600 p-2 mb-4 font-bold italic">KICKOFF</div>
-          {getByCat('kickoff').map((item, i) => renderItem(item, i))}
+          {getByCat('kickoff').length > 0 ? getByCat('kickoff').map((item, i) => renderItem(item, i)) : <p className="text-xs opacity-50">No Kickoff Items Active</p>}
         </div>
         <div className="bg-blue-950/40 p-4 border-t-4 border-white backdrop-blur-sm">
-          <div className="bg-white text-blue-900 p-2 mb-6 font-bold text-center text-xl">THE MAIN EVENT</div>
+          <div className="bg-white text-blue-900 p-2 mb-6 font-bold text-center text-xl uppercase">The Main Event</div>
           {getByCat('main').map((item, i) => (
             <div key={i} className="text-center mb-8">
               <div className="text-4xl font-black uppercase">{item.Title || item.title || item.TITLE}</div>
@@ -43,13 +44,14 @@ const BearsTheme = ({ ads }: { ads: any[] }) => {
         <div>
           <div className="bg-orange-600 p-2 mb-4 font-bold italic text-right">DRAFT PICKS</div>
           {getByCat('draft').map((item, i) => (
-             <div key={i} className="flex justify-between flex-row-reverse border-b border-white/20 mb-2 text-2xl font-bold uppercase">
+             <div key={i} className="flex justify-between flex-row-reverse border-b border-white/20 mb-2 text-2xl font-bold uppercase text-right">
                 <span>{item.Title || item.title || item.TITLE}</span>
                 <span className="text-orange-500">{item.Price || item.price || item.PRICE}</span>
              </div>
           ))}
         </div>
       </div>
+      {/* Visual Assets */}
       <img src="/beer-glass.png" className="absolute bottom-5 left-5 h-48 drop-shadow-2xl" style={{ transform: 'scaleX(-1)' }} />
       <img src="/football.png" className="absolute bottom-5 right-5 h-24 drop-shadow-2xl" />
     </div>
@@ -63,12 +65,12 @@ const TireShopTheme = ({ ads }: { ads: any[] }) => (
       TIRE SHOP <span className="text-yellow-400">DEALS</span>
     </h1>
     <div className="w-full max-w-4xl space-y-6">
-      {ads.map((ad, i) => (
+      {ads.length > 0 ? ads.map((ad, i) => (
         <div key={i} className="bg-slate-900 border-l-8 border-yellow-400 p-8 flex justify-between items-center shadow-2xl">
           <div className="text-4xl font-black uppercase tracking-tighter">{ad.Title || ad.title || ad.TITLE}</div>
           <div className="text-5xl font-black text-yellow-400">{ad.Price || ad.price || ad.PRICE}</div>
         </div>
-      ))}
+      )) : <p className="text-2xl opacity-50">No Active Deals Found</p>}
     </div>
   </div>
 );
@@ -87,10 +89,12 @@ const App = () => {
         const data = await res.json();
         
         const filtered = data.filter((row: any) => {
-          // Flexible mapping for Target_Screen and Status
+          // Removes spaces and handles multiple header names
           const target = String(row.Target_Screen || row.target_screen || row.targetScreen || "").toLowerCase().replace(/\s/g, '');
           const status = String(row.Status || row.status || "").toLowerCase().trim();
-          return target === shopId && status === 'active';
+          
+          // Debugging check: ensures 'tireshop' URL matches 'Tire Shop' or 'tireshop' in sheet
+          return (target === shopId || target.includes(shopId)) && status === 'active';
         });
         setItems(filtered);
       } catch (e) { console.error("Error fetching data:", e); }
@@ -100,6 +104,7 @@ const App = () => {
     return () => clearInterval(interval);
   }, [shopId]);
 
+  // Decides which theme to show based on URL ?id=
   return shopId === 'tireshop' ? <TireShopTheme ads={items} /> : <BearsTheme ads={items} />;
 };
 
