@@ -8,35 +8,34 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [activeAlert, setActiveAlert] = useState<any>(null);
   
-  // 1. DYNAMIC DETECTION: This catches ?ID=TONYSBAR from your screenshot
-  const currentURL = window.location.href.toLowerCase();
-  const isTireShop = currentURL.includes("tireshop");
-  const isTonysBar = currentURL.includes("tonysbar");
+  // 1. UNIVERSAL DETECTION: Automatically grabs whatever name is in the URL
+  const queryParams = new URLSearchParams(window.location.search);
+  // This looks for ?id=... or ?shop=...
+  const shopId = (queryParams.get('id') || queryParams.get('shop') || "").toLowerCase().trim();
 
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
 
   useEffect(() => {
-    // Determine which tab name to send to the Google Script
-    const shopTab = isTireShop ? "tireshop" : isTonysBar ? "tonysbar" : null;
-
-    if (!shopTab) {
+    // If there is no ID in the URL, stop here
+    if (!shopId) {
       setLoading(false);
       return;
     }
 
     const fetchData = async () => {
       try {
-        const response = await fetch(`${SCRIPT_URL}?shop=${shopTab}&t=${new Date().getTime()}`);
+        // 2. DYNAMIC FETCH: Asks the script for the tab matching the URL
+        const response = await fetch(`${SCRIPT_URL}?shop=${shopId}&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // 2. THE TRIGGER: Check for 'ALERT' + 'Active' status
-        const alert = data.find((row: any) => 
+        // 3. UNIVERSAL ALERT: Works for "Touchdown" or "Tire Specials"
+        const alertTrigger = data.find((row: any) => 
           String(row.category).toUpperCase() === 'ALERT' && 
           String(row.status).toLowerCase() === 'active'
         );
-        setActiveAlert(alert || null);
+        setActiveAlert(alertTrigger || null);
 
-        // 3. THE MENU: Everything else marked 'Active'
+        // 4. FILTER CONTENT: Only shows "Active" rows
         const filtered = data.filter((row: any) => 
           String(row.status).toLowerCase() === "active" &&
           String(row.category).toUpperCase() !== 'ALERT'
@@ -50,23 +49,23 @@ const App = () => {
     };
 
     fetchData();
-    // 5-second pulse to check for the Touchdown trigger
-    const interval = setInterval(fetchData, 5000); 
+    const interval = setInterval(fetchData, 5000); // 5-second "Live" check
     return () => clearInterval(interval);
-  }, [isTireShop, isTonysBar]);
+  }, [shopId]);
 
-  // 4. THE THEME SWITCHER
-  if (isTireShop) return <TireShopTheme ads={items} />;
+  // 5. AUTOMATIC THEME PICKER
+  if (shopId === 'tireshop') return <TireShopTheme ads={items} />;
   
-  if (isTonysBar) {
-    if (loading) return <StandbyScreen message="PREPPING THE STATION..." />;
+  // This will now load Tony's Bar because it matches the ID in your URL
+  if (shopId === 'tonysbar') {
+    if (loading) return <StandbyScreen message="PREPPING THE KITCHEN..." />;
     return <TonysBarTheme ads={items} alert={activeAlert} />;
   }
 
-  // 5. THE ERROR SCREEN: Now shows exactly what it sees in the URL
+  // 6. FALLBACK: If you haven't assigned a theme yet, it shows this
   return (
     <StandbyScreen 
-      message={`URL NOT RECOGNIZED. Detected: "${window.location.search}"`} 
+      message={shopId ? `CONNECTED TO "${shopId.toUpperCase()}" - ASSIGNING THEME...` : "WAITING FOR COMMAND..."} 
     />
   );
 };
