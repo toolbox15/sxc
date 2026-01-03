@@ -1,28 +1,45 @@
 import React, { useState, useEffect } from 'react';
 
-// WE ARE BUILDING THE THEME DIRECTLY INSIDE APP.TSX TO BYPASS THE BUILD ERROR
+// --- THEME 1: TONY'S BAR (The Bear Style) ---
 const TonysBarTheme = ({ ads, alert }: { ads: any[], alert: any }) => (
-  <div style={{ backgroundColor: '#003366', color: 'white', minHeight: '100vh', padding: '40px', fontFamily: 'sans-serif' }}>
+  <div style={{ backgroundColor: '#002a5c', color: 'white', minHeight: '100vh', padding: '50px', fontFamily: 'Arial, sans-serif' }}>
     {alert ? (
-      <div style={{ backgroundColor: 'white', color: '#003366', padding: '50px', textAlign: 'center', fontSize: '5rem', fontWeight: 'bold' }}>
-        {alert.title || "TOUCHDOWN!"}
+      <div style={{ height: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', color: '#002a5c', borderRadius: '20px' }}>
+        <h1 style={{ fontSize: '8rem', margin: 0 }}>{alert.title}</h1>
+        <p style={{ fontSize: '3rem' }}>{alert.description}</p>
       </div>
     ) : (
-      <div>
-        <h1 style={{ borderBottom: '4px solid white', paddingBottom: '10px' }}>TONY'S BAR MENU</h1>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '30px' }}>
+      <>
+        <h1 style={{ fontSize: '3.5rem', borderBottom: '5px solid white', paddingBottom: '20px', marginBottom: '40px' }}>TONY'S BAR MENU</h1>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '30px' }}>
           {ads.map((item, i) => (
-            <div key={i} style={{ border: '1px solid white', padding: '20px' }}>
-              <h2>{item.title} - {item.price}</h2>
-              <p>{item.description}</p>
+            <div key={i} style={{ border: '2px solid rgba(255,255,255,0.3)', padding: '30px', borderRadius: '10px' }}>
+              <h2>{item.title} — ${item.price}</h2>
+              <p style={{ color: '#ccc' }}>{item.description}</p>
             </div>
           ))}
         </div>
-      </div>
+      </>
     )}
   </div>
 );
 
+// --- THEME 2: TIRE SHOP (Original Style) ---
+const TireShopTheme = ({ ads }: { ads: any[] }) => (
+  <div style={{ backgroundColor: '#050505', color: '#f1f1f1', minHeight: '100vh', padding: '40px', fontFamily: 'Impact, sans-serif' }}>
+    <h1 style={{ color: '#ff4d4d', fontSize: '4rem', textTransform: 'uppercase' }}>Current Tire Specials</h1>
+    <div style={{ marginTop: '40px' }}>
+      {ads.map((item, i) => (
+        <div key={i} style={{ borderLeft: '10px solid #ff4d4d', padding: '20px', marginBottom: '20px', backgroundColor: '#1a1a1a' }}>
+          <h2 style={{ fontSize: '2.5rem', margin: 0 }}>{item.title}</h2>
+          <p style={{ fontSize: '1.5rem', color: '#aaa' }}>{item.description} — <span style={{ color: '#fff' }}>{item.price}</span></p>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// --- MAIN APP LOGIC ---
 const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +47,6 @@ const App = () => {
   
   const params = new URLSearchParams(window.location.search);
   const shopId = (params.get('id') || params.get('ID') || params.get('shop') || "").toLowerCase().trim();
-
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
 
   useEffect(() => {
@@ -45,14 +61,12 @@ const App = () => {
         const data = await response.json();
         
         const alertTrigger = data.find((row: any) => 
-          String(row.category).toUpperCase() === 'ALERT' && 
-          String(row.status).toLowerCase() === 'active'
+          String(row.category).toUpperCase() === 'ALERT' && String(row.status).toLowerCase() === 'active'
         );
         setActiveAlert(alertTrigger || null);
 
         const filtered = data.filter((row: any) => 
-          String(row.status).toLowerCase() === "active" &&
-          String(row.category).toUpperCase() !== 'ALERT'
+          String(row.status).toLowerCase() === "active" && String(row.category).toUpperCase() !== 'ALERT'
         );
         
         setItems(filtered);
@@ -67,13 +81,12 @@ const App = () => {
     return () => clearInterval(interval);
   }, [shopId]);
 
-  if (shopId === 'tonysbar') {
-    return <TonysBarTheme ads={items} alert={activeAlert} />;
-  }
+  if (shopId === 'tonysbar') return <TonysBarTheme ads={items} alert={activeAlert} />;
+  if (shopId === 'tireshop') return <TireShopTheme ads={items} />;
 
   return (
-    <div style={{ backgroundColor: '#001a33', color: 'white', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-      <h1>{shopId ? `CONNECTED TO: ${shopId.toUpperCase()}` : "WAITING FOR SHOP ID..."}</h1>
+    <div style={{ backgroundColor: '#001a33', color: 'white', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <h1>WAITING FOR SHOP ID (tireshop or tonysbar)</h1>
     </div>
   );
 };
