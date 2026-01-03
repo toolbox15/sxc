@@ -8,12 +8,10 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [activeAlert, setActiveAlert] = useState<any>(null);
   
-  // 1. DETECTION: Look for the word in the URL regardless of format
+  // 1. UNIVERSAL FIX: Search the whole URL for "tonysbar" or "tireshop"
   const fullUrl = window.location.href.toLowerCase();
-  const isTony = fullUrl.includes("tonysbar");
-  const isTire = fullUrl.includes("tireshop");
-  
-  const shopId = isTony ? "tonysbar" : (isTire ? "tireshop" : "");
+  const shopId = fullUrl.includes("tonysbar") ? "tonysbar" : (fullUrl.includes("tireshop") ? "tireshop" : "");
+
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
 
   useEffect(() => {
@@ -24,23 +22,24 @@ const App = () => {
 
     const fetchData = async () => {
       try {
+        // Fetch data based on whatever name was found in the URL
         const response = await fetch(`${SCRIPT_URL}?shop=${shopId}&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // Touchdown Trigger Logic
-        const alertTrigger = data.find((row: any) => 
+        // Check for 'ALERT' + 'Active' (Touchdown Trigger)
+        const touchdown = data.find((row: any) => 
           String(row.category).toUpperCase() === 'ALERT' && 
           String(row.status).toLowerCase() === 'active'
         );
-        setActiveAlert(alertTrigger || null);
+        setActiveAlert(touchdown || null);
 
-        // Menu Logic
-        const filtered = data.filter((row: any) => 
+        // Filter for active menu items
+        const menu = data.filter((row: any) => 
           String(row.status).toLowerCase() === "active" &&
           String(row.category).toUpperCase() !== 'ALERT'
         );
         
-        setItems(filtered);
+        setItems(menu);
         setLoading(false);
       } catch (err) {
         setLoading(false);
@@ -52,17 +51,20 @@ const App = () => {
     return () => clearInterval(interval);
   }, [shopId]);
 
-  if (isTony) {
-    if (loading) return <StandbyScreen message="PREPPING THE STATION..." />;
+  // 2. THEME SELECTOR
+  if (shopId === 'tonysbar') {
+    if (loading) return <StandbyScreen message="THE BEAR: PREPPING STATION..." />;
     return <TonysBarTheme ads={items} alert={activeAlert} />;
   }
 
-  if (isTire) return <TireShopTheme ads={items} />;
+  if (shopId === 'tireshop') {
+    return <TireShopTheme ads={items} />;
+  }
 
-  // This message confirms if your update worked
+  // 3. DEBUG: If you see this, the word "tonysbar" is missing from your URL
   return (
     <StandbyScreen 
-      message={`FIX INSTALLED. I see URL: ${window.location.href} but no shop name found.`} 
+      message={`VER 5.0 LIVE. URL DETECTED: ${window.location.search}`} 
     />
   );
 };
