@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
 
-// --- THEME 1: TONY'S BAR (FOOTBALL FIELD) ---
-const BearsTheme = ({ ads, alert }: { ads: any[], alert: any }) => {
-  const kickoff = ads.filter(ad => String(ad.category).toLowerCase() === 'kickoff');
-  const mains = ads.filter(ad => String(ad.category).toLowerCase() === 'main event' || String(ad.category).toLowerCase() === 'main-event');
-  const drinks = ads.filter(ad => String(ad.category).toLowerCase() === 'draft picks' || String(ad.category).toLowerCase() === 'draft-picks');
+const BearsTheme = ({ ads }: { ads: any[] }) => {
+  // Mapping based on your screenshot categories
+  const kickoff = ads.filter(ad => String(ad.category).toLowerCase().includes('kickoff'));
+  const mains = ads.filter(ad => String(ad.category).toLowerCase().includes('main'));
+  const drinks = ads.filter(ad => String(ad.category).toLowerCase().includes('draft'));
 
   return (
     <div className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans" 
@@ -27,24 +27,51 @@ const BearsTheme = ({ ads, alert }: { ads: any[], alert: any }) => {
         <div className="col-span-12 text-center mb-4 border-b-4 border-orange-600 pb-4">
           <h1 className="text-7xl font-black uppercase italic drop-shadow-2xl">GAME DAY <span className="text-orange-500">SPECIALS</span></h1>
         </div>
-        {/* Menu Columns */}
-        <div className="col-span-4 pl-40"><div className="bg-orange-600 p-2 mb-4">KICKOFF</div>{kickoff.map((item, i) => <div key={i} className="mb-4"><b>{item.title}</b> - {item.price}</div>)}</div>
-        <div className="col-span-4 bg-blue-950/40 p-4 border-t-4 border-white"><div className="bg-white text-blue-950 p-2 mb-4">MAINS</div>{mains.map((item, i) => <div key={i} className="mb-4 text-center text-xl"><b>{item.title}</b><br/>{item.price}</div>)}</div>
-        <div className="col-span-4 pr-32 text-right"><div className="bg-orange-600 p-2 mb-4">DRAFT PICKS</div>{drinks.map((item, i) => <div key={i} className="mb-4"><b>{item.title}</b> - {item.price}</div>)}</div>
+
+        {/* Kickoff Section */}
+        <div className="col-span-4 pl-40 pt-4">
+          <div className="bg-orange-600 p-2 mb-4 font-black italic">KICKOFF</div>
+          {kickoff.map((item, i) => (
+            <div key={i} className="mb-4 border-b border-white/20 pb-2">
+              <div className="flex justify-between font-bold text-2xl">
+                <span>{item.title}</span>
+                <span className="text-orange-500">{item.price}</span>
+              </div>
+              <p className="text-sm opacity-80">{item.description}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Main Event Section */}
+        <div className="col-span-4 bg-blue-950/40 p-6 border-t-4 border-white backdrop-blur-sm">
+          <div className="bg-white text-blue-950 p-2 mb-6 font-black italic text-center text-2xl">THE MAIN EVENT</div>
+          {mains.map((item, i) => (
+            <div key={i} className="mb-8 text-center border-b border-white/20 pb-4">
+              <h3 className="text-3xl font-black uppercase">{item.title}</h3>
+              <div className="text-3xl font-black text-orange-500 my-1">{item.price}</div>
+              <p className="text-sm italic">{item.description}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Draft Picks Section */}
+        <div className="col-span-4 pr-32 pt-4 text-right">
+          <div className="bg-orange-600 p-2 mb-4 font-black italic">DRAFT PICKS</div>
+          {drinks.map((item, i) => (
+            <div key={i} className="mb-4 border-b border-white/20 pb-2">
+              <div className="flex justify-between flex-row-reverse font-bold text-2xl">
+                <span>{item.title}</span>
+                <span className="text-orange-500">{item.price}</span>
+              </div>
+              <p className="text-sm opacity-80">{item.description}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-// --- THEME 2: TIRE SHOP (PLACEHOLDER) ---
-const TireShopTheme = ({ ads }: { ads: any[] }) => (
-  <div className="h-screen bg-slate-900 text-white p-20">
-    <h1 className="text-6xl font-black mb-10">TIRE SHOP <span className="text-yellow-400">DEALS</span></h1>
-    {ads.map((ad, i) => <div key={i} className="border-b py-4 text-3xl font-bold">{ad.title} — {ad.price}</div>)}
-  </div>
-);
-
-// --- MAIN APP COMPONENT ---
 const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const params = new URLSearchParams(window.location.search);
@@ -57,23 +84,24 @@ const App = () => {
         const response = await fetch(`${SCRIPT_URL}?t=${new Date().getTime()}`);
         const allData = await response.json();
 
-        // 🛡️ THE STRICT FILTER
+        // 🛡️ RE-MAPPING TO MATCH YOUR SPREADSHEET COLUMNS
         const filtered = allData.filter((row: any) => {
-          const clientInSheet = String(row.client).toLowerCase().replace(/['\s]/g, ''); // "Tony's Bar" -> "tonysbar"
+          // Normalize the client name for comparison
+          const clientInSheet = String(row.client).toLowerCase().replace(/['\s]/g, '');
+          
+          // Use Column J for Status and Column L for Target_Screen as per your image
           return clientInSheet === shopIdFromURL && String(row.status).toLowerCase() === "active";
         });
         
         setItems(filtered);
-      } catch (err) { console.error("Error fetching hub data:", err); }
+      } catch (err) { console.error("Error:", err); }
     };
     fetchData();
     const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, [shopIdFromURL]);
 
-  // Choose theme based on URL ID
-  if (shopIdFromURL === 'tonysbar') return <BearsTheme ads={items} alert={null} />;
-  return <TireShopTheme ads={items} />;
+  return <BearsTheme ads={items} />;
 };
 
 export default App;
