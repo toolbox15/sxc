@@ -1,22 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import TireShopTheme from './components/TireShopTheme'; 
-import TonysBarTheme from './components/TonysBarTheme'; 
-import { StandbyScreen } from './components/StandbyScreen'; 
+
+// WE ARE BUILDING THE THEME DIRECTLY INSIDE APP.TSX TO BYPASS THE BUILD ERROR
+const TonysBarTheme = ({ ads, alert }: { ads: any[], alert: any }) => (
+  <div style={{ backgroundColor: '#003366', color: 'white', minHeight: '100vh', padding: '40px', fontFamily: 'sans-serif' }}>
+    {alert ? (
+      <div style={{ backgroundColor: 'white', color: '#003366', padding: '50px', textAlign: 'center', fontSize: '5rem', fontWeight: 'bold' }}>
+        {alert.title || "TOUCHDOWN!"}
+      </div>
+    ) : (
+      <div>
+        <h1 style={{ borderBottom: '4px solid white', paddingBottom: '10px' }}>TONY'S BAR MENU</h1>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '30px' }}>
+          {ads.map((item, i) => (
+            <div key={i} style={{ border: '1px solid white', padding: '20px' }}>
+              <h2>{item.title} - {item.price}</h2>
+              <p>{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+);
 
 const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeAlert, setActiveAlert] = useState<any>(null);
   
-  // 1. PROFESSIONAL URL PARSING
-  // This looks for 'id' or 'ID' or 'shop' and converts to lowercase
   const params = new URLSearchParams(window.location.search);
   const shopId = (params.get('id') || params.get('ID') || params.get('shop') || "").toLowerCase().trim();
 
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKTJKOJjowfs0s0C9lOBbGM1CcajLFvjbi8dVANYeuGI7fIbSr9laHN9VnMjF_d1v0MQ/exec';
 
   useEffect(() => {
-    // If no ID is provided, don't attempt to fetch
     if (!shopId) {
       setLoading(false);
       return;
@@ -24,18 +41,15 @@ const App = () => {
 
     const fetchData = async () => {
       try {
-        // Fetch from the tab named in the URL (e.g., tonysbar)
         const response = await fetch(`${SCRIPT_URL}?shop=${shopId}&t=${new Date().getTime()}`);
         const data = await response.json();
         
-        // DYNAMIC ALERT: Works for "Touchdown" or "Tire Sales"
         const alertTrigger = data.find((row: any) => 
           String(row.category).toUpperCase() === 'ALERT' && 
           String(row.status).toLowerCase() === 'active'
         );
         setActiveAlert(alertTrigger || null);
 
-        // DYNAMIC MENU: Only shows Active items for this shop
         const filtered = data.filter((row: any) => 
           String(row.status).toLowerCase() === "active" &&
           String(row.category).toUpperCase() !== 'ALERT'
@@ -49,25 +63,18 @@ const App = () => {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 5000); // 5-second polling for live alerts
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, [shopId]);
 
-  // 2. THEME ROUTER
-  // Loads the correct UI based on the shopId
-  if (shopId === 'tireshop') return <TireShopTheme ads={items} />;
-  
   if (shopId === 'tonysbar') {
-    if (loading) return <StandbyScreen message="THE BEAR: PREPPING STATION..." />;
     return <TonysBarTheme ads={items} alert={activeAlert} />;
   }
 
-  // 3. FAIL-SAFE DEBUG SCREEN
-  // This tells you EXACTLY what the app is reading from your URL
   return (
-    <StandbyScreen 
-      message={shopId ? `SYSTEM LIVE. CONNECTED TO: ${shopId.toUpperCase()}` : "WAITING FOR SHOP ID..."} 
-    />
+    <div style={{ backgroundColor: '#001a33', color: 'white', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+      <h1>{shopId ? `CONNECTED TO: ${shopId.toUpperCase()}` : "WAITING FOR SHOP ID..."}</h1>
+    </div>
   );
 };
 
