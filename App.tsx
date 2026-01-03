@@ -3,16 +3,14 @@ import { motion } from 'framer-motion';
 import { Flame, UtensilsCrossed, Beer } from 'lucide-react';
 
 const BearsTheme = ({ ads, alert }: { ads: any[], alert: any }) => {
-  // Filter items based on the categories in your spreadsheet
   const kickoff = ads.filter(ad => String(ad.category).toLowerCase() === 'kickoff');
   const mains = ads.filter(ad => String(ad.category).toLowerCase() === 'main event' || String(ad.category).toLowerCase() === 'main-event');
   const drinks = ads.filter(ad => String(ad.category).toLowerCase() === 'draft picks' || String(ad.category).toLowerCase() === 'draft-picks');
 
   return (
     <div className="w-full h-screen relative overflow-hidden bg-cover bg-center font-sans" 
-         style={{ backgroundImage: "url('/field-bg.png')" }}> {/* ABSOLUTE PATH */}
+         style={{ backgroundImage: "url('/field-bg.png')" }}>
       
-      {/* Dark overlay to ensure text is readable against the grass */}
       <div className="absolute inset-0 bg-blue-950/30 z-0"></div>
 
       {/* 🚨 FLASH SALE OVERLAY */}
@@ -28,17 +26,22 @@ const BearsTheme = ({ ads, alert }: { ads: any[], alert: any }) => {
         </div>
       )}
 
-      {/* 🍺 BEER GLASS (Bottom Left) */}
-      <div className="absolute bottom-[-30px] left-[-40px] z-10">
-          <img src="/beer-glass.png" alt="Beer Glass" className="h-[450px] w-auto drop-shadow-2xl" />
+      {/* 🍺 BEER GLASS: Smaller (h-80) and Flipped (scale-x-[-1]) */}
+      <div className="absolute bottom-2 left-2 z-10">
+          <img 
+            src="/beer-glass.png" 
+            alt="Beer Glass" 
+            className="h-80 w-auto drop-shadow-2xl" 
+            style={{ transform: 'scaleX(-1)' }} 
+          />
       </div>
 
-      {/* 🏈 FOOTBALL (Bottom Right) */}
-      <div className="absolute bottom-[10px] right-[20px] z-10">
+      {/* 🏈 FOOTBALL: Smaller (h-40) and Positioned in the corner */}
+      <div className="absolute bottom-4 right-4 z-10">
         <motion.img 
           src="/football.png" 
-          className="h-[280px] w-auto drop-shadow-2xl" 
-          animate={{ rotate: [0, 5, 0], y: [0, -10, 0] }} 
+          className="h-40 w-auto drop-shadow-2xl" 
+          animate={{ rotate: [0, 5, 0], y: [0, -5, 0] }} 
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
         />
       </div>
@@ -100,7 +103,6 @@ const BearsTheme = ({ ads, alert }: { ads: any[], alert: any }) => {
   );
 };
 
-// --- MAIN APP LOGIC ---
 const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [activeAlert, setActiveAlert] = useState<any>(null);
